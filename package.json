@@ -63,6 +63,7 @@
   "license": "MIT",
   "dependencies": {
     "electron-store": "^5.1.1",
-    "league-connect": "^2.0.1"
+    "league-connect": "^2.0.1",
+    "node-fetch": "^2.6.0"
   }
 }

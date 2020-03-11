@@ -1,8 +1,6 @@
 import { writable } from "svelte/store";
 
-export interface IKeyValue {
-  [key: string]: any;
-}
+import { IKeyValue } from "../../app/interfaces/IKeyValue";
 
 export interface ISummonerStore {
   auth: boolean;

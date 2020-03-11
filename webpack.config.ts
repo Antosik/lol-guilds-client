@@ -129,10 +129,11 @@ const config: webpack.Configuration[] = [
           NODE_ENV: JSON.stringify(nodeEnv)
         }
       }),
+
       new Copy([
         {
-          from: './assets',
-          to: './assets'
+          from: path.join(__dirname, 'assets'),
+          to: path.join(__dirname, 'target', 'renderer')
         }
       ]),
 

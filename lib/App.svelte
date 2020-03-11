@@ -1,10 +1,15 @@
 <script lang="typescript">
   import { onMount } from "svelte";
-  import { summonerStore } from "./store/index";
 
   import { rpc } from "./data/rpc";
 
-  import { gameflowMap } from "./consts/gameflow";
+  // @ts-ignore
+  import NoAuth from "./pages/NoAuth.svelte";
+  // @ts-ignore
+  import Auth from "./pages/Auth.svelte";
+
+  import { summonerStore } from "./store/summoner";
+  import { guildStore } from "./store/guild";
 
   onMount(() => {
     rpc.on("lcu:auth", e => summonerStore.setAuth(e.status === "ok"));
@@ -19,24 +24,40 @@
       console.log(e);
       summonerStore.setAuth(false);
     });
+    rpc.on("guilds:club", e => {
+      guildStore.setGuildData(e);
+    });
+    rpc.on("guilds:members", e => {
+      guildStore.setMembers(e);
+    });
   });
 
   function LCUReconnect() {
     rpc.send("ui:reconnect", undefined);
   }
+  // @ts-ignore
+  function inviteMemberToParty(event) {
+    rpc.send("guilds:member:invite", event.detail);
+  }
+  // @ts-ignore
+  function inviteAllMembersToParty(event) {
+    rpc.send("guilds:member:invite-all", event.detail);
+  }
+
+  const guild = {
+    name: "CoolStoryBob"
+  };
 
   export {};
 </script>
 
-<div>
-  {#if !$summonerStore.auth}
-    <h1>Клиент League of Legends не запущен!</h1>
-    <button type="button" on:click={LCUReconnect}>reconnect</button>
-  {:else if !$summonerStore.summoner}
-    <h1>Загружаем информацию о призывателе...</h1>
-  {:else}
-    <h1>Привет, {$summonerStore.summoner.displayName}</h1>
-    <p>Статус: {gameflowMap.get($summonerStore.status)}</p>
-  {/if}
-
-</div>
+{#if !$summonerStore.auth}
+  <NoAuth on:click-reconnect={LCUReconnect} />
+{:else}
+  <Auth
+    summoner={$summonerStore.summoner}
+    status={$summonerStore.status}
+    guild={$guildStore}
+    on:member-invite={inviteMemberToParty}
+    on:member-invite-all={inviteAllMembersToParty} />
+{/if}

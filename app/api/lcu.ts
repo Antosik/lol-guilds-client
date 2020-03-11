@@ -3,6 +3,8 @@ import type { Credentials, LeagueWebSocket, EventResponse } from "league-connect
 import type { ClientRPC } from "../data/rpc";
 
 import { auth, connect, request } from "league-connect";
+import { IKeyValue } from "../interfaces/IKeyValue";
+
 
 export class LCUSession {
   private static RECONNECT_INTERVAL = 3000;
@@ -40,7 +42,7 @@ export class LCUSession {
     }
   }
 
-  public async request(url: string, body: object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET"): Promise<unknown> {
+  public async request(url: string, body: string | object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET"): Promise<unknown> {
     return request({
       url,
       method,
@@ -96,3 +98,8 @@ export class LCUSession {
 }
 
 export const createLCUSession = (rpc: ClientRPC): LCUSession => new LCUSession(rpc);
+
+export const constructInvitation = (accountId: number): IKeyValue => ({
+  state: "Requested",
+  toSummonerId: accountId
+})

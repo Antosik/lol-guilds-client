@@ -6,7 +6,7 @@ interface IStorePrototype {
     puuid: string;
     accountId: number;
     summonerId: number;
-  },
+  };
   token?: string;
 }
 

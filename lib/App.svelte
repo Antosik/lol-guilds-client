@@ -1,11 +1,9 @@
-<script lang="typescript">
+<script>
   import { onMount } from "svelte";
 
   import { rpc } from "./data/rpc";
 
-  // @ts-ignore
   import NoAuth from "./pages/NoAuth.svelte";
-  // @ts-ignore
   import Auth from "./pages/Auth.svelte";
 
   import { summonerStore } from "./store/summoner";
@@ -35,11 +33,9 @@
   function LCUReconnect() {
     rpc.send("ui:reconnect", undefined);
   }
-  // @ts-ignore
   function inviteMemberToParty(event) {
     rpc.send("guilds:member:invite", event.detail);
   }
-  // @ts-ignore
   function inviteAllMembersToParty(event) {
     rpc.send("guilds:member:invite-all", event.detail);
   }

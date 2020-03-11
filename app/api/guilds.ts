@@ -1,16 +1,15 @@
 import type { IKeyValue } from "../interfaces/IKeyValue";
 
 import fetch from "node-fetch";
-import { gameflowVariants, gameflowSortPriority } from "../helpers/gameflow";
 
-interface GuildsAPIRequestOptions {
+interface IGuildsAPIRequestOptions {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  body?: any;
+  body?: string | object | undefined;
   version?: 1 | 2;
   token?: string;
 }
 
-export async function requestGuildsAPI(path: string, options: GuildsAPIRequestOptions = { method: "GET", version: 1 }) {
+export async function requestGuildsAPI(path: string, options: IGuildsAPIRequestOptions = { method: "GET", version: 1 }) {
   const apiVersion = options.version === 2 ? "api-v2" : "api";
   const headers: IKeyValue = {
     "Accept": "application/json",
@@ -20,7 +19,6 @@ export async function requestGuildsAPI(path: string, options: GuildsAPIRequestOp
   if (options.token) {
     headers.Authorization = `JWT ${options.token}`;
   }
-
 
   return fetch(`https://clubs.lcu.ru.leagueoflegends.com/${apiVersion}/${path}`, {
     method: options.method,
@@ -43,4 +41,4 @@ export const api = {
     ),
   getCurrentSeason: async (token: string = "") => requestGuildsAPI("contest/season", { method: "GET", version: 2, token })
     .then((seasons: IKeyValue[]) => seasons.find((season: IKeyValue) => season.is_open && !season.is_closed))
-}
+};

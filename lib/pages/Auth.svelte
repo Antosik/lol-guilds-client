@@ -8,8 +8,6 @@
   export let status = "None";
   export let guild = undefined;
 
-  $: console.log(guild);
-
   const dispatch = createEventDispatcher();
 
   function LCUReconnect() {

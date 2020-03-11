@@ -81,7 +81,7 @@ export class LCUSession {
     }
   }
 
-  private async onConnect() {
+  private onConnect() {
     this.rpc.emit("lcu:connect", this.credentials);
 
     this.subscribe("/process-control/v1/process", true);
@@ -92,7 +92,7 @@ export class LCUSession {
     });
   }
 
-  private async onDisconnect() {
+  private onDisconnect() {
     this.rpc.send("lcu:disconnect", undefined);
   }
 }
@@ -102,4 +102,4 @@ export const createLCUSession = (rpc: ClientRPC): LCUSession => new LCUSession(r
 export const constructInvitation = (accountId: number): IKeyValue => ({
   state: "Requested",
   toSummonerId: accountId
-})
+});

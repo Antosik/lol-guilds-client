@@ -1,41 +1,40 @@
-// Modules to control application life and create native browser window
-import { app, BrowserWindow } from "electron";
-import * as path from "path";
+import { app } from "electron";
 
-function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js")
-    }
+import { createLCUSession } from "./api/lcu";
+import { createRPC } from "./data/rpc";
+import { createWindow } from "./ui/window";
+
+function main() {
+  const window = createWindow();
+  const rpc = createRPC(window);
+  const session = createLCUSession(rpc);
+
+  window.once("show", async () => {
+    await session.connect();
   });
 
-  // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, ".", "index.html"));
+  rpc.on("ui:reconnect", async () => {
+    await session.connect();
+  });
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  rpc.on("lcu:connect", async () => {
+    session.subscribe("/lol-gameflow/v1/gameflow-phase");
+    session.subscribe("/lol-service-status/v1/lcu-status", true);
+
+    const [summoner, gameflow, token] = await Promise.all([
+      session.request("/lol-summoner/v1/current-summoner"),
+      session.request("/lol-gameflow/v1/gameflow-phase"),
+      session.request("/lol-rso-auth/v1/authorization/id-token")
+    ]);
+    rpc.send("lcu:summoner", summoner);
+    rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
+  });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+app.on("ready", main);
 
-// Quit when all windows are closed.
 app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") app.quit();
 });
-
-app.on("activate", () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

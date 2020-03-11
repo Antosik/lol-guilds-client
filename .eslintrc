@@ -16,10 +16,12 @@
         "target"
     ],
     "overrides": [
-      {
-        "files": ["**/*.svelte"],
-        "processor": "svelte3/svelte3"
-      }
+        {
+            "files": [
+                "**/*.svelte"
+            ],
+            "processor": "svelte3/svelte3"
+        }
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -107,6 +109,7 @@
             }
         ],
         "@typescript-eslint/ban-ts-ignore": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
         // other options
         "@typescript-eslint/prefer-for-of": "error",
         "@typescript-eslint/prefer-function-type": "error",

@@ -4,8 +4,8 @@
     "outDir": "./dist/tmp/root/"
   },
   "include": [
-    "./app/",
-    "./lib/",
+    "./app/**/*",
+    "./lib/**/*",
   ],
   "references": [
     {

@@ -73,9 +73,20 @@ const config: webpack.Configuration[] = [
     module: {
       rules: [
         {
-          test: /\.(js|ts)$/,
+          test: /\.js$/,
           exclude: /node_modules/,
           loader: 'babel-loader'
+        },
+        {
+          test: /\.tsx?$/,
+          use: [
+            {
+              loader: 'ts-loader',
+              options: {
+                transpileOnly: true
+              }
+            }
+          ]
         },
         {
           test: /\.svelte$/,
@@ -97,7 +108,7 @@ const config: webpack.Configuration[] = [
           }
         },
         {
-          test: /\.json/,
+          test: /\.json$/,
           loader: 'json-loader'
         },
         {

@@ -7,3 +7,7 @@ target
 
 # env files
 .env
+
+# editor files
+.vscode
+.idea

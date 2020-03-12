@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import GuildMemberList from "../blocks/GuildMemberList.svelte";
   import SummonerStatus from "../components/SummonerStatus.svelte";
-  import { notBusyStatusCode } from "../consts/gameflow";
+  import { notBusyStatusCode } from "../../../shared/helpers/gameflow";
 
   export let summoner = undefined;
   export let status = "None";
@@ -103,7 +103,7 @@
       </div>
     {/if}
     <button type="button" class="refresh">
-      <img src="renderer/images/icons/refresh.svg" alt="Обновить" />
+      <img src="./images/icons/refresh.svg" alt="Обновить" />
     </button>
 
   </div>

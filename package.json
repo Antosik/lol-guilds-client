@@ -2,10 +2,10 @@
   "name": "guilds-client",
   "version": "1.0.0",
   "description": "A minimal Electron application (with typescript)",
-  "main": "target/index.js",
+  "main": "target/app/main.js",
   "scripts": {
     "clean": "del-cli ./target",
-    "compile": "tsc",
+    "compile": "npm run clean && npm run start:prod",
     "dist:linux": "electron-builder --config ./electron-builder.json --linux",
     "dist:mac": "electron-builder --config ./electron-builder.json --mac",
     "dist:windows": "electron-builder --config ./electron-builder.json --win",
@@ -13,8 +13,9 @@
     "lint:fix": "eslint --ext .js,.ts,.svelte . --fix",
     "postinstall": "electron-builder install-app-deps",
     "prestart": "npm run compile",
-    "start:dev": "concurrently -n \"Webpack,TypeScript\" -c \"cyan.bold,blue.bold\" \"webpack -w\" \"tsc --build -v --pretty --watch --preserveWatchOutput\" -k",
-    "start:app": "electron target",
+    "start:prod": "cross-env NODE_ENV=\"production\" concurrently -n \"WebpackMain,WebpackRenderer\" -c \"cyan.bold,blue.bold\" \"webpack -w --config main/webpack.config.ts\" \"webpack -w --config renderer/webpack.config.ts\" -k",
+    "start:dev": "concurrently -n \"WebpackMain,WebpackRenderer\" -c \"cyan.bold,blue.bold\" \"webpack -w --config main/webpack.config.ts\" \"webpack -w --config renderer/webpack.config.ts\" -k",
+    "start:app": "electron target/app/main.js",
     "watch": "tsc -w"
   },
   "devDependencies": {

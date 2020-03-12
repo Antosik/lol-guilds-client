@@ -1,5 +1,5 @@
 <script>
-  import { gameflowLocale, notBusyStatusCode } from "../consts/gameflow";
+  import { gameflowLocale, notBusyStatusCode } from "../../../shared/helpers/gameflow";
 
   export let statusCode = "None";
   $: isBusy = !notBusyStatusCode.includes(statusCode);

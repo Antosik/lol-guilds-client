@@ -18,8 +18,7 @@ export class Window extends BrowserWindow {
     };
     super(settings);
 
-    this.removeMenu();
-    this.loadFile(joinPath(__dirname, "..", "index.html"));
+    this.loadFile(joinPath("../", "index.html"));
 
     this.once("ready-to-show", () => {
       this.show();

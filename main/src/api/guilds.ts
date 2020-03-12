@@ -1,4 +1,4 @@
-import type { IKeyValue } from "../interfaces/IKeyValue";
+import type { IKeyValue } from "@guilds-shared/interfaces/IKeyValue";
 
 import fetch from "node-fetch";
 

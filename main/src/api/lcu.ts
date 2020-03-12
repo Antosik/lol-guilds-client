@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { Credentials, LeagueWebSocket, EventResponse } from "league-connect";
+import type { IKeyValue } from "@guilds-shared/interfaces/IKeyValue";
 import type { ClientRPC } from "../data/rpc";
 
 import { auth, connect, request } from "league-connect";
-import { IKeyValue } from "../interfaces/IKeyValue";
 
 
 export class LCUSession {

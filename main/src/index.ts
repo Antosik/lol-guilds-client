@@ -1,3 +1,5 @@
+import type { IKeyValue } from "@guilds-shared/interfaces/IKeyValue";
+
 import { app } from "electron";
 
 import { api as guildAPI } from "./api/guilds";
@@ -5,7 +7,6 @@ import { createLCUSession, constructInvitation } from "./api/lcu";
 import { createRPC } from "./data/rpc";
 import { createStore } from "./data/store";
 import { createWindow } from "./ui/window";
-import { IKeyValue } from "./interfaces/IKeyValue";
 
 function main() {
   const window = createWindow();

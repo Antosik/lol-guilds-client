@@ -1,6 +1,6 @@
-import { writable } from "svelte/store";
+import type { IKeyValue } from "@guilds-shared/interfaces/IKeyValue";
 
-import { IKeyValue } from "../../app/interfaces/IKeyValue";
+import { writable } from "svelte/store";
 
 export interface ISummonerStore {
   auth: boolean;

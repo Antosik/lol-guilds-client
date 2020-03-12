@@ -6,11 +6,12 @@ import { join as joinPath } from "path";
 import TerserPlugin from "terser-webpack-plugin";
 import { DefinePlugin, IgnorePlugin } from "webpack";
 
-import { preprocess } from "../svelte.config";
-
+import { preprocess } from "./svelte.config";
+import { alias } from "../webpack.config";
 
 const nodeEnv = process.env.NODE_ENV || "development";
 const isProduction = nodeEnv === "production";
+
 
 const config: Configuration = ({
   name: "guilds-view",
@@ -20,27 +21,18 @@ const config: Configuration = ({
   devtool: isProduction ? "hidden-source-map" : "cheap-module-source-map",
 
   resolve: {
-    extensions: [".mjs", ".js", ".svelte", ".ts", ".html",]
+    extensions: [".mjs", ".js", ".ts", ".svelte", ".html"],
+    alias
   },
-  entry: "./lib/index.ts",
+
+  entry: joinPath(__dirname, "src/index.ts"),
   output: {
-    path: joinPath(__dirname, "..", "target", "renderer"),
+    path: joinPath(__dirname, "..", "target/renderer"),
     filename: "bundle.js"
   },
 
   module: {
     rules: [
-      {
-        test: /\.ts$/,
-        use: [
-          {
-            loader: "ts-loader",
-            options: {
-              transpileOnly: true
-            }
-          }
-        ]
-      },
       {
         test: /\.svelte$/,
         exclude: /node_modules/,
@@ -56,11 +48,22 @@ const config: Configuration = ({
         }
       },
       {
+        test: /\.ts$/,
+        use: [
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true
+            }
+          }
+        ]
+      },
+      {
         test: /\.css$/,
         use: [
           isProduction ? MiniCssExtractPlugin.loader : "style-loader",
           { loader: "css-loader", options: { importLoaders: 1 } },
-          "postcss-loader"
+          { loader: "postcss-loader", options: { config: { path: __dirname } } }
         ]
       }
     ]
@@ -77,13 +80,13 @@ const config: Configuration = ({
 
     new CopyWebpackPlugin([
       {
-        from: joinPath(__dirname, "..", "assets"),
-        to: joinPath(__dirname, "..", "target", "renderer")
+        from: joinPath(__dirname, "static"),
+        to: joinPath(__dirname, "..", "target"),
       }
     ]),
 
     new MiniCssExtractPlugin({
-      filename: "[name].css"
+      filename: "../css/[name].css"
     })
   ],
 

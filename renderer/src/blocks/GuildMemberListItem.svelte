@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
 
   import SummonerStatus from "../components/SummonerStatus.svelte";
-  import { notBusyStatusCode } from "../consts/gameflow";
+  import { notBusyStatusCode } from "../../../shared/helpers/gameflow";
 
   const dispatch = createEventDispatcher();
 

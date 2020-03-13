@@ -1,7 +1,6 @@
 import { app } from "electron";
 
-import { api as guildAPI } from "./api/guilds";
-
+import { createGuildsAPIClient, GuildsClient } from "./api/guilds";
 import { createLCUAPIClient } from "./api/lcu";
 import { createRPC } from "./data/rpc";
 import { createWindow } from "./ui/window";
@@ -10,6 +9,7 @@ function main() {
   const window = createWindow();
   const rpc = createRPC(window);
   const lcuClient = createLCUAPIClient(rpc);
+  let guildsClient: GuildsClient;
 
   async function getBasicLCUInfo() {
     const [summoner, gameflow, token] = await Promise.all([
@@ -18,6 +18,19 @@ function main() {
       lcuClient.getIdToken(),
     ]);
     return { summoner, gameflow, token };
+  }
+
+  async function getBasicGuildsInfo() {
+    if (guildsClient === undefined) {
+      return { club: undefined, members: [] };
+    }
+
+    const guildsMe = await guildsClient.getCurrentSummoner();
+    const guildMembers = guildsMe.club?.id === undefined
+      ? []
+      : await guildsClient.getGuildMembers(guildsMe.club.id);
+
+    return { club: guildsMe.club, members: guildMembers };
   }
 
   window.once("show", async () => {
@@ -34,10 +47,10 @@ function main() {
       rpc.send("lcu:summoner", summoner);
       rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
 
-      const guildsMe = await guildAPI.getMe(token);
-      rpc.send("guilds:club", guildsMe.prev);
-      const guildMembers = await guildAPI.getGuildMembers(guildsMe.prev.id, token);
-      rpc.send("guilds:members", guildMembers);
+      guildsClient = createGuildsAPIClient(token);
+      const { club, members } = await getBasicGuildsInfo();
+      rpc.send("guilds:club", club);
+      rpc.send("guilds:members", members);
     }
   });
 
@@ -50,11 +63,10 @@ function main() {
     rpc.send("lcu:summoner", summoner);
     rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
 
-    const guildsMe = await guildAPI.getMe(token);
-    rpc.send("guilds:club", guildsMe.prev);
-
-    const guildMembers = await guildAPI.getGuildMembers(guildsMe.prev.id, token);
-    rpc.send("guilds:members", guildMembers);
+    guildsClient = createGuildsAPIClient(token);
+    const { club, members } = await getBasicGuildsInfo();
+    rpc.send("guilds:club", club);
+    rpc.send("guilds:members", members);
   });
 
   rpc.on("guilds:member:invite", async (nickname: string) => {

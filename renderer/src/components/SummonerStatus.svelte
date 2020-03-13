@@ -7,23 +7,23 @@
 
 <style>
 span {
-  color: #01A64B;
+  color: #02A64B;
 }
 span .status__circle {
   display: inline-block;
   background: #02A64B;
-  border: 2px solid #67F9A1;
+  border: 2px solid #42DD88;
   border-radius: 50%;
   width: 8px;
   height: 8px;
   margin-right: 4px;
 }
 span.busy {
-  color: #24C6E4;
+  color: #016AA7;
 }
 span.busy .status__circle {
-  background: #0E4F75;
-  border: 2px solid #3BC0DF;
+  background: #016AA7;
+  border: 2px solid #41A3DC;
 }
 </style>
 

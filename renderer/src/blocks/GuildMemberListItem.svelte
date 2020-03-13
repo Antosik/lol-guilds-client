@@ -43,9 +43,11 @@
     width: 24px;
     height: 24px;
     display: flex;
+    border-radius: 50%;
     align-items: center;
     justify-content: center;
-    color: #f5f0df;
+    border: 2px solid #C2AA70;
+    color: #C2AA70;
     text-transform: uppercase;
     text-align: center;
     cursor: pointer;

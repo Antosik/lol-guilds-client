@@ -88,11 +88,10 @@ export class LCUApi {
   }
 
   private _onConnect() {
-    if (this._isConnected) return;
-
-    this._isConnected = true;
-
     this._setReconnectTimer("off");
+
+    if (this._isConnected) return;
+    this._isConnected = true;
 
     if (this._socket) {
       this._socket.on("/process-control/v1/process", (event) => {
@@ -106,14 +105,14 @@ export class LCUApi {
   }
 
   private _onDisconnect() {
+    this._setReconnectTimer("on");
+
     if (!this._isConnected) return;
     if (this._socket !== undefined) this._socket.close();
 
     this._socket = undefined;
     this._credentials = undefined;
     this._isConnected = false;
-
-    this._setReconnectTimer("on");
 
     this._rpc.emit("lcu:disconnect");
   }

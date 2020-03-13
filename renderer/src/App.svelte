@@ -10,7 +10,9 @@
   import { guildStore } from "./store/guild";
 
   onMount(() => {
-    rpc.on("lcu:auth", e => summonerStore.setAuth(e.status === "ok"));
+    rpc.on("lcu:connect", e => summonerStore.setAuth(true));
+    rpc.on("lcu:disconnect", e => summonerStore.setAuth(false));
+
     rpc.on("lcu:summoner", e => {
       console.log(e);
       summonerStore.setSummoner(e);
@@ -18,10 +20,7 @@
     rpc.on("lcu:lol-gameflow.v1.gameflow-phase", e => {
       summonerStore.setStatus(e.data);
     });
-    rpc.on("lcu:disconnect", e => {
-      console.log(e);
-      summonerStore.setAuth(false);
-    });
+
     rpc.on("guilds:club", e => {
       guildStore.setGuildData(e);
     });
@@ -31,7 +30,7 @@
   });
 
   function LCUReconnect() {
-    rpc.send("ui:reconnect", undefined);
+    rpc.send("ui:reconnect");
   }
   function inviteMemberToParty(event) {
     rpc.send("guilds:member:invite", event.detail);
@@ -39,12 +38,6 @@
   function inviteAllMembersToParty(event) {
     rpc.send("guilds:member:invite-all", event.detail);
   }
-
-  const guild = {
-    name: "CoolStoryBob"
-  };
-
-  export {};
 </script>
 
 {#if !$summonerStore.auth}
@@ -54,6 +47,7 @@
     summoner={$summonerStore.summoner}
     status={$summonerStore.status}
     guild={$guildStore}
+    on:click-reconnect={LCUReconnect}
     on:member-invite={inviteMemberToParty}
     on:member-invite-all={inviteAllMembersToParty} />
 {/if}

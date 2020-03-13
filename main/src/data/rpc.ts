@@ -25,7 +25,7 @@ export class ClientRPC extends EventEmitter {
     super.emit(event, data);
   }
 
-  send(event: string, data: unknown): void {
+  send(event: string, data: unknown = undefined): void {
     this.wc.send(this.id, { event, data });
   }
 

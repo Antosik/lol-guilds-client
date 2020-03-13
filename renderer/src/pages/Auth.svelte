@@ -102,7 +102,7 @@
         <SummonerStatus statusCode={status} />
       </div>
     {/if}
-    <button type="button" class="refresh">
+    <button type="button" class="refresh" on:click={LCUReconnect}>
       <img src="./images/icons/refresh.svg" alt="Обновить" />
     </button>
 

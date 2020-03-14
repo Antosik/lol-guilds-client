@@ -1,18 +1,20 @@
 <script>
-  import { createEventDispatcher } from "svelte";
-  import GuildMemberList from "../blocks/GuildMemberList.svelte";
-  import { notBusyStatusCode } from "../../../shared/helpers/gameflow";
+  import { createEventDispatcher, onMount } from "svelte";
 
-  export let members = [];
+  import { rpc } from "../../data/rpc";
+  import { guildStore } from "../../store/guild";
 
-  function onMemberInvite(e) {
-    dispatch("member-invite", e.detail);
+  import GuildMemberList from "../../blocks/GuildMemberList.svelte";
+  import { notBusyStatusCode } from "../../../../shared/helpers/gameflow";
+
+  function onMemberInvite(event) {
+    rpc.send("guilds:member:invite", event.detail);
   }
   function onMemberInviteAll() {
-    const ready = members
+    const ready = $guildStore.members
       .filter(member => notBusyStatusCode.includes(member.status))
       .map(member => member.name);
-    dispatch("member-invite-all", ready);
+    rpc.send("guilds:member:invite-all", ready);
   }
 </script>
 
@@ -33,7 +35,7 @@
   }
 </style>
 
-{#if members.length > 0}
+{#if $guildStore.members.length > 0}
   <div class="guild-members">
     <h2>Члены гильдии</h2>
 
@@ -44,6 +46,8 @@
       Пригласить всех
     </button>
 
-    <GuildMemberList {members} on:member-invite={onMemberInvite} />
+    <GuildMemberList
+      members={$guildStore.members}
+      on:member-invite={onMemberInvite} />
   </div>
 {/if}

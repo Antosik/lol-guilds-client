@@ -1,23 +1,22 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
+  import Router from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
   import { summonerStore } from "../store/summoner";
   import { guildStore } from "../store/guild";
 
   import SummonerInfo from "../sections/SummonerInfo.svelte";
-  import GuildMembers from "../sections/GuildMembers.svelte";
+  import GuildMembers from "./subpages/GuildMembers.svelte";
 
+  const prefix = "/client";
+  const routes = {
+    "/": GuildMembers
+  };
   const dispatch = createEventDispatcher();
 
   function LCUReconnect() {
     rpc.send("ui:reconnect");
-  }
-  function onMemberInvite(event) {
-    rpc.send("guilds:member:invite", event.detail);
-  }
-  function onMemberInviteAll(event) {
-    rpc.send("guilds:member:invite-all", event.detail);
   }
 
   onMount(() => {
@@ -49,10 +48,10 @@
   </div>
 {:else}
   <div class="summoner summoner--auth">
-    <SummonerInfo summoner={$summonerStore.summoner} guild={$guildStore} status={$summonerStore.status} />
-    <GuildMembers
-      members={$guildStore.members}
-      on:member-invite={onMemberInvite}
-      on:member-invite-all={onMemberInviteAll} />
+    <SummonerInfo
+      summoner={$summonerStore.summoner}
+      guild={$guildStore}
+      status={$summonerStore.status} />
+    <Router {routes} {prefix} />
   </div>
 {/if}

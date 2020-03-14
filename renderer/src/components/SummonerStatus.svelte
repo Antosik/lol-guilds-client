@@ -6,7 +6,7 @@
 </script>
 
 <style>
-span {
+span .status__text{
   color: #02A64B;
 }
 span .status__circle {
@@ -18,7 +18,7 @@ span .status__circle {
   height: 8px;
   margin-right: 4px;
 }
-span.busy {
+span.busy .status__text{
   color: #016AA7;
 }
 span.busy .status__circle {

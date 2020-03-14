@@ -63,7 +63,7 @@ const config: Configuration = ({
         use: [
           isProduction ? MiniCssExtractPlugin.loader : "style-loader",
           { loader: "css-loader", options: { importLoaders: 1 } },
-          { loader: "postcss-loader", options: { config: { path: __dirname } } }
+          { loader: "postcss-loader" }
         ]
       }
     ]

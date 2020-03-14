@@ -10,6 +10,8 @@
   import { guildStore } from "./store/guild";
 
   onMount(() => {
+    rpc.send("ui:reconnect");
+
     rpc.on("lcu:connect", e => summonerStore.setAuth(true));
     rpc.on("lcu:disconnect", e => summonerStore.setAuth(false));
 

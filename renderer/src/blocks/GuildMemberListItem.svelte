@@ -1,6 +1,5 @@
 <script>
   import { createEventDispatcher } from "svelte";
-
   import SummonerStatus from "../components/SummonerStatus.svelte";
   import { notBusyStatusCode } from "../../../shared/helpers/gameflow";
 
@@ -42,16 +41,8 @@
   button {
     width: 24px;
     height: 24px;
-    display: flex;
     border-radius: 50%;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #C2AA70;
-    color: #C2AA70;
-    text-transform: uppercase;
-    text-align: center;
-    cursor: pointer;
-    background-color: #161614;
+    padding: 0;
   }
 </style>
 
@@ -62,7 +53,7 @@
       <SummonerStatus statusCode={member.status} />
     </div>
     {#if !isBusy}
-      <button class="guild-member__invite" type="button" on:click={inviteToParty}>+</button>
+      <button class="guild-member__invite flex-center" type="button" on:click={inviteToParty}>+</button>
     {/if}
   </li>
 {/if}

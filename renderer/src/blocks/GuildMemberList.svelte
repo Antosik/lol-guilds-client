@@ -1,6 +1,5 @@
 <script>
   import { createEventDispatcher } from "svelte";
-
   import GuildMemberListItem from "./GuildMemberListItem.svelte";
 
   const dispatch = createEventDispatcher();
@@ -11,14 +10,6 @@
     dispatch("member-invite", e.detail);
   }
 </script>
-
-<style>
-  ul {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-  }
-</style>
 
 <ul>
   {#each members as member (member.name)}

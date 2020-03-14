@@ -37,11 +37,13 @@ function main() {
     await lcuClient.connect();
   });
 
-  rpc.on("ui:reconnect", async () => {
+  async function onLCUConnect() {
     if (!lcuClient.isConnected) {
       await lcuClient.connect();
     } else {
       rpc.send("lcu:connect");
+      lcuClient.api.subscribe("/lol-gameflow/v1/gameflow-phase");
+      lcuClient.api.subscribeInternal("/lol-service-status/v1/lcu-status");
 
       const { summoner, gameflow, token } = await getBasicLCUInfo();
       rpc.send("lcu:summoner", summoner);
@@ -52,22 +54,11 @@ function main() {
       rpc.send("guilds:club", club);
       rpc.send("guilds:members", members);
     }
-  });
+  }
 
-  rpc.on("lcu:connect", async () => {
-    rpc.send("lcu:connect");
-    lcuClient.api.subscribe("/lol-gameflow/v1/gameflow-phase");
-    lcuClient.api.subscribeInternal("/lol-service-status/v1/lcu-status");
-
-    const { summoner, gameflow, token } = await getBasicLCUInfo();
-    rpc.send("lcu:summoner", summoner);
-    rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
-
-    guildsClient = createGuildsAPIClient(token);
-    const { club, members } = await getBasicGuildsInfo();
-    rpc.send("guilds:club", club);
-    rpc.send("guilds:members", members);
-  });
+  rpc.on("ui:reconnect", onLCUConnect);
+  rpc.on("lcu:connect", onLCUConnect);
+  rpc.on("lcu:disconnect", () => rpc.send("lcu:disconnect"));
 
   rpc.on("guilds:member:invite", async (nickname: string) => {
     if (lcuClient.isConnected) {

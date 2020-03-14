@@ -1,5 +1,5 @@
 import type { GuildsAPI } from "./api";
-import type { ICurrentSummonerResponseV2, ISummonerClubMemberResponseV2, ISummonerResponse } from "./interfaces/IAPISummoner";
+import type { ICurrentSummonerResponseV2, ISummonerClubMemberResponseV2 } from "./interfaces/IAPISummoner";
 import type { ISeasonResponse } from "./interfaces/IAPISeason";
 import type { IGuildMember } from "./interfaces/IGuildMember";
 

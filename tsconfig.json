@@ -1,15 +1,34 @@
 {
-  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist/tmp/root/"
-  },
-  "include": [
-    "./app/**/*",
-    "./lib/**/*",
-  ],
-  "references": [
-    {
-      "path": "./app/tsconfig.json"
+    "module": "commonjs",
+    "target": "ES2018",
+    "sourceMap": true,
+    "esModuleInterop": true,
+
+    "allowJs": true,
+    "checkJs": false,
+
+    "pretty": true,
+    "newLine": "lf",
+
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    "baseUrl": ".",
+    
+    "paths": {
+      "@guilds-main/*": ["main/src/*"],
+      "@guilds-web/*": ["renderer/src/*"],
+      "@guilds-shared/*": ["shared/*"],
     }
-  ]
+  },
+  "exclude": ["node_modules", "**/*.test.ts"]
 }

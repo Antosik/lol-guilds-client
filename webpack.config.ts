@@ -1,11 +1,7 @@
-import type { Configuration } from 'webpack';
+import { resolve as resolvePath } from "path";
 
-import MainConfig from "./config/webpack.config.main";
-import RendererConfig from "./config/webpack.config.renderer";
-
-const config: Configuration[] = [
-  MainConfig,
-  RendererConfig
-];
-
-export default config;
+export const alias = {
+  "@guilds-main/*": resolvePath(__dirname, "main/src/"),
+  "@guilds-web/*": resolvePath(__dirname, "renderer/src/"),
+  "@guilds-shared/*": resolvePath(__dirname, "shared/"),
+};

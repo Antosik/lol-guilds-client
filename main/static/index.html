@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+    <link rel="stylesheet" href="./css/fonts.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <title>Guilds Client</title>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- You can also require other files to run in this process -->
+    <script>start = performance.now();</script>
+    <script src="./renderer/bundle.js"></script>
+    <script>console.log('total init time', performance.now() - start);</script>
+  </body>
+</html>

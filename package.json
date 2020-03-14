@@ -5,7 +5,9 @@
   "main": "target/app/main.js",
   "scripts": {
     "clean": "del-cli ./target",
-    "compile": "npm run clean && npm run start:prod",
+    "compile": "npm run clean && npm run compile:main && npm run compile:renderer",
+    "compile:main": "cross-env NODE_ENV=\"production\" webpack --config main/webpack.config.ts",
+    "compile:renderer": "cross-env NODE_ENV=\"production\" webpack --config renderer/webpack.config.ts",
     "dist:linux": "electron-builder --config ./electron-builder.json --linux",
     "dist:mac": "electron-builder --config ./electron-builder.json --mac",
     "dist:windows": "electron-builder --config ./electron-builder.json --win",
@@ -13,10 +15,8 @@
     "lint:fix": "eslint --ext .js,.ts,.svelte . --fix",
     "postinstall": "electron-builder install-app-deps",
     "prestart": "npm run compile",
-    "start:prod": "cross-env NODE_ENV=\"production\" concurrently -n \"WebpackMain,WebpackRenderer\" -c \"cyan.bold,blue.bold\" \"webpack -w --config main/webpack.config.ts\" \"webpack -w --config renderer/webpack.config.ts\" -k",
     "start:dev": "concurrently -n \"WebpackMain,WebpackRenderer\" -c \"cyan.bold,blue.bold\" \"webpack -w --config main/webpack.config.ts\" \"webpack -w --config renderer/webpack.config.ts\" -k",
-    "start:app": "electron target/app/main.js",
-    "watch": "tsc -w"
+    "start:app": "electron target/app/main.js"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",

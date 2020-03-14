@@ -3,6 +3,7 @@ import type { ClientRPC } from "@guilds-main/data/rpc";
 import type { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import type { LCUApi } from "./api";
 import type { IStorePrototype } from "./store";
+import type { IIdToken } from "./interfaces/IIdToken";
 import type { ISummoner } from "./interfaces/ISummoner";
 
 import { createLCUApi } from "./api";
@@ -44,12 +45,14 @@ export class LCUClient {
 
   async getIdToken(): Promise<string> {
     const tokenFromStore = this.store.get("token");
-    if (tokenFromStore !== undefined) {
-      return tokenFromStore;
+    if (tokenFromStore !== undefined && tokenFromStore.expiry * 1000 > Date.now()) {
+      return tokenFromStore.token;
     }
 
     const data = await this.api.request("/lol-rso-auth/v1/authorization/id-token");
-    const tokenData = data as { expiry: number, token: string };
+    const tokenData = data as IIdToken;
+    this.store.set("token", tokenData);
+
     return tokenData.token;
   }
 

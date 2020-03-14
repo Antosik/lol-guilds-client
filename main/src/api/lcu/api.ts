@@ -9,6 +9,7 @@ export class LCUApi {
   private static RECONNECT_INTERVAL = 3000;
   private _reconnectTimer?: NodeJS.Timer;
 
+  private _isInited: boolean;
   private _isConnected: boolean;
   private _credentials?: Credentials;
   private _socket?: LeagueWebSocket;
@@ -16,6 +17,7 @@ export class LCUApi {
 
   constructor(rpc: ClientRPC) {
     this._isConnected = false;
+    this._isInited = false;
     this._rpc = rpc;
 
     this._socketListener = this._socketListener.bind(this);
@@ -90,11 +92,12 @@ export class LCUApi {
   private _onConnect() {
     this._setReconnectTimer("off");
 
-    if (this._isConnected) return;
+    if (this._isConnected && this._isInited) return;
+    if (!this._isInited) { this._isInited = true; }
     this._isConnected = true;
 
     if (this._socket) {
-      this._socket.on("/process-control/v1/process", (event) => {
+      this._socket.subscribe("/process-control/v1/process", (_, event) => {
         if (event.data.status === "Stopping") {
           this.disconnect();
         }
@@ -107,7 +110,8 @@ export class LCUApi {
   private _onDisconnect() {
     this._setReconnectTimer("on");
 
-    if (!this._isConnected) return;
+    if (!this._isConnected && this._isInited) return;
+    if (!this._isInited) { this._isInited = true; }
     if (this._socket !== undefined) this._socket.close();
 
     this._socket = undefined;

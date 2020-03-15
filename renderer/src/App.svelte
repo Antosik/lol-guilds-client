@@ -4,14 +4,7 @@
 
   import { rpc } from "./data/rpc";
   import { summonerStore } from "./store/summoner";
-
-  import MainPage from "./pages/MainPage.svelte";
-  import NotLaunched from "./pages/NotLaunched.svelte";
-
-  const routes = {
-    "/not-launched": NotLaunched,
-    "/client/*": MainPage
-  };
+  import { routes } from "./routes";
 
   onMount(() => {
     rpc.send("ui:reconnect");

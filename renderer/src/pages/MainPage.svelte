@@ -1,26 +1,15 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
-  import Router from "svelte-spa-router";
+  import Router, { replace } from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
   import { summonerStore } from "../store/summoner";
   import { guildStore } from "../store/guild";
+  import { subroutes, subprefix } from "../routes";
 
   import SummonerInfo from "../sections/SummonerInfo.svelte";
   import Navigation from "../sections/Navigation.svelte";
-  
-  import GuildMembers from "./subpages/GuildMembers.svelte";
-  import GuildMyInfo from "./subpages/GuildMyInfo.svelte";
-  import GuildInfo from "./subpages/GuildInfo.svelte";
-  import GuildsRating from "./subpages/GuildsRating.svelte";
 
-  const prefix = "/client";
-  const routes = {
-    "/": GuildMembers,
-    "/me": GuildMyInfo,
-    "/guild": GuildInfo,
-    "/rating": GuildsRating
-  };
   const dispatch = createEventDispatcher();
 
   function LCUReconnect() {
@@ -28,6 +17,8 @@
   }
 
   onMount(() => {
+    if (!$summonerStore.auth) { replace("/not-launched"); }
+
     rpc.on("lcu:summoner", e => {
       summonerStore.setSummoner(e);
     });
@@ -66,7 +57,7 @@
       on:click-reconnect={LCUReconnect} />
     <Navigation />
     <div class="subpages">
-      <Router {routes} {prefix} />
+      <Router routes={subroutes} prefix={subprefix} />
     </div>
   </div>
 {/if}

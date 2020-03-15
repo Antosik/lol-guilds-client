@@ -14,6 +14,12 @@
 </script>
 
 <style>
+  .summoner-info {
+    background: rgba(1, 4, 9, 0.65);
+    border-bottom: 1px solid #3d3d3b;
+    padding: 20px;
+  }
+
   h1 span {
     font-size: 16px;
     color: #cbab5c;
@@ -34,7 +40,7 @@
   }
 </style>
 
-<div class="summoner summoner--auth">
+<div class="summoner-info">
   <h1>
     {summoner.displayName}
     {#if guild.guild}

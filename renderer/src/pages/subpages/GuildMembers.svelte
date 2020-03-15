@@ -23,11 +23,6 @@
     position: relative;
   }
 
-  h2 {
-    margin-top: 12px;
-    margin-bottom: 8px;
-  }
-
   .guild-members__invite-all {
     position: absolute;
     top: 0;
@@ -35,10 +30,9 @@
   }
 </style>
 
-{#if $guildStore.members.length > 0}
-  <div class="guild-members">
-    <h2>Члены гильдии</h2>
-
+<div class="guild-members">
+  <h2>Члены гильдии</h2>
+  {#if $guildStore.members.length > 0}
     <button
       type="button"
       class="guild-members__invite-all flex-center"
@@ -49,5 +43,5 @@
     <GuildMemberList
       members={$guildStore.members}
       on:member-invite={onMemberInvite} />
-  </div>
-{/if}
+  {/if}
+</div>

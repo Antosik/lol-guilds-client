@@ -7,11 +7,19 @@
   import { guildStore } from "../store/guild";
 
   import SummonerInfo from "../sections/SummonerInfo.svelte";
+  import Navigation from "../sections/Navigation.svelte";
+  
   import GuildMembers from "./subpages/GuildMembers.svelte";
+  import GuildMyInfo from "./subpages/GuildMyInfo.svelte";
+  import GuildInfo from "./subpages/GuildInfo.svelte";
+  import GuildsRating from "./subpages/GuildsRating.svelte";
 
   const prefix = "/client";
   const routes = {
-    "/": GuildMembers
+    "/": GuildMembers,
+    "/me": GuildMyInfo,
+    "/guild": GuildInfo,
+    "/rating": GuildsRating
   };
   const dispatch = createEventDispatcher();
 
@@ -40,6 +48,9 @@
   div.summoner--no-auth h1 {
     text-align: center;
   }
+  .subpages {
+    padding: 0 20px;
+  }
 </style>
 
 {#if !$summonerStore.summoner}
@@ -51,7 +62,11 @@
     <SummonerInfo
       summoner={$summonerStore.summoner}
       guild={$guildStore}
-      status={$summonerStore.status} />
-    <Router {routes} {prefix} />
+      status={$summonerStore.status}
+      on:click-reconnect={LCUReconnect} />
+    <Navigation />
+    <div class="subpages">
+      <Router {routes} {prefix} />
+    </div>
   </div>
 {/if}

@@ -1,45 +1,49 @@
-import type { IKeyValue } from "@guilds-shared/interfaces/IKeyValue";
-import type { ISummonerResponse } from "./IAPISummoner";
+import type { IShortSummonerResponse, ISummonerResponse } from "./IAPISummoner";
 
-export type IClubOwnerResponse = ISummonerResponse;
 
-export interface IClubResponse {
+interface IBaseClubResponse {
   id: number;
-  owner: IClubOwnerResponse;
+  is_hiring: boolean;
+  members_count: number;
+  seasons_count: number;
+}
+
+interface IClubResponseV1 extends IBaseClubResponse {
+  owner: ISummonerResponse;
   lol_name: string;
   lol_club_key: string;
-  is_hiring: boolean;
-  members_count: number;
-  seasons_count: number;
 }
 
-export interface IClubResponseV2 {
-  id: number;
-  owner: IClubOwnerResponse;
+interface IBaseClubResponseV2 extends IBaseClubResponse {
   club_name: string;
-  is_hiring: boolean;
-  members_count: number;
-  seasons_count: number;
-  short_description: string;
-  long_description: string;
+  short_description?: string;
+  long_description?: string;
 }
 
-export interface IParticipatingClubResponse {
+export interface IMyClubResponse extends IBaseClubResponseV2 {
+  owner: IShortSummonerResponse;
+}
+
+export interface IClubResponse extends IBaseClubResponseV2 {
+  owner: ISummonerResponse;
+}
+
+interface IClubRatingResponse {
   id: number;
-  club: IClubResponse;
-  rank_reward: IKeyValue;
+  club: IClubResponseV1;
+  rank_reward: string;
   points: number;
   games: number;
   rank: number;
   joined: string;
 }
 
-export interface ISeasonsClubResponse extends IParticipatingClubResponse {
-  season: number;
+export interface IClubSeasonRatingResponse extends IClubRatingResponse {
   completed_stages: number;
+  season: number;
 }
 
-export interface IStageClubResponse extends IParticipatingClubResponse {
+export interface IClubStageRatingResponse extends IClubRatingResponse {
   stage: number;
-  group: number;
+  group?: number;
 }

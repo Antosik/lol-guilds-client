@@ -25,12 +25,13 @@ function main() {
       return { club: undefined, members: [] };
     }
 
-    const guildsMe = await guildsClient.getCurrentSummoner();
-    const guildMembers = guildsMe.club?.id === undefined
+    const seasons = await guildsClient.api.getSeasons();
+    const currentSummoner = await guildsClient.api.getCurrentSummoner();
+    const guildMembers = currentSummoner.club?.id === undefined
       ? []
-      : await guildsClient.getGuildMembers(guildsMe.club.id);
+      : await guildsClient.getGuildMembers(currentSummoner.club.id);
 
-    return { club: guildsMe.club, members: guildMembers };
+    return { seasons, club: currentSummoner.club, members: guildMembers };
   }
 
   window.once("show", async () => {
@@ -50,9 +51,10 @@ function main() {
       rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
 
       guildsClient = createGuildsAPIClient(token);
-      const { club, members } = await getBasicGuildsInfo();
+      const { seasons, club, members, } = await getBasicGuildsInfo();
       rpc.send("guilds:club", club);
       rpc.send("guilds:members", members);
+      rpc.send("guilds:seasons", seasons);
     }
   }
 

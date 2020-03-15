@@ -1,5 +1,8 @@
 import type { IStageResponse } from "./IAPIStage";
 
+
+export type TSeasonStatusResponse = 0 | 1 | 2 | 3 | 4;
+
 export interface ISeasonResponse {
   id: number;
   rules: number;
@@ -8,10 +11,6 @@ export interface ISeasonResponse {
   title: string;
   is_open: boolean;
   is_closed: boolean;
-  status: number;
+  status: TSeasonStatusResponse;
   stages: IStageResponse[];
-}
-
-export interface ICurrentSeasonResponse extends ISeasonResponse {
-  current_stage?: IStageResponse;
 }

@@ -9,6 +9,7 @@ body {
   font-family: "BeaufortforLOL", sans-serif;
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
 }
 *,
 *:before,
@@ -27,8 +28,9 @@ body {
   background-attachment: fixed;
 }
 
-#app {
-  padding: 20px;
+h2 {
+  margin-top: 12px;
+  margin-bottom: 8px;
 }
 
 ul {
@@ -62,4 +64,18 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #201E19; 
+}
+::-webkit-scrollbar-thumb {
+  background: #81785D; 
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c2aa70; 
 }

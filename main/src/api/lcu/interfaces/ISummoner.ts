@@ -1,10 +1,14 @@
-export interface ISummoner {
-  accountId: number;
+export interface ISummonerCore {
   displayName: string;
+  puuid: string;
+  accountId: number;
+  summonerId: number;
+}
+
+export interface ISummoner extends ISummonerCore {
   internalName: string;
   percentCompleteForNextLevel: number;
   profileIconId: number;
-  puuid: string;
   rerollPoints: {
     currentPoints: number;
     maxRolls: number;
@@ -12,7 +16,6 @@ export interface ISummoner {
     pointsCostToRoll: number;
     pointsToReroll: number;
   };
-  summonerId: number;
   summonerLevel: number;
   xpSinceLastLevel: number;
   xpUntilNextLevel: number;

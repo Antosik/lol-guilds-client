@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
-  import Router, { replace } from "svelte-spa-router";
+  import Router, { replace, location } from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
   import { summonerStore } from "../store/summoner";
@@ -17,7 +17,9 @@
   }
 
   onMount(() => {
-    if (!$summonerStore.auth) { replace("/not-launched"); }
+    if (!$summonerStore.auth) {
+      replace("/not-launched");
+    }
 
     rpc.on("lcu:summoner", e => {
       summonerStore.setSummoner(e);
@@ -25,7 +27,6 @@
     rpc.on("lcu:lol-gameflow.v1.gameflow-phase", e => {
       summonerStore.setStatus(e.data);
     });
-
     rpc.on("guilds:club", e => {
       guildStore.setGuildData(e);
     });
@@ -54,6 +55,7 @@
       summoner={$summonerStore.summoner}
       guild={$guildStore}
       status={$summonerStore.status}
+      style={$location === "/client/" ? "normal" : "light"}
       on:click-reconnect={LCUReconnect} />
     <Navigation />
     <div class="subpages">

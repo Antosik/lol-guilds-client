@@ -1,11 +1,11 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
 
-  import { rpc } from "../../data/rpc";
-  import { guildStore } from "../../store/guild";
+  import { rpc } from "@guilds-web/data/rpc";
+  import { guildStore } from "@guilds-web/store/guild";
+  import GuildMemberList from "@guilds-web/blocks/GuildMemberList.svelte";
 
-  import GuildMemberList from "../../blocks/GuildMemberList.svelte";
-  import { notBusyStatusCode } from "../../../../shared/helpers/gameflow";
+  import { notBusyStatusCode } from "@guilds-shared/helpers/gameflow";
 
   function onMemberInvite(event) {
     rpc.send("guilds:member:invite", event.detail);

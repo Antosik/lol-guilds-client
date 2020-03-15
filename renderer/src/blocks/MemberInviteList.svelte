@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import GuildMemberListItem from "./GuildMemberListItem.svelte";
+  import MemberInviteListItem from "./MemberInviteListItem.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -13,6 +13,6 @@
 
 <ul>
   {#each members as member (member.name)}
-    <GuildMemberListItem {member} on:member-invite={inviteToParty}/>
+    <MemberInviteListItem {member} on:member-invite={inviteToParty}/>
   {/each}
 </ul>

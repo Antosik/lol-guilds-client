@@ -39,6 +39,13 @@ ul {
   flex-wrap: wrap;
 }
 
+a {
+  color: #cbab5c;
+  margin: 2px;
+  text-decoration: none;
+  position: relative;
+}
+
 button {
   cursor: pointer;
   padding: 0.25rem;
@@ -66,16 +73,40 @@ button {
   bottom: 0;
 }
 
-
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #201E19; 
+  background: #201e19;
 }
 ::-webkit-scrollbar-thumb {
-  background: #81785D; 
+  background: #81785d;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #c2aa70; 
+  background: #c2aa70;
+}
+
+
+.guild-member {
+  width: calc(100% - 20px);
+  margin-right: 20px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+@media all and (min-width: 576px) {
+  .guild-member {
+    width: calc(50% - 20px);
+  }
+}
+@media all and (min-width: 765px) {
+  .guild-member {
+    width: calc(33% - 20px);
+  }
+}
+@media all and (min-width: 1024px) {
+  .guild-member {
+    width: calc(25% - 20px);
+  }
 }

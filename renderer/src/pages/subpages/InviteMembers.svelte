@@ -3,7 +3,7 @@
 
   import { rpc } from "@guilds-web/data/rpc";
   import { guildStore } from "@guilds-web/store/guild";
-  import GuildMemberList from "@guilds-web/blocks/GuildMemberList.svelte";
+  import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
   import { notBusyStatusCode } from "@guilds-shared/helpers/gameflow";
 
@@ -40,7 +40,7 @@
       Пригласить всех
     </button>
 
-    <GuildMemberList
+    <MemberInviteList
       members={$guildStore.members}
       on:member-invite={onMemberInvite} />
   {/if}

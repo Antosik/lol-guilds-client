@@ -7,7 +7,7 @@
 
 <style>
 span .status__text{
-  color: #02A64B;
+  color: #42DD88;
 }
 span .status__circle {
   display: inline-block;
@@ -19,7 +19,7 @@ span .status__circle {
   margin-right: 4px;
 }
 span.busy .status__text{
-  color: #016AA7;
+  color: #41A3DC;
 }
 span.busy .status__circle {
   background: #016AA7;

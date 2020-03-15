@@ -19,6 +19,7 @@
     background: rgba(1, 4, 9, 0.65);
     border-bottom: 1px solid #3d3d3b;
     padding: 20px;
+    position: relative;
   }
   h1 span {
     font-size: 16px;
@@ -44,10 +45,11 @@
 
   .refresh {
     position: absolute;
-    top: 20px;
+    top: 50%;
     right: 20px;
     width: 30px;
     height: 30px;
+    transform: translateY(-50%);
   }
 
   .refresh img {

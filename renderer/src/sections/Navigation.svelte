@@ -1,5 +1,5 @@
 <script>
-  import { link } from "svelte-spa-router";
+  import { link, location } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
 </script>
 
@@ -38,13 +38,26 @@
       <a href="/client/" class="flex-center" use:link use:active>Главная</a>
     </li>
     <li>
-      <a href="/client/me" class="flex-center" use:link use:active>Моя статистика</a>
+      <a href="/client/me" class="flex-center" use:link use:active>
+        Моя статистика
+      </a>
     </li>
     <li>
-      <a href="/client/guild" class="flex-center" use:link use:active>Моя гильдия</a>
+      <a href="/client/guild" class="flex-center" use:link use:active>
+        Моя гильдия
+      </a>
     </li>
     <li>
-      <a href="/client/rating" class="flex-center" use:link use:active>Рейтинг</a>
+      <a href="/client/rating" class="flex-center" use:link use:active>
+        Рейтинг
+      </a>
     </li>
+    {#if String($location).startsWith('/client/member')}
+      <li>
+        <a href={$location} class="flex-center active" use:link>
+          О игроке
+        </a>
+      </li>
+    {/if}
   </ul>
 </nav>

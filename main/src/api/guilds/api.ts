@@ -38,8 +38,8 @@ export class GuildsAPI {
       .sort(({ points: n1 }, { points: n2 }) => n2 - n1);
   }
 
-  async getMembersRatingForStageWithId(stage_id: number): Promise<IUserStageRatingResponse[]> {
-    const data = await this.request(`contest/season/${stage_id}/userstagerating`, { method: "GET", version: 2 });
+  async getMembersRatingForStageWithSeasonId(season_id: number): Promise<IUserStageRatingResponse[]> {
+    const data = await this.request(`contest/season/${season_id}/userstagerating`, { method: "GET", version: 2 });
     const members = data as IUserStageRatingResponse[];
     return members
       .sort(({ points: n1 }, { points: n2 }) => n2 - n1);

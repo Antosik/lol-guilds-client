@@ -25,13 +25,24 @@ function main() {
       return { club: undefined, members: [] };
     }
 
-    const seasons = await guildsClient.api.getSeasons();
-    const currentSummoner = await guildsClient.api.getCurrentSummoner();
-    const guildMembers = currentSummoner.club?.id === undefined
-      ? []
-      : await guildsClient.getGuildMembers(currentSummoner.club.id);
+    const [seasons, currentSummoner] = await Promise.all([
+      guildsClient.api.getSeasons(),
+      guildsClient.api.getCurrentSummoner()
+    ]);
 
-    return { seasons, club: currentSummoner.club, members: guildMembers };
+    const club = currentSummoner.next !== undefined
+      ? currentSummoner.next
+      : currentSummoner.club !== undefined
+        ? currentSummoner.club : currentSummoner.prev;
+    const liveSeason = seasons.find((s) => s.is_open && !s.is_closed);
+    const season = liveSeason !== undefined ? liveSeason : seasons[seasons.length - 1];
+
+    const [guildMembers, guildMembersStageRating] = await Promise.all([
+      guildsClient.getGuildMembers(club?.id),
+      guildsClient.getGuildMembersStageRating(season.id, club?.id)
+    ]);
+
+    return { seasons, season, club, members: guildMembers, membersStage: guildMembersStageRating };
   }
 
   window.once("show", async () => {
@@ -51,9 +62,10 @@ function main() {
       rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
 
       guildsClient = createGuildsAPIClient(token);
-      const { seasons, club, members, } = await getBasicGuildsInfo();
+      const { seasons, club, members, membersStage } = await getBasicGuildsInfo();
       rpc.send("guilds:club", club);
       rpc.send("guilds:members", members);
+      rpc.send("guilds:members:stage", membersStage);
       rpc.send("guilds:seasons", seasons);
     }
   }

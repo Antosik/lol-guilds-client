@@ -54,9 +54,7 @@
     </li>
     {#if String($location).startsWith('/client/member')}
       <li>
-        <a href={$location} class="flex-center active" use:link>
-          О игроке
-        </a>
+        <a href={$location} class="flex-center active" use:link>О игроке</a>
       </li>
     {/if}
   </ul>

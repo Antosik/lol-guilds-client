@@ -7,8 +7,6 @@
 
   import { notBusyStatusCode } from "@guilds-shared/helpers/gameflow";
 
-  let membersLoading = true;
-
   function onMemberInvite(event) {
     rpc.invoke("guilds:member:invite", event.detail);
   }
@@ -19,11 +17,9 @@
     rpc.invoke("guilds:member:invite-all", ready);
   }
 
-  onMount(async () => {
-    const members = await rpc.invoke("guilds:members", $guildStore.guild.id);
-    guildStore.setMembers(members);
-    membersLoading = false;
-  });
+  const membersLoadingPromise = rpc
+    .invoke("guilds:members", $guildStore.guild.id)
+    .then(members => guildStore.setMembers(members));
 </script>
 
 <style>
@@ -41,9 +37,9 @@
 <div class="guild-members">
   <h2>Члены гильдии</h2>
 
-  {#if membersLoading}
+  {#await membersLoadingPromise}
     <h3>Загружаем список членов гильдии...</h3>
-  {:else if $guildStore.members.length > 0}
+  {:then}
     <button
       type="button"
       class="guild-members__invite-all flex-center"
@@ -54,7 +50,7 @@
     <MemberInviteList
       members={$guildStore.members}
       on:member-invite={onMemberInvite} />
-  {:else}
-    <h3>Произошла странная ошибка ._.</h3>
-  {/if}
+  {:catch}
+    <h3>Произошла странная ошибка!</h3>
+  {/await}
 </div>

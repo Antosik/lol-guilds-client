@@ -23,14 +23,20 @@ export class LCUClient {
   get isConnected(): boolean {
     return this.api.isConnected;
   }
-  async connect(): Promise<void> {
+
+
+  // #region Main
+  public async connect(): Promise<void> {
     return this.api.connect();
   }
-  disconnect(): void {
+
+  public disconnect(): void {
     return this.api.disconnect();
   }
+  // #endregion
 
-  async getCurrentSummoner(): Promise<ISummoner> {
+
+  public async getCurrentSummoner(): Promise<ISummoner> {
     const summonerFromStore = this.store.get("summoner");
     if (summonerFromStore !== undefined) {
       return summonerFromStore;
@@ -43,7 +49,7 @@ export class LCUClient {
     return summoner;
   }
 
-  async getIdToken(): Promise<string> {
+  public async getIdToken(): Promise<string> {
     const tokenFromStore = this.store.get("token");
     if (tokenFromStore !== undefined && tokenFromStore.expiry * 1000 > Date.now()) {
       return tokenFromStore.token;
@@ -56,12 +62,12 @@ export class LCUClient {
     return tokenData.token;
   }
 
-  async getStatus(): Promise<EGameflowStatus> {
+  public async getStatus(): Promise<EGameflowStatus> {
     const data = await this.api.request("/lol-gameflow/v1/gameflow-phase");
     return data as EGameflowStatus;
   }
 
-  async getSummonerByName(name: string): Promise<ISummonerCore> {
+  public async getSummonerByName(name: string): Promise<ISummonerCore> {
     const summonersFromStore = this.store.get("summoners");
     const summonerFromStore = summonersFromStore.find(({ displayName }) => displayName.toLowerCase() === name.toLowerCase());
     if (summonerFromStore !== undefined) {
@@ -78,7 +84,7 @@ export class LCUClient {
     return summoner;
   }
 
-  async sendInviteByNickname(nicknames: string[]): Promise<boolean> {
+  public async sendInviteByNickname(nicknames: string[]): Promise<boolean> {
     try {
       const summoners = await Promise.all(nicknames.map((nickname) => this.getSummonerByName(nickname)));
       const body = constructInvitationForSummoners(summoners);

@@ -9,6 +9,7 @@ import { createLCUAPIClient } from "./api/lcu";
 import { createRPC } from "./data/rpc";
 import { createWindow } from "./ui/window";
 
+
 export class MainApplication {
   private static _instance: MainApplication;
 
@@ -41,6 +42,7 @@ export class MainApplication {
     return this._window;
   }
 
+  // #region Init
   private initCoreEvents() {
     if (this._window !== undefined && this._rpc !== undefined) {
       this._window.once("show", this._onLCUConnect);
@@ -53,12 +55,10 @@ export class MainApplication {
   private initGuildHandlers() {
     if (this._rpc !== undefined) {
       this._rpc.setHandler("guilds:member:invite", async (nickname: string) => {
-        console.log(nickname);
         if (!this._lcuClient) return null;
         return this._lcuClient.sendInviteByNickname([nickname]);
       });
       this._rpc.setHandler("guilds:member:invite-all", async (nicknames: string[]) => {
-        console.log(nicknames);
         if (!this._lcuClient) return null;
         return this._lcuClient.sendInviteByNickname(nicknames);
       });
@@ -81,12 +81,10 @@ export class MainApplication {
       });
     }
   }
+  // #endregion
 
-  public destroy() {
-    if (this._rpc !== undefined) this._rpc.destroy();
-    if (this._lcuClient !== undefined) this._lcuClient.disconnect();
-  }
 
+  // #region LCU Connect/Disconnect
   private async _onLCUConnect() {
     if (this._rpc !== undefined && this._lcuClient !== undefined) {
       if (!this._lcuClient.isConnected) {
@@ -114,5 +112,12 @@ export class MainApplication {
   }
   private _onLCUDisconnect() {
     if (this._rpc !== undefined) this._rpc.send("lcu:disconnect");
+  }
+  // #endregion
+
+
+  public destroy() {
+    if (this._rpc !== undefined) this._rpc.destroy();
+    if (this._lcuClient !== undefined) this._lcuClient.disconnect();
   }
 }

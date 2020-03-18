@@ -3,6 +3,7 @@ import type { BrowserWindowConstructorOptions } from "electron";
 import { BrowserWindow } from "electron";
 import { join as joinPath } from "path";
 
+
 export class Window extends BrowserWindow {
   constructor(options: BrowserWindowConstructorOptions = {}) {
     const settings: BrowserWindowConstructorOptions = {

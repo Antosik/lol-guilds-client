@@ -28,5 +28,3 @@ if (!gotTheLock) {
     if (process.platform !== "darwin") app.quit();
   });
 }
-
-

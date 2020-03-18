@@ -14,6 +14,7 @@ export class ClientRPC extends EventEmitter {
 
     this._window = window;
     this._handlers = new Map();
+
     this.handleFlow = this.handleFlow.bind(this);
     this.handleInvoke = this.handleInvoke.bind(this);
 
@@ -25,6 +26,8 @@ export class ClientRPC extends EventEmitter {
     return this._window.webContents;
   }
 
+
+  // #region Main
   public send(event: string, data: unknown = undefined): void {
     this.wc.send(this._id, { event, data });
   }
@@ -42,7 +45,10 @@ export class ClientRPC extends EventEmitter {
     ipcMain.removeListener(this._id, this.handleFlow);
     ipcMain.removeHandler(this._id);
   }
+  // #endregion
 
+
+  // #region Flow handlers
   private handleFlow(_: IpcMainEvent, { event, data }: { event: string, data: unknown }): void {
     super.emit(event, data);
   }
@@ -54,6 +60,7 @@ export class ClientRPC extends EventEmitter {
     }
     return handler(data);
   }
+  // #endregion
 }
 
 export const createRPC = (window: BrowserWindow): ClientRPC => new ClientRPC(window);

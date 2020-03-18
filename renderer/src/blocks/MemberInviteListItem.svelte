@@ -6,7 +6,8 @@
   export let member = undefined;
 
   const dispatch = createEventDispatcher();
-  $: isBusy = member && member.status ? !notBusyStatusCode.includes(member.status) : true;
+  $: isBusy =
+    member && member.status ? !notBusyStatusCode.includes(member.status) : true;
 
   function inviteToParty() {
     dispatch("member-invite", member.name);
@@ -29,7 +30,12 @@
       <SummonerStatus statusCode={member.status} />
     </div>
     {#if !isBusy}
-      <button class="guild-member__invite flex-center" type="button" on:click={inviteToParty}>+</button>
+      <button
+        class="guild-member__invite flex-center"
+        type="button"
+        on:click={inviteToParty}>
+        +
+      </button>
     {/if}
   </li>
 {/if}

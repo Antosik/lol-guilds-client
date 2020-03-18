@@ -1,6 +1,8 @@
 import type { IInvitation } from "../interfaces/IInvitation";
+import type { ISummonerCore } from "../interfaces/ISummoner";
+
 import { EInvitationState } from "../interfaces/IInvitation";
-import { ISummonerCore } from "../interfaces/ISummoner";
+
 
 export function constructInvitation(accountId: number): IInvitation {
   return {

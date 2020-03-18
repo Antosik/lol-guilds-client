@@ -3,12 +3,11 @@ import type { IPagedRequest, IPagedResponse, IRequestOptions } from "./interface
 import type { IClubSeasonRatingResponse, IClubStageRatingResponse } from "./interfaces/IAPIClub";
 import type { IMemberResponse } from "./interfaces/IAPIMember";
 import type { ISeasonResponse } from "./interfaces/IAPISeason";
+import type { IStageResponse } from "./interfaces/IAPIStage";
 import type { ICurrentSummonerResponse, IUserSeasonRatingResponse, IUserStageRatingResponse } from "./interfaces/IAPISummoner";
 
 import fetch from "node-fetch";
 import { stringify as stringifyQuery } from "querystring";
-import { IStageResponse } from "./interfaces/IAPIStage";
-
 
 
 export class GuildsAPI {
@@ -19,26 +18,26 @@ export class GuildsAPI {
   }
 
   // #region Club API
-  async getCurrentSummoner(): Promise<ICurrentSummonerResponse> {
+  public async getCurrentSummoner(): Promise<ICurrentSummonerResponse> {
     const data = await this.request("contest/summoner", { method: "GET", version: 2 });
     return data as ICurrentSummonerResponse;
   }
 
-  async getGuildMembers(club_id: number): Promise<IMemberResponse[]> {
+  public async getGuildMembers(club_id: number): Promise<IMemberResponse[]> {
     const data = await this.request(`accounts/clubs/${club_id}/members`, { method: "GET", version: 2 });
     const members = data as IMemberResponse[];
     return members
       .sort(({ summoner: { summoner_name: n1 } }, { summoner: { summoner_name: n2 } }) => n1.localeCompare(n2));
   }
 
-  async getMembersRatingForSeasonWithId(season_id: number): Promise<IUserSeasonRatingResponse[]> {
+  public async getMembersRatingForSeasonWithId(season_id: number): Promise<IUserSeasonRatingResponse[]> {
     const data = await this.request(`contest/season/${season_id}/userseasonrating`, { method: "GET", version: 2 });
     const members = data as IUserSeasonRatingResponse[];
     return members
       .sort(({ points: n1 }, { points: n2 }) => n2 - n1);
   }
 
-  async getMembersRatingForStageWithSeasonId(season_id: number): Promise<IUserStageRatingResponse[]> {
+  public async getMembersRatingForStageWithSeasonId(season_id: number): Promise<IUserStageRatingResponse[]> {
     const data = await this.request(`contest/season/${season_id}/userstagerating`, { method: "GET", version: 2 });
     const members = data as IUserStageRatingResponse[];
     return members
@@ -48,31 +47,32 @@ export class GuildsAPI {
 
 
   // #region Season API
-  async getSeasons(): Promise<ISeasonResponse[]> {
+  public async getSeasons(): Promise<ISeasonResponse[]> {
     const data = await this.request("contest/season", { method: "GET", version: 2 });
     return data as ISeasonResponse[];
   }
 
-  async getCurrentSeason(): Promise<ISeasonResponse | undefined> {
+  public async getCurrentSeason(): Promise<ISeasonResponse | undefined> {
     const data = await this.request("contest/season", { method: "GET", version: 2 });
     const seasons = data as ISeasonResponse[];
     return seasons.find((season) => season.is_open && !season.is_closed);
   }
 
-  async getCurrentStage(): Promise<IStageResponse | undefined> {
+  public async getCurrentStage(): Promise<IStageResponse | undefined> {
     const currentSeason = await this.getCurrentSeason();
     if (currentSeason === undefined) { return undefined; }
     return currentSeason.stages.find((stage) => stage.is_open && !stage.is_closed);
   }
 
-  async getSeasonById(season_id: number): Promise<ISeasonResponse> {
+  public async getSeasonById(season_id: number): Promise<ISeasonResponse> {
     const data = await this.request(`contest/season/${season_id}`, { method: "GET", version: 2 });
     return data as ISeasonResponse;
   }
   // #endregion
 
+
   // #region Rating API
-  async getTopClubsForSeasonWithId(season_id: number, options?: IPagedRequest): Promise<IClubSeasonRatingResponse[]> {
+  public async getTopClubsForSeasonWithId(season_id: number, options?: IPagedRequest): Promise<IClubSeasonRatingResponse[]> {
     const opts: IPagedRequest = { page: 1, per_page: 50, ...options };
     const query = stringifyQuery(opts);
     const data = await this.request(`contest/season/${season_id}/clubs/?${query}`, { method: "GET", version: 1 });
@@ -80,7 +80,7 @@ export class GuildsAPI {
     return rating;
   }
 
-  async getTopClubsForStageWithId(stage_id: number, season_id: number, options?: IPagedRequest): Promise<IClubStageRatingResponse[]> {
+  public async getTopClubsForStageWithId(stage_id: number, season_id: number, options?: IPagedRequest): Promise<IClubStageRatingResponse[]> {
     const opts: IPagedRequest = { page: 1, per_page: 50, ...options };
     const query = stringifyQuery(opts);
     const data = await this.request(`contest/season/${season_id}/stages/${stage_id}/clubs/?${query}`, { method: "GET", version: 1 });

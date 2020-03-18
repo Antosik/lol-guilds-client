@@ -58,7 +58,7 @@
   }
 </style>
 
-<div class="summoner-info" class:light={style === "light"}>
+<div class="summoner-info" class:light={style === 'light'}>
   <h1>
     {summoner.displayName}
     {#if guild.guild}
@@ -67,7 +67,7 @@
   </h1>
   {#if status}
     <div class="summoner-info__status">
-      <SummonerStatus statusCode={status} showText={style !== "light"} />
+      <SummonerStatus statusCode={status} showText={style !== 'light'} />
     </div>
   {/if}
   <button type="button" class="refresh flex-center" on:click={LCUReconnect}>

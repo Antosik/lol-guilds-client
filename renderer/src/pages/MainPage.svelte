@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, onDestroy } from "svelte";
   import Router, { replace, location } from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
@@ -11,33 +11,41 @@
   import Navigation from "../sections/Navigation.svelte";
 
   const dispatch = createEventDispatcher();
+  let guildConnected = false;
 
   function LCUReconnect() {
     rpc.send("ui:reconnect");
   }
 
-  onMount(() => {
+  const onSummoner = e => summonerStore.setSummoner(e);
+  const onGameflow = e => summonerStore.setStatus(e.data);
+  const onGuilds = async e => {
+    const club = await rpc.invoke("guilds:club");
+    guildStore.setGuildData(club);
+
+    guildConnected = true;
+  };
+
+  onMount(async () => {
     if (!$summonerStore.auth) {
       replace("/not-launched");
     }
 
-    rpc.on("lcu:summoner", e => {
-      summonerStore.setSummoner(e);
-    });
-    rpc.on("lcu:lol-gameflow.v1.gameflow-phase", e => {
-      summonerStore.setStatus(e.data);
-    });
-    rpc.on("guilds:club", e => {
-      guildStore.setGuildData(e);
-    });
-    rpc.on("guilds:members", e => {
-      guildStore.setMembers(e);
-    });
+    rpc.on("lcu:summoner", onSummoner);
+    rpc.on("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
+
+    rpc.on("guilds:connect", onGuilds);
+  });
+
+  onDestroy(() => {
+    rpc.removeListener("lcu:summoner", onSummoner);
+    rpc.removeListener("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
   });
 </script>
 
 <style>
-  div.summoner--no-auth h1 {
+  h1,
+  h2 {
     text-align: center;
   }
   .subpages {
@@ -55,11 +63,15 @@
       summoner={$summonerStore.summoner}
       guild={$guildStore}
       status={$summonerStore.status}
-      style={$location === "/client/" ? "normal" : "light"}
+      style={$location === '/client/' ? 'normal' : 'light'}
       on:click-reconnect={LCUReconnect} />
     <Navigation />
     <div class="subpages">
-      <Router routes={subroutes} prefix={subprefix} />
+      {#if !guildConnected}
+        <h2>Подключаемся к системе гильдий...</h2>
+      {:else}
+        <Router routes={subroutes} prefix={subprefix} />
+      {/if}
     </div>
   </div>
 {/if}

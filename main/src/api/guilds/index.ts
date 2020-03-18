@@ -1,4 +1,5 @@
 import type { GuildsAPI } from "./api";
+import type { IClubResponse } from "./interfaces/IAPIClub";
 import type { IInternalGuildMember, IInternalGuildMemberStagesRating } from "./interfaces/IInternal";
 
 import { createGuildsApi } from "./api";
@@ -9,6 +10,18 @@ export class GuildsClient {
 
   constructor(token: string) {
     this.api = createGuildsApi(token);
+  }
+
+  async getCurrentClub(): Promise<IClubResponse> {
+    const { next, prev, club: current } = await this.api.getCurrentSummoner();
+
+    const club = next !== undefined
+      ? next
+      : current !== undefined
+        ? current
+        : prev;
+
+    return club;
   }
 
   async getGuildMembers(club_id?: number): Promise<IInternalGuildMember[]> {
@@ -22,7 +35,7 @@ export class GuildsClient {
     }));
   }
 
-  async getGuildMembersStageRating(season_id?: number, club_id?: number): Promise<IInternalGuildMemberStagesRating[]> {
+  async getGuildMembersStageRating(club_id?: number, season_id?: number): Promise<IInternalGuildMemberStagesRating[]> {
     if (club_id === undefined || season_id === undefined) { return []; }
 
     const members = await this.api.getMembersRatingForStageWithSeasonId(season_id);

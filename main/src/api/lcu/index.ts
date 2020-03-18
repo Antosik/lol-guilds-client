@@ -78,10 +78,15 @@ export class LCUClient {
     return summoner;
   }
 
-  async sendInviteByNickname(nicknames: string[]): Promise<void> {
-    const summoners = await Promise.all(nicknames.map((nickname) => this.getSummonerByName(nickname)));
-    const body = constructInvitationForSummoners(summoners);
-    await this.api.request("lol-lobby/v2/lobby/invitations", body, "POST");
+  async sendInviteByNickname(nicknames: string[]): Promise<boolean> {
+    try {
+      const summoners = await Promise.all(nicknames.map((nickname) => this.getSummonerByName(nickname)));
+      const body = constructInvitationForSummoners(summoners);
+      await this.api.request("lol-lobby/v2/lobby/invitations", body, "POST");
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 }
 

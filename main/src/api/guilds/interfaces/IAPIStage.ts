@@ -1,7 +1,10 @@
+export type TStageStatusResponse = 0 | 1 | 2 | 3 | 4;
+
+
 export const enum EStageModeResponse {
-  registration = "registration",
-  team_init = "team_init",
-  main = "main"
+  Registration = "registration",
+  TeamInit = "team_init",
+  Main = "main",
 }
 
 export interface IStageResponse {
@@ -12,6 +15,6 @@ export interface IStageResponse {
   number: number;
   is_open: boolean;
   is_closed: boolean;
-  status: number;
+  status: TStageStatusResponse;
   mode: EStageModeResponse;
 }

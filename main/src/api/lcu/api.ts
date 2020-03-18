@@ -11,13 +11,16 @@ export class LCUApi {
 
   private _isInited: boolean;
   private _isConnected: boolean;
+
   private _credentials?: Credentials;
   private _socket?: LeagueWebSocket;
   private _rpc: ClientRPC;
 
+
   constructor(rpc: ClientRPC) {
-    this._isConnected = false;
     this._isInited = false;
+    this._isConnected = false;
+
     this._rpc = rpc;
 
     this._socketListener = this._socketListener.bind(this);
@@ -28,6 +31,7 @@ export class LCUApi {
     return this._isConnected;
   }
 
+  // #region Main
   public async connect() {
     try {
       this._credentials = await auth();
@@ -50,7 +54,10 @@ export class LCUApi {
       body
     }, this._credentials).then(res => res.json());
   }
+  // #endregion
 
+
+  // #region Listener handlers
   public subscribe(url: string): void {
     if (this._socket !== undefined) {
       this._socket.subscribe(url, this._socketListener);
@@ -78,7 +85,10 @@ export class LCUApi {
     const alias = event.uri.slice(1).replace(/\//g, ".");
     this._rpc.emit(`lcu:${alias}`, event);
   }
+  // #endregion
 
+
+  // #region Connect handlers
   private _setReconnectTimer(mode: "on" | "off"): void {
     if (this._reconnectTimer !== undefined && mode === "off") {
       clearInterval(this._reconnectTimer);
@@ -120,6 +130,7 @@ export class LCUApi {
 
     this._rpc.emit("lcu:disconnect");
   }
+  // #endregion
 }
 
 export const createLCUApi = (rpc: ClientRPC): LCUApi => new LCUApi(rpc);

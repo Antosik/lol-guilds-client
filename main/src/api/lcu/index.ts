@@ -4,7 +4,7 @@ import type { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import type { LCUApi } from "./api";
 import type { IStorePrototype } from "./store";
 import type { IIdToken } from "./interfaces/IIdToken";
-import type { ISummoner } from "./interfaces/ISummoner";
+import type { ISummoner, ISummonerCore } from "./interfaces/ISummoner";
 
 import { createLCUApi } from "./api";
 import { constructInvitationForSummoners } from "./helpers/invites";
@@ -23,14 +23,20 @@ export class LCUClient {
   get isConnected(): boolean {
     return this.api.isConnected;
   }
-  async connect(): Promise<void> {
+
+
+  // #region Main
+  public async connect(): Promise<void> {
     return this.api.connect();
   }
-  disconnect(): void {
+
+  public disconnect(): void {
     return this.api.disconnect();
   }
+  // #endregion
 
-  async getCurrentSummoner(): Promise<ISummoner> {
+
+  public async getCurrentSummoner(): Promise<ISummoner> {
     const summonerFromStore = this.store.get("summoner");
     if (summonerFromStore !== undefined) {
       return summonerFromStore;
@@ -43,7 +49,7 @@ export class LCUClient {
     return summoner;
   }
 
-  async getIdToken(): Promise<string> {
+  public async getIdToken(): Promise<string> {
     const tokenFromStore = this.store.get("token");
     if (tokenFromStore !== undefined && tokenFromStore.expiry * 1000 > Date.now()) {
       return tokenFromStore.token;
@@ -56,20 +62,37 @@ export class LCUClient {
     return tokenData.token;
   }
 
-  async getStatus(): Promise<EGameflowStatus> {
+  public async getStatus(): Promise<EGameflowStatus> {
     const data = await this.api.request("/lol-gameflow/v1/gameflow-phase");
     return data as EGameflowStatus;
   }
 
-  async getSummonerByName(name: string): Promise<ISummoner> {
+  public async getSummonerByName(name: string): Promise<ISummonerCore> {
+    const summonersFromStore = this.store.get("summoners");
+    const summonerFromStore = summonersFromStore.find(({ displayName }) => displayName.toLowerCase() === name.toLowerCase());
+    if (summonerFromStore !== undefined) {
+      return summonerFromStore;
+    }
+
     const data = await this.api.request(`/lol-summoner/v1/summoners?name=${encodeURI(name)}`);
-    return data as ISummoner;
+    const summoner = data as ISummoner;
+
+    this.store.set("summoners", [
+      ...summonersFromStore,
+      { accountId: summoner.accountId, displayName: summoner.displayName, puuid: summoner.puuid, summonerId: summoner.summonerId }
+    ]);
+    return summoner;
   }
 
-  async sendInviteByNickname(nicknames: string[]): Promise<void> {
-    const summoners = await Promise.all(nicknames.map((nickname) => this.getSummonerByName(nickname)));
-    const body = constructInvitationForSummoners(summoners);
-    await this.api.request("lol-lobby/v2/lobby/invitations", body, "POST");
+  public async sendInviteByNickname(nicknames: string[]): Promise<boolean> {
+    try {
+      const summoners = await Promise.all(nicknames.map((nickname) => this.getSummonerByName(nickname)));
+      const body = constructInvitationForSummoners(summoners);
+      await this.api.request("lol-lobby/v2/lobby/invitations", body, "POST");
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 }
 

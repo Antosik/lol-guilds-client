@@ -1,9 +1,9 @@
 import type { GuildsAPI } from "./api";
-import type { ICurrentSummonerResponseV2, ISummonerClubMemberResponseV2 } from "./interfaces/IAPISummoner";
-import type { ISeasonResponse } from "./interfaces/IAPISeason";
-import type { IGuildMember } from "./interfaces/IGuildMember";
+import type { IClubResponse } from "./interfaces/IAPIClub";
+import type { IInternalGuildMember, IInternalGuildMemberStagesRating } from "./interfaces/IInternal";
 
 import { createGuildsApi } from "./api";
+
 
 export class GuildsClient {
   public api: GuildsAPI;
@@ -12,28 +12,54 @@ export class GuildsClient {
     this.api = createGuildsApi(token);
   }
 
-  async getCurrentSummoner(): Promise<ICurrentSummonerResponseV2> {
-    const data = await this.api.request("contest/summoner", { method: "GET", version: 2 });
-    const summonerData = data as ICurrentSummonerResponseV2;
-    return summonerData;
+  public async getCurrentClub(): Promise<IClubResponse> {
+    const { next, prev, club: current } = await this.api.getCurrentSummoner();
+
+    const club = next !== undefined
+      ? next
+      : current !== undefined
+        ? current
+        : prev;
+
+    return club;
   }
 
-  async getGuildMembers(club_id: number): Promise<IGuildMember[]> {
-    const data = await this.api.request(`accounts/clubs/${club_id}/members`, { method: "GET", version: 2 });
-    const members = data as ISummonerClubMemberResponseV2[];
-    return members
-      .map((member) => ({
-        name: member.summoner.summoner_name,
-        role: member.role,
-        status: "None"
-      }))
-      .sort(({ name: n1 }, { name: n2 }) => n1.localeCompare(n2));
+  public async getGuildMembers(club_id?: number): Promise<IInternalGuildMember[]> {
+    if (club_id === undefined) { return []; }
+
+    const members = await this.api.getGuildMembers(club_id);
+    return members.map(member => ({
+      name: member.summoner.summoner_name,
+      role: member.role,
+      status: "None"
+    }));
   }
 
-  async getCurrentSeason(club_id: number): Promise<ISeasonResponse | undefined> {
-    const data = await this.api.request(`accounts/clubs/${club_id}/members`, { method: "GET", version: 2 });
-    const seasons = data as ISeasonResponse[];
-    return seasons.find((season) => season.is_open && !season.is_closed);
+  public async getGuildMembersStageRating(club_id?: number, season_id?: number): Promise<IInternalGuildMemberStagesRating[]> {
+    if (club_id === undefined || season_id === undefined) { return []; }
+
+    const members = await this.api.getMembersRatingForStageWithSeasonId(season_id);
+    const tempPointsMap: { [id: number]: number } = {};
+
+    const membersMap = members.reduce<{ [id: number]: IInternalGuildMemberStagesRating }>((acc, member) => {
+      if (acc[member.summoner.id] === undefined) {
+        acc[member.summoner.id] = { summoner: member.summoner, stages: [] };
+        tempPointsMap[member.summoner.id] = 0;
+      }
+
+      acc[member.summoner.id].stages.push({
+        id: member.id,
+        games: member.games,
+        points: member.points,
+        stage_id: member.stage
+      });
+      tempPointsMap[member.summoner.id] += member.points;
+
+      return acc;
+    }, {});
+
+    return Object.values(membersMap)
+      .sort(({ summoner: { id: id1 } }, { summoner: { id: id2 } }) => tempPointsMap[id2] - tempPointsMap[id1]);
   }
 }
 

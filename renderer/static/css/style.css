@@ -9,6 +9,7 @@ body {
   font-family: "BeaufortforLOL", sans-serif;
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
 }
 *,
 *:before,
@@ -27,14 +28,22 @@ body {
   background-attachment: fixed;
 }
 
-#app {
-  padding: 20px;
+h2 {
+  margin-top: 12px;
+  margin-bottom: 8px;
 }
 
 ul {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
+}
+
+a {
+  color: #cbab5c;
+  margin: 2px;
+  text-decoration: none;
+  position: relative;
 }
 
 button {
@@ -62,4 +71,42 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #201e19;
+}
+::-webkit-scrollbar-thumb {
+  background: #81785d;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c2aa70;
+}
+
+
+.guild-member {
+  width: calc(100% - 20px);
+  margin-right: 20px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+@media all and (min-width: 576px) {
+  .guild-member {
+    width: calc(50% - 20px);
+  }
+}
+@media all and (min-width: 765px) {
+  .guild-member {
+    width: calc(33% - 20px);
+  }
+}
+@media all and (min-width: 1024px) {
+  .guild-member {
+    width: calc(25% - 20px);
+  }
 }

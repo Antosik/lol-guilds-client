@@ -1,6 +1,8 @@
 import type { IInvitation } from "../interfaces/IInvitation";
+import type { ISummonerCore } from "../interfaces/ISummoner";
+
 import { EInvitationState } from "../interfaces/IInvitation";
-import { ISummoner } from "../interfaces/ISummoner";
+
 
 export function constructInvitation(accountId: number): IInvitation {
   return {
@@ -9,6 +11,6 @@ export function constructInvitation(accountId: number): IInvitation {
   };
 }
 
-export function constructInvitationForSummoners(summoners: ISummoner[]): IInvitation[] {
+export function constructInvitationForSummoners(summoners: ISummonerCore[]): IInvitation[] {
   return summoners.map((summoner) => constructInvitation(summoner.summonerId));
 }

@@ -1,44 +1,55 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
-  import Router from "svelte-spa-router";
+  import { createEventDispatcher, onMount, onDestroy } from "svelte";
+  import Router, { replace, location } from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
   import { summonerStore } from "../store/summoner";
   import { guildStore } from "../store/guild";
+  import { subroutes, subprefix } from "../routes";
 
   import SummonerInfo from "../sections/SummonerInfo.svelte";
-  import GuildMembers from "./subpages/GuildMembers.svelte";
+  import Navigation from "../sections/Navigation.svelte";
 
-  const prefix = "/client";
-  const routes = {
-    "/": GuildMembers
-  };
   const dispatch = createEventDispatcher();
+  let guildConnected = false;
 
   function LCUReconnect() {
     rpc.send("ui:reconnect");
   }
 
-  onMount(() => {
-    rpc.on("lcu:summoner", e => {
-      summonerStore.setSummoner(e);
-    });
-    rpc.on("lcu:lol-gameflow.v1.gameflow-phase", e => {
-      summonerStore.setStatus(e.data);
-    });
+  const onSummoner = e => summonerStore.setSummoner(e);
+  const onGameflow = e => summonerStore.setStatus(e.data);
+  const onGuilds = async e => {
+    const club = await rpc.invoke("guilds:club");
+    guildStore.setGuildData(club);
 
-    rpc.on("guilds:club", e => {
-      guildStore.setGuildData(e);
-    });
-    rpc.on("guilds:members", e => {
-      guildStore.setMembers(e);
-    });
+    guildConnected = true;
+  };
+
+  onMount(async () => {
+    if (!$summonerStore.auth) {
+      replace("/not-launched");
+    }
+
+    rpc.on("lcu:summoner", onSummoner);
+    rpc.on("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
+
+    rpc.on("guilds:connect", onGuilds);
+  });
+
+  onDestroy(() => {
+    rpc.removeListener("lcu:summoner", onSummoner);
+    rpc.removeListener("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
   });
 </script>
 
 <style>
-  div.summoner--no-auth h1 {
+  h1,
+  h2 {
     text-align: center;
+  }
+  .subpages {
+    padding: 0 20px;
   }
 </style>
 
@@ -51,7 +62,16 @@
     <SummonerInfo
       summoner={$summonerStore.summoner}
       guild={$guildStore}
-      status={$summonerStore.status} />
-    <Router {routes} {prefix} />
+      status={$summonerStore.status}
+      style={$location === '/client/' ? 'normal' : 'light'}
+      on:click-reconnect={LCUReconnect} />
+    <Navigation />
+    <div class="subpages">
+      {#if !guildConnected}
+        <h2>Подключаемся к системе гильдий...</h2>
+      {:else}
+        <Router routes={subroutes} prefix={subprefix} />
+      {/if}
+    </div>
   </div>
 {/if}

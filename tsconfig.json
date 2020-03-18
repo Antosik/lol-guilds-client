@@ -23,6 +23,7 @@
     "forceConsistentCasingInFileNames": true,
     
     "baseUrl": ".",
+    "outDir": "./dist/",
     
     "paths": {
       "@guilds-main/*": ["main/src/*"],
@@ -30,5 +31,5 @@
       "@guilds-shared/*": ["shared/*"],
     }
   },
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "exclude": ["node_modules", "**/*.test.ts", "dist", "target"]
 }

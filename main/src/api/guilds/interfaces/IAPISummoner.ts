@@ -1,39 +1,41 @@
-import type { IClubResponseV2 } from "./IAPIClub";
+import type { EMemberRoleResponse } from "./IAPIMember";
+import type { IClubResponse } from "./IAPIClub";
 
 
-export interface ISummonerMemberResponseV2 {
+interface IBaseSummonerResponse {
   id: number;
-  role: 0 | 1 | 2;
-  club: IClubResponseV2;
-}
-
-export interface ISummonerResponse {
-  id: number;
-  lol_account_id: number;
   summoner_name: string;
   avatar: string;
-  current_club?: number;
 }
 
-export interface ISummonerClubMemberResponseV2 {
-  id: number;
-  role: 0 | 1 | 2;
-  summoner: ISummonerResponse;
-}
-
-export interface ICurrentSummonerResponseV2 {
-  id: number;
+interface IBaseSummonerWithAccountIdResponse extends IBaseSummonerResponse {
   lol_account_id: number;
-  summoner_name: string;
+}
+
+interface IBaseSummonerWithHonorResponse extends IBaseSummonerResponse {
   honor: boolean;
-  avatar: string;
-  members: ISummonerMemberResponseV2[];
-  club?: IClubResponseV2;
-  next?: IClubResponseV2;
-  prev?: IClubResponseV2;
 }
 
-export interface ISummonerRatingResponse {
+export type IShortSummonerResponse = IBaseSummonerWithHonorResponse;
+
+export interface ISummonerResponse extends IBaseSummonerWithAccountIdResponse {
+  current_club: number;
+}
+
+export interface ISummonerMemberResponse {
+  id: number;
+  role: EMemberRoleResponse;
+  club: IClubResponse;
+}
+
+export interface ICurrentSummonerResponse extends IBaseSummonerWithAccountIdResponse, IBaseSummonerWithHonorResponse {
+  members: ISummonerMemberResponse[];
+  club: IClubResponse;
+  next: IClubResponse;
+  prev: IClubResponse;
+}
+
+interface IUserRatingResponse {
   id: number;
   points: number;
   games: number;
@@ -41,17 +43,10 @@ export interface ISummonerRatingResponse {
   summoner: ISummonerResponse;
 }
 
-export interface IStageSummonerResponse extends ISummonerRatingResponse {
-  rank: number;
-  joined: string;
-  left?: string;
+export interface IUserStageRatingResponse extends IUserRatingResponse {
   stage: number;
 }
 
-export interface ISummonerStageRatingResponse extends ISummonerRatingResponse {
-  stage: number;
-}
-
-export interface ISummonerSeasonRatingResponse extends ISummonerRatingResponse {
+export interface IUserSeasonRatingResponse extends IUserRatingResponse {
   season: number;
 }

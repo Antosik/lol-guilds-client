@@ -86,7 +86,7 @@ export class GuildsAPI {
     return rating;
   }
 
-  public async getTopClubsForStageWithId(stage_id: number, season_id: number, options?: IPagedRequest): Promise<IClubStageRatingResponse[]> {
+  public async getTopClubsForStageWithId(season_id: number, stage_id: number, options?: IPagedRequest): Promise<IClubStageRatingResponse[]> {
     const opts: IPagedRequest = { page: 1, per_page: 50, ...options };
     const query = stringifyQuery(opts);
     const data = await this.request(`contest/season/${season_id}/stages/${stage_id}/clubs/?${query}`, { method: "GET", version: 1 });

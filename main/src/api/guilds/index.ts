@@ -3,6 +3,7 @@ import type { IClubResponse, IClubSeasonRatingResponse, IClubStageRatingResponse
 import type { IInternalGuildMember, IInternalGuildMemberStagesRating } from "./interfaces/IInternal";
 
 import { createGuildsApi } from "./api";
+import { ISeasonResponse } from "./interfaces/IAPISeason";
 
 
 export class GuildsClient {
@@ -22,6 +23,10 @@ export class GuildsClient {
         : prev;
 
     return club;
+  }
+
+  public async getSeason(season_id?: number): Promise<ISeasonResponse | undefined> {
+    return season_id ? this.api.getSeason(season_id) : this.api.getCurrentSeason();
   }
 
   public async getGuildMembers(club_id?: number): Promise<IInternalGuildMember[]> {
@@ -65,6 +70,7 @@ export class GuildsClient {
   public async getGuildSeasonStats(season_id: number, club_id?: number): Promise<IClubSeasonRatingResponse | undefined> {
     return club_id === undefined ? this.api.getSeasonRatingForMyClub(season_id) : undefined;
   }
+
   public async getGuildStageStats(stage_id: number, season_id: number, club_id?: number): Promise<IClubStageRatingResponse | undefined> {
     return club_id === undefined ? this.api.getStageRatingForMyClub(stage_id, season_id) : this.api.getStageRatingForClub(club_id, stage_id, season_id);
   }

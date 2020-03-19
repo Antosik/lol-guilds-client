@@ -84,7 +84,10 @@ export class LCUClient {
     return summoner;
   }
 
-  public async sendInviteByNickname(nicknames: string[]): Promise<boolean> {
+  public async sendInviteByNickname(nicknames: string | string[]): Promise<boolean> {
+    if (!Array.isArray(nicknames)) {
+      nicknames = [nicknames];
+    }
     try {
       const summoners = await Promise.all(nicknames.map((nickname) => this.getSummonerByName(nickname)));
       const body = constructInvitationForSummoners(summoners);

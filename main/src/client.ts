@@ -8,6 +8,7 @@ import { createGuildsAPIClient } from "./api/guilds";
 import { createLCUAPIClient } from "./api/lcu";
 import { createRPC } from "./data/rpc";
 import { createWindow } from "./ui/window";
+import { IPagedRequest } from "./api/guilds/interfaces/IGuildsAPI";
 
 
 export class MainApplication {
@@ -83,13 +84,13 @@ export class MainApplication {
         if (!this._guildsClient) return null;
         return this._guildsClient.api.getSeason(season_id);
       });
-      this._rpc.setHandler("guilds:rating:season", async (season_id: number) => {
+      this._rpc.setHandler("guilds:rating:season", async (season_id: number, options?: IPagedRequest) => {
         if (!this._guildsClient) return null;
-        return this._guildsClient.api.getTopClubsForSeasonWithId(season_id);
+        return this._guildsClient.api.getTopClubsForSeasonWithId(season_id, options);
       });
-      this._rpc.setHandler("guilds:rating:stage", async (season_id: number, stage_id: number) => {
+      this._rpc.setHandler("guilds:rating:stage", async (season_id: number, stage_id: number, options?: IPagedRequest) => {
         if (!this._guildsClient) return null;
-        return this._guildsClient.api.getTopClubsForStageWithId(stage_id, season_id);
+        return this._guildsClient.api.getTopClubsForStageWithId(stage_id, season_id, options);
       });
       this._rpc.setHandler("guilds:stats:season", async (season_id: number, club_id: number) => {
         if (!this._guildsClient) return null;

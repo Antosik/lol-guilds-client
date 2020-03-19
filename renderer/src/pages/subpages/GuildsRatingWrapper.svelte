@@ -1,40 +1,30 @@
 <script>
   import { onMount } from "svelte";
-  import { link, push } from "svelte-spa-router";
+  import Router, { link, push, location } from "svelte-spa-router";
 
   import { rpc } from "@guilds-web/data/rpc";
-  import { guildStore } from "@guilds-web/store/guild";
-
-  import GuildStats from "@guilds-web/sections/GuildStats";
-  import GuildsRatingTable from "@guilds-web/sections/GuildsRatingTable";
+  import {
+    rating_subprefix as subprefix,
+    rating_subroutes as subroutes
+  } from "@guilds-web/routes/subroutes";
 
   export let params = {};
-
-  let seasons = [];
 
   $: season_id = Number(params.season_id);
   $: stage_id = Number(params.stage_id);
 
-  $: season_info = season_id
-    ? seasons.find(season => season.id === season_id)
-    : undefined;
-  $: stage_info = season_info
-    ? season_info.stages.find(stage => stage.id === stage_id)
-    : undefined;
+  $: season_info = season_id && seasons.find(season => season.id === season_id);
+  $: stage_info =
+    stage_id &&
+    season_info &&
+    season_info.stages.find(stage => stage.id === stage_id);
 
+  let seasons = [];
   let seasonsLoadingPromise = rpc.invoke("guilds:seasons");
-  $: ratingLoadingPromise = !season_id
-    ? undefined
-    : !stage_id
-    ? rpc.invoke("guilds:rating:season", season_id)
-    : rpc.invoke("guilds:rating:stage", season_id, stage_id);
-  $: myRatingLoadingPromise = !season_id
-    ? undefined
-    : !stage_id
-    ? rpc.invoke("guilds:stats:season", season_id)
-    : rpc.invoke("guilds:stats:stage", season_id, stage_id);
 
   const onSeasonChange = e => push(`/client/rating/season/${e.target.value}`);
+  const formatDate = date =>
+    new Date(date).toLocaleDateString({}, { day: "numeric", month: "long" });
 
   onMount(async () => {
     seasons = await seasonsLoadingPromise;
@@ -45,14 +35,11 @@
 </script>
 
 <style>
-  .season-selector,
-  .my-guild-rating,
-  .guilds-rating {
-    margin: 12px 0;
-  }
   .season-selector {
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
   }
   .season-selector select {
     background: transparent;
@@ -79,7 +66,6 @@
 <div>
 
   <div class="selector">
-
     {#await seasonsLoadingPromise}
       <h2>Загружаем список сезонов...</h2>
     {:then seasons}
@@ -102,6 +88,7 @@
                 </a>
               </li>
             {/if}
+
             {#each season_info.stages as stage (stage.id)}
               <li>
                 <a
@@ -112,26 +99,24 @@
               </li>
             {/each}
           </ul>
-        </div>
 
-        <div class="my-guild-rating">
-          {#await myRatingLoadingPromise}
-            <h3>Гильдия</h3>
-            <div>Загружаем информацию о гильдии...</div>
-          {:then guild}
-            <GuildStats {guild} />
-          {/await}
-        </div>
+          <div style="width: 100%">
+            {#if stage_info}
+              <h3>Этап {stage_info.number}</h3>
+              <div>
+                {formatDate(stage_info.start_date)} - {formatDate(stage_info.end_date)}
+              </div>
+            {:else}
+              <div>
+                {formatDate(season_info.start_date)} - {formatDate(season_info.end_date)}
+              </div>
+            {/if}
+          </div>
 
-        <div class="guilds-rating">
-          <h3>Рейтинг гильдий</h3>
-          {#await ratingLoadingPromise}
-            <h4>Загружаем рейтинг...</h4>
-          {:then guilds}
-            <GuildsRatingTable {guilds} myGuildId={$guildStore.guild.id} />
-          {/await}
         </div>
       {/if}
+
+      <Router routes={subroutes} prefix={subprefix} />
     {:catch error}
       <p>Что-то пошло не так: {error.message}</p>
     {/await}

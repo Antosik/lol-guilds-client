@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import type { GuildsClient } from "../api/guilds";
+import type { GuildsClient } from "@guilds-main/api/guilds";
+import  { getRewardsForSeason, getRewardsForStages } from "./rewards";
 
 
 type IHandler = (...args: any[]) => any;
@@ -13,5 +14,6 @@ export const handlersGuildClient = new Map<string, IGuildsHandler>([
   ["guilds:rating:season", (client) => client.api.getTopClubsForSeasonWithId.bind(client.api)],
   ["guilds:stats:season", (client) => client.getGuildSeasonStats.bind(client)],
   ["guilds:stats:stage", (client) => client.getGuildStageStats.bind(client)],
+  ["guilds:rewards:season", (client) => getRewardsForSeason(client)],
+  ["guilds:rewards:stage", (client) => getRewardsForStages(client)],
 ]);
-

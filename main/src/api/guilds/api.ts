@@ -2,6 +2,7 @@ import type { IPagedRequest, IPagedResponse, IRequestOptions } from "./interface
 
 import type { IClubSeasonRatingResponse, IClubStageRatingResponse } from "./interfaces/IAPIClub";
 import type { IMemberResponse } from "./interfaces/IAPIMember";
+import type { ISeasonRewardResponse, IStageRewardResponse } from "./interfaces/IAPIReward";
 import type { ISeasonResponse } from "./interfaces/IAPISeason";
 import type { IStageResponse } from "./interfaces/IAPIStage";
 import type { ICurrentSummonerResponse, IUserSeasonRatingResponse, IUserStageRatingResponse } from "./interfaces/IAPISummoner";
@@ -110,6 +111,18 @@ export class GuildsAPI {
     const data = await this.request(`contest/season/${season_id}/clubs/${club_id}/stages/?${query}`, { method: "GET", version: 1 });
     const { results: stages = [] } = data as IPagedResponse<IClubStageRatingResponse>;
     return stages.find((stage) => stage.stage === stage_id);
+  }
+  // #endregion
+
+
+  // #region Rewards API
+  public async getRewardsForSeason(season_id: number): Promise<ISeasonRewardResponse[]> {
+    const data = await this.request(`contest/season/${season_id}/userseasonrewards`, { method: "GET", version: 1 });
+    return data as ISeasonRewardResponse[];
+  }
+  public async getRewardsForStages(season_id: number): Promise<IStageRewardResponse[]> {
+    const data = await this.request(`contest/season/${season_id}/userstagerewards`, { method: "GET", version: 1 });
+    return data as IStageRewardResponse[];
   }
   // #endregion
 

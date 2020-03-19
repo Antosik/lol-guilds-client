@@ -1,8 +1,18 @@
 {
   "appId": "com.antosik.guilds-client",
   "productName": "Guilds Client",
+  "files": [
+    "./target/app/main.js",
+    "./node_modules/**/*",
+    "./package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "./target",
+      "to": "."
+    }
+  ],
   "directories": {
-    "buildResources": "./build",
     "output": "./dist"
   },
   "asarUnpack": ["**/*.node"],

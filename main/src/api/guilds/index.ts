@@ -1,5 +1,5 @@
 import type { GuildsAPI } from "./api";
-import type { IClubResponse } from "./interfaces/IAPIClub";
+import type { IClubResponse, IClubSeasonRatingResponse, IClubStageRatingResponse } from "./interfaces/IAPIClub";
 import type { IInternalGuildMember, IInternalGuildMemberStagesRating } from "./interfaces/IInternal";
 
 import { createGuildsApi } from "./api";
@@ -60,6 +60,13 @@ export class GuildsClient {
 
     return Object.values(membersMap)
       .sort(({ summoner: { id: id1 } }, { summoner: { id: id2 } }) => tempPointsMap[id2] - tempPointsMap[id1]);
+  }
+
+  public async getGuildSeasonStats(season_id: number, club_id?: number): Promise<IClubSeasonRatingResponse | undefined> {
+    return club_id === undefined ? this.api.getSeasonRatingForMyClub(season_id) : undefined;
+  }
+  public async getGuildStageStats(stage_id: number, season_id: number, club_id?: number): Promise<IClubStageRatingResponse | undefined> {
+    return club_id === undefined ? this.api.getStageRatingForMyClub(stage_id, season_id) : this.api.getStageRatingForClub(club_id, stage_id, season_id);
   }
 }
 

@@ -48,7 +48,7 @@
       </a>
     </li>
     <li>
-      <a href="/client/rating" class="flex-center" use:link use:active>
+      <a href="/client/rating" class="flex-center" use:link use:active={'/client/rating/*'}>
         Рейтинг
       </a>
     </li>

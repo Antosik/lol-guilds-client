@@ -9,6 +9,9 @@ export const subroutes = {
   "/": InviteMembers,
   "/me": GuildMyInfo,
   "/guild": GuildInfo,
+  "/guild/:id": GuildInfo,
   "/rating": GuildsRating,
+  "/rating/season/:season_id": GuildsRating,
+  "/rating/season/:season_id/stage/:stage_id": GuildsRating,
   "/member/:nickname": GuildMember
 };

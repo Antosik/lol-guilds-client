@@ -37,7 +37,7 @@ export class ClientRPC {
     this.ipc.send(this.id, { event, data });
   }
 
-  invoke(event: string, data: unknown): any | Promise<any> {
+  invoke(event: string, ...data: unknown[]): any | Promise<any> {
     if (!this.id) {
       throw new Error("Not ready");
     }

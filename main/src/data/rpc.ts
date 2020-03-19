@@ -53,12 +53,12 @@ export class ClientRPC extends EventEmitter {
     super.emit(event, data);
   }
 
-  private handleInvoke(_: IpcMainInvokeEvent, { event, data }: { event: string, data: unknown }): unknown | Promise<unknown> {
+  private handleInvoke(_: IpcMainInvokeEvent, { event, data }: { event: string, data: unknown[] }): unknown | Promise<unknown> {
     const handler = this._handlers.get(event);
     if (handler === undefined) {
       return undefined;
     }
-    return handler(data);
+    return handler(...data);
   }
   // #endregion
 }

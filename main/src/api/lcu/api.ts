@@ -57,6 +57,10 @@ export class LCUApi {
       body
     }, this._credentials)
       .then(res => res.json())
+      .then(res => {
+        if (res.errorCode) { throw new Error(res); }
+        return res;
+      })
       .catch(err => {
         logError("ERROR: LCU API Request", err);
 

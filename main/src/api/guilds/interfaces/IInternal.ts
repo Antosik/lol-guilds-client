@@ -4,7 +4,7 @@ import type { ISummonerResponse } from "./IAPISummoner";
 export interface IInternalGuildMember {
   name: string;
   role: EMemberRoleResponse;
-  status: string;
+  status?: string;
 }
 
 interface IInternalGuildMemberStageRating {

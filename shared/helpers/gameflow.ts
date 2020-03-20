@@ -15,23 +15,6 @@ export const enum EGameflowStatus {
   TerminatedInError = "TerminatedInError"
 }
 
-export const gameflowVariants = [
-  EGameflowStatus.None,
-  EGameflowStatus.Lobby,
-  EGameflowStatus.Matchmaking,
-  EGameflowStatus.CheckedIntoTournament,
-  EGameflowStatus.ReadyCheck,
-  EGameflowStatus.ChampSelect,
-  EGameflowStatus.GameStart,
-  EGameflowStatus.FailedToLaunch,
-  EGameflowStatus.InProgress,
-  EGameflowStatus.Reconnect,
-  EGameflowStatus.WaitingForStats,
-  EGameflowStatus.PreEndOfGame,
-  EGameflowStatus.EndOfGame,
-  EGameflowStatus.TerminatedInError
-];
-
 export const gameflowLocale = new Map<EGameflowStatus, string>([
   [EGameflowStatus.None, "В главном меню"],
   [EGameflowStatus.Lobby, "В лобби"],
@@ -49,25 +32,26 @@ export const gameflowLocale = new Map<EGameflowStatus, string>([
   [EGameflowStatus.TerminatedInError, "???"]
 ]);
 
-export const gameflowSortPriority = new Map<EGameflowStatus, number>([
-  [EGameflowStatus.Lobby, 0],
-  [EGameflowStatus.None, 1],
-  [EGameflowStatus.Matchmaking, 2],
-  [EGameflowStatus.CheckedIntoTournament, 3],
-  [EGameflowStatus.ReadyCheck, 4],
-  [EGameflowStatus.ChampSelect, 5],
-  [EGameflowStatus.GameStart, 7],
-  [EGameflowStatus.FailedToLaunch, 7],
-  [EGameflowStatus.InProgress, 7],
-  [EGameflowStatus.Reconnect, 7],
-  [EGameflowStatus.WaitingForStats, 7],
-  [EGameflowStatus.PreEndOfGame, 7],
-  [EGameflowStatus.EndOfGame, 6],
-  [EGameflowStatus.TerminatedInError, 8]
-]);
-
-export const notBusyStatusCode: EGameflowStatus[] = [
+export const gameflowNotBusyStatusCode: EGameflowStatus[] = [
   EGameflowStatus.None,
   EGameflowStatus.Lobby,
   EGameflowStatus.EndOfGame
 ];
+
+export const enum EGuildMemberStatus {
+  Away = "away",
+  Online = "chat",
+  InGame = "dnd",
+  Mobile = "mobile",
+  Offline = "offline",
+  Unknown = "unknown"
+}
+
+export const guildMemberStatusLocale = new Map<EGuildMemberStatus, string>([
+  [EGuildMemberStatus.Online, "Онлайн"],
+  [EGuildMemberStatus.Away, "Отошел"],
+  [EGuildMemberStatus.InGame, "В игре"],
+  [EGuildMemberStatus.Offline, "Оффлайн"],
+  [EGuildMemberStatus.Mobile, "League+"],
+  [EGuildMemberStatus.Unknown, "Неизвестно"]
+]);

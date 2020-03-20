@@ -1,13 +1,10 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import SummonerStatus from "../components/SummonerStatus.svelte";
-  import { notBusyStatusCode } from "@guilds-shared/helpers/gameflow";
+  import GuildMemberStatus from "../components/GuildMemberStatus.svelte";
 
   export let member = undefined;
 
   const dispatch = createEventDispatcher();
-  $: isBusy =
-    member && member.status ? !notBusyStatusCode.includes(member.status) : true;
 
   function inviteToParty() {
     dispatch("member-invite", member.name);
@@ -27,9 +24,9 @@
   <li class="guild-member">
     <div class="guild-member__info">
       <div>{member.name}</div>
-      <SummonerStatus statusCode={member.status} />
+      <GuildMemberStatus statusCode={member.status} />
     </div>
-    {#if !isBusy}
+    {#if member.status === 'chat' || member.status === 'away' || member.status === 'unknown'}
       <button
         class="guild-member__invite flex-center"
         type="button"

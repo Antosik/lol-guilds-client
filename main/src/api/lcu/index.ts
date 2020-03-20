@@ -4,6 +4,7 @@ import type { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import type { LCUApi } from "./api";
 import type { IStorePrototype } from "./store";
 import type { IIdToken } from "./interfaces/IIdToken";
+import type { IFriend, IFriendCore } from "./interfaces/IFriend";
 import type { ISummoner, ISummonerCore } from "./interfaces/ISummoner";
 
 import { createLCUApi } from "./api";
@@ -82,6 +83,12 @@ export class LCUClient {
       { accountId: summoner.accountId, displayName: summoner.displayName, puuid: summoner.puuid, summonerId: summoner.summonerId }
     ]);
     return summoner;
+  }
+
+  public async getFriendsList(): Promise<IFriendCore[]> {
+    const data = await this.api.request("/lol-chat/v1/friends");
+    const friendsRaw = data as IFriend[];
+    return friendsRaw.map(({ availability, id, name, summonerId }) => ({ availability, id, name, summonerId }));
   }
 
   public async sendInviteByNickname(nicknames: string[]): Promise<boolean> {

@@ -9,6 +9,8 @@ import { createLCUAPIClient } from "./api/lcu";
 import { createRPC } from "./data/rpc";
 import { createWindow } from "./ui/window";
 import { IPagedRequest } from "./api/guilds/interfaces/IGuildsAPI";
+import { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
+import { IFriendCore } from "./api/lcu/interfaces/IFriend";
 
 
 export class MainApplication {
@@ -70,7 +72,7 @@ export class MainApplication {
       });
       this._rpc.setHandler("guilds:members", (club_id: number) => {
         if (!this._guildsClient) return null;
-        return this._guildsClient.getGuildMembers(club_id);
+        return this._getMembersWithStatus(club_id);
       });
       this._rpc.setHandler("guilds:members:stage", (club_id: number, season_id: number) => {
         if (!this._guildsClient) return null;
@@ -112,7 +114,6 @@ export class MainApplication {
         await this._lcuClient.connect();
       } else {
         this._lcuClient.api.subscribe("/lol-gameflow/v1/gameflow-phase");
-        this._lcuClient.api.subscribeInternal("/lol-service-status/v1/lcu-status");
 
         this._rpc.send("lcu:connect");
 
@@ -133,6 +134,28 @@ export class MainApplication {
   }
   private _onLCUDisconnect() {
     if (this._rpc !== undefined) this._rpc.send("lcu:disconnect");
+  }
+  // #endregion
+
+  // #region Friends Logic
+  private async _getMembersWithStatus(club_id: number): Promise<IInternalGuildMember[]> {
+    if (this._rpc !== undefined && this._lcuClient !== undefined && this._guildsClient !== undefined) {
+      const guildMembers = await this._guildsClient.getGuildMembers(club_id);
+      const friendsList = await this._lcuClient.getFriendsList();
+
+      const friendNameToDataMap = new Map<string, IFriendCore>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
+      const guildMembersWithStatus = guildMembers.map(member => {
+        const friend = friendNameToDataMap.get(member.name.toLowerCase());
+        return {
+          ...member,
+          status: friend === undefined ? "unknown" : friend.availability
+        };
+      });
+
+      return guildMembersWithStatus;
+    }
+
+    return [];
   }
   // #endregion
 

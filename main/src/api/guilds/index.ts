@@ -24,14 +24,11 @@ export class GuildsClient {
     return club;
   }
 
-  public async getGuildMembers(club_id?: number): Promise<IInternalGuildMember[]> {
-    if (club_id === undefined) { return []; }
-
+  public async getGuildMembers(club_id: number): Promise<IInternalGuildMember[]> {
     const members = await this.api.getGuildMembers(club_id);
     return members.map(member => ({
       name: member.summoner.summoner_name,
-      role: member.role,
-      status: "None"
+      role: member.role
     }));
   }
 

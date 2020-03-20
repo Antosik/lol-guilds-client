@@ -6,10 +6,6 @@
 
 <ul>
   {#each members as member (member.name)}
-    <li class="guild-member">
-      <a href={`/client/member/${encodeURI(member.name)}`} use:link>
-        {member.name}
-      </a>
-    </li>
+    <li class="guild-member">{member.name}</li>
   {/each}
 </ul>

@@ -43,9 +43,7 @@
           <td>{i + 1}</td>
           <td>
             {#if guild.club.lol_name}
-              <a href={`/client/guild/${guild.club.id}`} use:link>
-                {guild.club.lol_name}
-              </a>
+              {guild.club.lol_name}
             {:else}Гильдия распущена{/if}
           </td>
           <td>{guild.points} pt.</td>

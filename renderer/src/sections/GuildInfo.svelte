@@ -51,12 +51,7 @@
 
 <div class="guild-info__top flex-center">
 
-  <div class="guild-info__top__item">
-    Глава:
-    <a href={`/client/member/${encodeURI(guild.owner.summoner_name)}`} use:link>
-      {guild.owner.summoner_name}
-    </a>
-  </div>
+  <div class="guild-info__top__item">Глава: {guild.owner.summoner_name}</div>
 
   <div class="guild-info__top__item">
     Завершено сезонов: {guild.seasons_count}

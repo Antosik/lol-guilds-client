@@ -1,9 +1,11 @@
 import MainPage from "../pages/MainPage.svelte";
-import NotLaunched from "../pages/NotLaunched.svelte";
+import NotLaunchedPage from "../pages/NotLaunched.svelte";
+import NotFoundPage from "../pages/NotFound.svelte";
 
 export const routes = {
-  "/not-launched": NotLaunched,
-  "/client/*": MainPage
+  "/not-launched": NotLaunchedPage,
+  "/client/*": MainPage,
+  "*": NotFoundPage
 };
 
 export { subroutes, subprefix } from "./subroutes";

@@ -1,5 +1,5 @@
+import type { Response } from "node-fetch";
 import type { IPagedRequest, IPagedResponse, IRequestOptions } from "./interfaces/IGuildsAPI";
-
 import type { IClubSeasonRatingResponse, IClubStageRatingResponse } from "./interfaces/IAPIClub";
 import type { IMemberResponse } from "./interfaces/IAPIMember";
 import type { ISeasonResponse } from "./interfaces/IAPISeason";
@@ -8,6 +8,7 @@ import type { ICurrentSummonerResponse, IUserSeasonRatingResponse, IUserStageRat
 
 import fetch from "node-fetch";
 import { stringify as stringifyQuery } from "querystring";
+import { logDebug, logError } from "@guilds-main/utils/log";
 
 
 export class GuildsAPI {
@@ -114,23 +115,37 @@ export class GuildsAPI {
   // #endregion
 
 
-  public async request(path: string, options: IRequestOptions): Promise<unknown> {
-    const opts = { method: "GET", version: 1, body: undefined, ...options };
+  public async request(path: string, options: IRequestOptions, retry = 3): Promise<unknown> {
+    const opts: IRequestOptions = { method: "GET", version: 1, body: undefined, ...options };
+    const result = await this._sendRequest(path, opts, retry);
 
-    const apiVersion = opts.version === 2 ? "api-v2" : "api";
-    const body = typeof opts.body === "undefined" ? undefined : JSON.stringify(opts.body);
+    return result.status === 200 ? result.json() : undefined;
+  }
 
-    const result = await fetch(`https://clubs.lcu.ru.leagueoflegends.com/${apiVersion}/${path}`, {
-      method: opts.method,
+  private async _sendRequest(path: string, options: IRequestOptions, retry = 3): Promise<Response> {
+    logDebug(`Guilds API Request: path - ${path}, options - ${JSON.stringify(options)}`);
+
+    const apiVersion = options.version === 2 ? "api-v2" : "api";
+    const body = typeof options.body === "undefined" ? undefined : JSON.stringify(options.body);
+
+    return fetch(`https://clubs.lcu.ru.leagueoflegends.com/${apiVersion}/${path}`, {
+      method: options.method,
       body,
       headers: {
         "Accept": "application/json",
         "Authorization": `JWT ${this._token}`,
         "Content-Type": "application/json",
       }
-    });
+    })
+      .catch(err => {
+        logError("ERROR: Guilds API Request", err);
 
-    return result.status === 200 ? result.json() : undefined;
+        if (retry === 0) {
+          throw err;
+        }
+
+        return this._sendRequest(path, options, retry - 1);
+      });
   }
 }
 

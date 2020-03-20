@@ -1,0 +1,1 @@
+export { error as logError, debug as logDebug } from "electron-log";

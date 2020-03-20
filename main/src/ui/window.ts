@@ -19,6 +19,7 @@ export class Window extends BrowserWindow {
     };
     super(settings);
 
+    this.setMenuBarVisibility(false);
     this.loadFile(joinPath("../", "index.html"));
 
     this.once("ready-to-show", () => {

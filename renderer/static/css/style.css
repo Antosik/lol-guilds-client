@@ -27,6 +27,10 @@ body {
   background-attachment: fixed;
 }
 
+#app {
+  padding-bottom: 20px;
+}
+
 h2 {
   margin-top: 12px;
   margin-bottom: 8px;

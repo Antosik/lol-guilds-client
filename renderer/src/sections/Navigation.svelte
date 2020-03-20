@@ -38,17 +38,16 @@
       <a href="/client/" class="flex-center" use:link use:active>Главная</a>
     </li>
     <li>
-      <a href="/client/me" class="flex-center" use:link use:active>
-        Моя статистика
-      </a>
-    </li>
-    <li>
       <a href="/client/guild" class="flex-center" use:link use:active>
         Моя гильдия
       </a>
     </li>
     <li>
-      <a href="/client/rating" class="flex-center" use:link use:active={'/client/rating/*'}>
+      <a
+        href="/client/rating"
+        class="flex-center"
+        use:link
+        use:active={'/client/rating/*'}>
         Рейтинг
       </a>
     </li>

@@ -1,1 +1,1 @@
-export { error as logError, info as logInfo } from "electron-log";
+export { error as logError, debug as logDebug } from "electron-log";

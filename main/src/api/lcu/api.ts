@@ -3,7 +3,7 @@ import type { Credentials, LeagueWebSocket, EventResponse } from "league-connect
 import type { ClientRPC } from "@guilds-main/data/rpc";
 
 import { auth, connect, request } from "league-connect";
-import { logError } from "@guilds-main/utils/log";
+import { logDebug, logError } from "@guilds-main/utils/log";
 
 
 export class LCUApi {
@@ -49,6 +49,8 @@ export class LCUApi {
   }
 
   public async request(url: string, body: string | object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET", retry = 3): Promise<unknown> {
+    logDebug(`LCU API Request: path - ${url}, body - ${JSON.stringify(body)}`);
+
     return request({
       url,
       method,
@@ -56,7 +58,7 @@ export class LCUApi {
     }, this._credentials)
       .then(res => res.json())
       .catch(err => {
-        logError(err);
+        logError("ERROR: LCU API Request", err);
 
         if (retry === 0) {
           return this.disconnect();

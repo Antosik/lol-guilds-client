@@ -69,7 +69,9 @@
     <GuildsRatingTable {guilds} myGuildId={$guildStore.guild.id} />
 
     {#if (!stage_id && guilds.length < 500) || (stage_id && guilds.length < 25)}
-      <IntersectionObs on:intersect={() => currentPage++} />
+      <IntersectionObs on:intersect={() => currentPage++}>
+        Загружаем еще одну страницу...
+      </IntersectionObs>
     {/if}
   {:else}
     <h4>Нет данных</h4>

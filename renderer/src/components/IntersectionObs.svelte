@@ -28,4 +28,6 @@
   }
 </style>
 
-<div class="observer" bind:this={div} />
+<div class="observer flex-center" bind:this={div}>
+  <slot />
+</div>

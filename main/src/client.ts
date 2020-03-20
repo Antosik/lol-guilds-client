@@ -102,6 +102,9 @@ export class MainApplication {
         if (!this._guildsClient) return null;
         return this._guildsClient.getGuildStageStats(stage_id, season_id, club_id);
       });
+      this._rpc.setHandler("guilds:member-status:subscribe", async (club_id: number) => {
+        return this._subscribeToGuildMembersStatus(club_id);
+      });
     }
   }
   // #endregion
@@ -156,6 +159,28 @@ export class MainApplication {
     }
 
     return [];
+  }
+
+  private async _subscribeToGuildMembersStatus(club_id: number): Promise<void> {
+    if (this._rpc !== undefined && this._lcuClient !== undefined && this._guildsClient !== undefined) {
+      const guildMembers = await this._guildsClient.getGuildMembers(club_id);
+      const friendsList = await this._lcuClient.getFriendsList();
+
+      const friendNameToDataMap = new Map<string, IFriendCore>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
+      guildMembers.forEach(member => {
+        const friend = friendNameToDataMap.get(member.name.toLowerCase());
+        if (friend !== undefined && this._lcuClient !== undefined && this._rpc !== undefined) {
+          this._lcuClient.api.subscribeInternal(`/lol-chat/v1/friends/${friend.id}`);
+          this._rpc.on(`lcu:lol-chat.v1.friends.${friend.id}`, ({ data }) => {
+            if (this._rpc !== undefined && data) {
+              const update = { ...friend, status: data.availability };
+              this._rpc.send("guilds:member-status:update", update);
+            }
+          });
+        }
+      });
+
+    }
   }
   // #endregion
 

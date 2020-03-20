@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher, onMount, onDestroy } from "svelte";
 
   import { rpc } from "@guilds-web/data/rpc";
   import { guildStore } from "@guilds-web/store/guild";
@@ -19,7 +19,18 @@
 
   const membersLoadingPromise = rpc
     .invoke("guilds:members", $guildStore.guild.id)
-    .then(members => guildStore.setMembers(members));
+    .then(members => guildStore.setMembers(members))
+    .then(members => {
+      rpc.invoke("guilds:member-status:subscribe", $guildStore.guild.id);
+      rpc.on("guilds:member-status:update", memberStatusUpdate);
+      return members;
+    });
+
+  const memberStatusUpdate = member => guildStore.setMemberStatus(member);
+
+  onDestroy(() => {
+    rpc.removeListener("guilds:member-status:update", memberStatusUpdate);
+  });
 </script>
 
 <style>

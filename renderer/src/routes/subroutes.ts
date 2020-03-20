@@ -1,3 +1,5 @@
+import NotFoundPage from "../pages/NotFound.svelte";
+
 import InviteMembers from "../pages/subpages/InviteMembers.svelte";
 import GuildMyInfo from "../pages/subpages/GuildMyInfo.svelte";
 import GuildInfo from "../pages/subpages/GuildInfo.svelte";
@@ -14,7 +16,8 @@ export const subroutes = {
   "/rating": GuildsRatingWrapper,
   "/rating/season/:season_id": GuildsRatingWrapper,
   "/rating/season/:season_id/stage/:stage_id": GuildsRatingWrapper,
-  "/member/:nickname": GuildMember
+  "/member/:nickname": GuildMember,
+  "*": NotFoundPage
 };
 
 export const rating_subprefix = subprefix + "/rating";

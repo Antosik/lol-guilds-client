@@ -3,6 +3,7 @@ import type { Credentials, LeagueWebSocket, EventResponse } from "league-connect
 import type { ClientRPC } from "@guilds-main/data/rpc";
 
 import { auth, connect, request } from "league-connect";
+import { logError } from "@guilds-main/utils/log";
 
 
 export class LCUApi {
@@ -47,12 +48,23 @@ export class LCUApi {
     this._onDisconnect();
   }
 
-  public async request(url: string, body: string | object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET"): Promise<unknown> {
+  public async request(url: string, body: string | object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET", retry = 3): Promise<unknown> {
     return request({
       url,
       method,
       body
-    }, this._credentials).then(res => res.json());
+    }, this._credentials)
+      .then(res => res.json())
+      .catch(err => {
+        logError(err);
+
+        if (retry === 0) {
+          return this.disconnect();
+        }
+
+        return this.request(url, body, method, retry - 1);
+      });
+
   }
   // #endregion
 

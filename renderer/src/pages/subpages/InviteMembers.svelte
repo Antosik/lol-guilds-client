@@ -5,14 +5,12 @@
   import { guildStore } from "@guilds-web/store/guild";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
-  import { notBusyStatusCode } from "@guilds-shared/helpers/gameflow";
-
   function onMemberInvite(event) {
     rpc.invoke("guilds:member:invite", event.detail);
   }
   function onMemberInviteAll() {
     const ready = $guildStore.members
-      .filter(member => notBusyStatusCode.includes(member.status))
+      .filter(member => ["chat", "away", "unknown"].includes(member.status))
       .map(member => member.name);
     rpc.invoke("guilds:member:invite-all", ready);
   }

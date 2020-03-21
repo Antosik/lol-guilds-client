@@ -144,7 +144,7 @@ export class MainApplication {
       }
     });
 
-    autoUpdater.on("update-downloaded", (e) => {
+    autoUpdater.on("update-downloaded", () => {
       if (this._rpc !== undefined) {
         this._rpc.send("version:update:ready");
       }

@@ -51,25 +51,28 @@ export class LCUApi {
   public async request(url: string, body: string | object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET", retry = 3): Promise<unknown> {
     logDebug(`LCU API Request: path - ${url}, body - ${JSON.stringify(body)}`);
 
-    return request({
+    const response = await request({
       url,
       method,
       body
-    }, this._credentials)
-      .then(res => res.json())
-      .then(res => {
-        if (res.errorCode) { throw new Error(res); }
-        return res;
-      })
-      .catch(err => {
-        logError("ERROR: LCU API Request", err);
+    }, this._credentials);
 
-        if (retry === 0) {
-          return this.disconnect();
-        }
+    return response.status === 204
+      ? undefined
+      : response.json()
+        .then(res => {
+          if (res.errorCode) { throw new Error(res); }
+          return res;
+        })
+        .catch(err => {
+          logError("ERROR: LCU API Request", JSON.stringify(err));
 
-        return this.request(url, body, method, retry - 1);
-      });
+          if (retry === 0) {
+            return this.disconnect();
+          }
+
+          return this.request(url, body, method, retry - 1);
+        });
 
   }
   // #endregion

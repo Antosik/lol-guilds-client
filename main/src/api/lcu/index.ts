@@ -8,7 +8,7 @@ import type { IFriend, IFriendCore } from "./interfaces/IFriend";
 import type { ISummoner, ISummonerCore } from "./interfaces/ISummoner";
 
 import { createLCUApi } from "./api";
-import { constructInvitationForSummoners } from "./helpers/invites";
+import { constructInvitationForSummoners, constructFriendRequest } from "./helpers/invites";
 import { createLCUStore } from "./store";
 
 
@@ -96,6 +96,17 @@ export class LCUClient {
       const summoners = await Promise.all(nicknames.map((nickname) => this.getSummonerByName(nickname)));
       const body = constructInvitationForSummoners(summoners);
       await this.api.request("lol-lobby/v2/lobby/invitations", body, "POST");
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  public async sendFriendRequestByNickname(nickname: string): Promise<boolean> {
+    try {
+      const summoner = await this.getSummonerByName(nickname);
+      const body = constructFriendRequest(summoner);
+      await this.api.request("/lol-chat/v1/friend-requests", body, "POST");
     } catch (e) {
       return false;
     }

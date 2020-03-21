@@ -70,6 +70,10 @@ export class MainApplication {
         if (!this._lcuClient) return null;
         return this._lcuClient.sendInviteByNickname(nicknames);
       });
+      this._rpc.setHandler("guilds:member:friend-request", async (nickname: string) => {
+        if (!this._lcuClient) return null;
+        return this._lcuClient.sendFriendRequestByNickname(nickname);
+      });
 
       this._rpc.setHandler("guilds:club", async () => {
         if (!this._guildsClient) return null;

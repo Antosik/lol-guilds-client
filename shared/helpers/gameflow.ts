@@ -55,3 +55,12 @@ export const guildMemberStatusLocale = new Map<EGuildMemberStatus, string>([
   [EGuildMemberStatus.Mobile, "League+"],
   [EGuildMemberStatus.Unknown, "Неизвестно"]
 ]);
+
+export const guildMemberStatusSortOrder = new Map<EGuildMemberStatus, number>([
+  [EGuildMemberStatus.Online, 0],
+  [EGuildMemberStatus.Away, 1],
+  [EGuildMemberStatus.Unknown, 2],
+  [EGuildMemberStatus.InGame, 3],
+  [EGuildMemberStatus.Mobile, 4],
+  [EGuildMemberStatus.Offline, 5],
+]);

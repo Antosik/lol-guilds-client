@@ -18,6 +18,14 @@
     "start:dev": "concurrently -n \"WebpackMain,WebpackRenderer\" -c \"cyan.bold,blue.bold\" \"webpack -w --config main/webpack.config.ts\" \"webpack -w --config renderer/webpack.config.ts\" -k",
     "start:app": "electron target/app/main.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Antosik/lol-guilds-client.git"
+  },
+  "homepage": "https://github.com/Antosik/lol-guilds-client",
+  "bugs": {
+    "url": "https://github.com/Antosik/lol-guilds-client/issues"
+  },
   "devDependencies": {
     "@babel/core": "^7.8.7",
     "@pyoner/svelte-types": "^3.4.4-2",

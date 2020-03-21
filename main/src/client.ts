@@ -143,8 +143,10 @@ export class MainApplication {
   // #region Friends Logic
   private async _getMembersWithStatus(club_id: number): Promise<IInternalGuildMember[]> {
     if (this._rpc !== undefined && this._lcuClient !== undefined && this._guildsClient !== undefined) {
-      const guildMembers = await this._guildsClient.getGuildMembers(club_id);
-      const friendsList = await this._lcuClient.getFriendsList();
+      const [guildMembers, friendsList] = await Promise.all([
+        this._guildsClient.getGuildMembers(club_id),
+        this._lcuClient.getFriendsList()
+      ]);
 
       const friendNameToDataMap = new Map<string, IFriendCore>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
       const guildMembersWithStatus = guildMembers.map(member => {
@@ -163,23 +165,33 @@ export class MainApplication {
 
   private async _subscribeToGuildMembersStatus(club_id: number): Promise<void> {
     if (this._rpc !== undefined && this._lcuClient !== undefined && this._guildsClient !== undefined) {
-      const guildMembers = await this._guildsClient.getGuildMembers(club_id);
-      const friendsList = await this._lcuClient.getFriendsList();
+      const [guildMembers, friendsList] = await Promise.all([
+        this._guildsClient.getGuildMembers(club_id),
+        this._lcuClient.getFriendsList()
+      ]);
 
       const friendNameToDataMap = new Map<string, IFriendCore>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
       guildMembers.forEach(member => {
         const friend = friendNameToDataMap.get(member.name.toLowerCase());
-        if (friend !== undefined && this._lcuClient !== undefined && this._rpc !== undefined) {
-          this._lcuClient.api.subscribeInternal(`/lol-chat/v1/friends/${friend.id}`);
-          this._rpc.on(`lcu:lol-chat.v1.friends.${friend.id}`, ({ data }) => {
-            if (this._rpc !== undefined && data) {
-              const update = { ...friend, status: data.availability };
-              this._rpc.send("guilds:member-status:update", update);
-            }
-          });
+        if (friend !== undefined) {
+          this._subscribeToFriendStatus(friend);
         }
       });
 
+    }
+  }
+
+  private _subscribeToFriendStatus(friend: IFriendCore) {
+    if (this._rpc !== undefined && this._lcuClient !== undefined) {
+      this._lcuClient.api.unsubscribe(`/lol-chat/v1/friends/${friend.id}`);
+      this._lcuClient.api.subscribeInternal(`/lol-chat/v1/friends/${friend.id}`);
+
+      this._rpc.on(`lcu:lol-chat.v1.friends.${friend.id}`, ({ data }) => {
+        if (this._rpc !== undefined && data) {
+          const update = { ...friend, status: data.availability };
+          this._rpc.send("guilds:member-status:update", update);
+        }
+      });
     }
   }
   // #endregion

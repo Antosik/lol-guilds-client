@@ -12,6 +12,7 @@
 
   const dispatch = createEventDispatcher();
   let guildConnected = false;
+  let connectTimeout = false;
 
   function LCUReconnect() {
     rpc.send("ui:reconnect");
@@ -30,6 +31,8 @@
     if (!$summonerStore.auth) {
       replace("/not-launched");
     }
+
+    setTimeout(() => (connectTimeout = true), 3000);
 
     rpc.on("lcu:summoner", onSummoner);
     rpc.on("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
@@ -51,11 +54,22 @@
   .subpages {
     padding: 0 20px;
   }
+  .summoner--no-auth {
+    flex-direction: column;
+  }
+  .summoner--no-auth button {
+    margin-top: 20px;
+  }
 </style>
 
 {#if !$summonerStore.summoner}
   <div class="summoner summoner--no-auth absolute-full flex-center">
     <h1>Загружаем информацию о призывателе...</h1>
+    {#if connectTimeout}
+      <button class="flex-center" type="button" on:click={LCUReconnect}>
+        Обновить страницу
+      </button>
+    {/if}
   </div>
 {:else}
   <div class="summoner summoner--auth">

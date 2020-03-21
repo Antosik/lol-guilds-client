@@ -245,6 +245,8 @@ export class MainApplication {
       this._lcuClient.api.unsubscribe(`/lol-chat/v1/friends/${friend.id}`);
       this._lcuClient.api.subscribeInternal(`/lol-chat/v1/friends/${friend.id}`);
 
+
+      this._rpc.removeAllListeners(`lcu:lol-chat.v1.friends.${friend.id}`);
       this._rpc.on(`lcu:lol-chat.v1.friends.${friend.id}`, ({ data }) => {
         if (this._rpc !== undefined && data) {
           const update = { ...friend, status: data.availability };

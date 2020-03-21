@@ -3,6 +3,7 @@
 
   import { rpc } from "@guilds-web/data/rpc";
   import { guildStore } from "@guilds-web/store/guild";
+  import { summonerStore } from "@guilds-web/store/summoner";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
   function onMemberFriendRequest(event) {
@@ -26,6 +27,8 @@
       rpc.on("guilds:member-status:update", memberStatusUpdate);
       return members;
     });
+
+  $: guildMembersToInvite = $guildStore.members.filter(({ name }) => name.toLowerCase() !== $summonerStore.summoner.displayName.toLowerCase());
 
   const memberStatusUpdate = member => guildStore.setMemberStatus(member);
 
@@ -60,7 +63,7 @@
     </button>
 
     <MemberInviteList
-      members={$guildStore.members}
+      members={guildMembersToInvite}
       on:member-invite={onMemberInvite}
       on:friend-request={onMemberFriendRequest} />
   {:catch}

@@ -1,4 +1,3 @@
-
 import { autoUpdater } from "electron-updater";
 import log from "./log";
 

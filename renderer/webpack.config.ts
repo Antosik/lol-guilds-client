@@ -4,7 +4,7 @@ import CopyWebpackPlugin from "copy-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { join as joinPath } from "path";
 import TerserPlugin from "terser-webpack-plugin";
-import { DefinePlugin, IgnorePlugin } from "webpack";
+import { IgnorePlugin } from "webpack";
 
 import { preprocess } from "./svelte.config";
 import { alias } from "../webpack.config";
@@ -70,12 +70,6 @@ const config: Configuration = ({
 
   plugins: [
     new IgnorePlugin(/.*\.js.map$/i),
-
-    new DefinePlugin({
-      "process.env": {
-        NODE_ENV: JSON.stringify(nodeEnv)
-      }
-    }),
 
     new CopyWebpackPlugin([
       {

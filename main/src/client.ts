@@ -114,8 +114,10 @@ export class MainApplication {
   }
 
   private initVersionEvents() {
-    autoUpdater.on("error", (e) => {
-      console.error(e);
+    autoUpdater.on("error", () => {
+      if (this._rpc !== undefined) {
+        this._rpc.send("version:update:error");
+      }
     });
 
     autoUpdater.on("checking-for-update", () => {
@@ -124,27 +126,39 @@ export class MainApplication {
       }
     });
 
-    autoUpdater.on("update-available", (e) => {
+    autoUpdater.on("update-available", () => {
       if (this._rpc !== undefined) {
-        this._rpc.send("version:update:available", { version: e.version });
+        this._rpc.send("version:update:available");
       }
     });
 
-    autoUpdater.on("update-not-available", (e) => {
+    autoUpdater.on("update-not-available", () => {
       if (this._rpc !== undefined) {
-        this._rpc.send("version:update:not-available", { version: e.version });
+        this._rpc.send("version:update:not-available");
+      }
+    });
+
+    autoUpdater.on("download-progress", (e) => {
+      if (this._rpc !== undefined) {
+        this._rpc.send("version:update:downloading", (e.percent as number).toFixed(2));
       }
     });
 
     autoUpdater.on("update-downloaded", (e) => {
       if (this._rpc !== undefined) {
-        this._rpc.send("version:update:ready", { version: e.version });
+        this._rpc.send("version:update:ready");
       }
     });
 
     if (this._rpc !== undefined) {
       this._rpc.setHandler("version:get", () => {
-        return `${process.env.APP_VERSION}`;
+        return autoUpdater.currentVersion.version;
+      });
+      this._rpc.setHandler("version:check", () => {
+        return autoUpdater.checkForUpdates();
+      });
+      this._rpc.setHandler("version:install", () => {
+        return autoUpdater.quitAndInstall();
       });
     }
   }

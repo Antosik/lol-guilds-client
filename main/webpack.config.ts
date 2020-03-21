@@ -5,7 +5,6 @@ import { join as joinPath } from "path";
 import TerserPlugin from "terser-webpack-plugin";
 
 import { alias } from "../webpack.config";
-import { version } from "../package.json";
 
 const nodeEnv = process.env.NODE_ENV || "development";
 const isProduction = nodeEnv === "production";
@@ -53,8 +52,7 @@ const config: Configuration = {
 
     new DefinePlugin({
       "process.env": {
-        NODE_ENV: JSON.stringify(nodeEnv),
-        APP_VERSION: JSON.stringify(version)
+        NODE_ENV: JSON.stringify(nodeEnv)
       }
     }),
   ],

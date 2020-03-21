@@ -1,6 +1,7 @@
 {
   "appId": "com.antosik.guilds-client",
   "productName": "Guilds Client",
+  
   "files": [
     "./target/app/main.js",
     "./node_modules/**/*",
@@ -15,31 +16,27 @@
   "directories": {
     "output": "./dist"
   },
+  
   "asarUnpack": ["**/*.node"],
+
   "mac": {
     "category": "public.app-category.games",
-    "target": "dmg"
+    "target": "dmg",
+    "publish": ["github"]
   },
   "linux": {
-    "target": ["AppImage", "deb"]
+    "target": ["AppImage", "deb"],
+    "publish": ["github"]
   },
   "win": {
-    "appId": "antosik.guilds-client",
-    "target": "nsis"
+    "target": "nsis",
+    "publish": ["github"]
   },
+
   "nsis": {
     "oneClick": false,
     "perMachine": false,
     "allowToChangeInstallationDirectory": true
-  },
-  "squirrelWindows": {
-    "msi": "true"
-  },
-  "msi": {
-    "warningsAsErrors": false
-  },
-  "appx": {
-    "publisherDisplayName": "antosik"
   },
   "buildDependenciesFromSource": true,
   "npmRebuild": true

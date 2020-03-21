@@ -1,10 +1,11 @@
-import type { Configuration } from "webpack";
+import { Configuration, DefinePlugin } from "webpack";
 
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import { join as joinPath } from "path";
 import TerserPlugin from "terser-webpack-plugin";
 
 import { alias } from "../webpack.config";
+import { version } from "../package.json";
 
 const nodeEnv = process.env.NODE_ENV || "development";
 const isProduction = nodeEnv === "production";
@@ -48,7 +49,14 @@ const config: Configuration = {
         from: joinPath(__dirname, "static"),
         to: joinPath(__dirname, "..", "target")
       }
-    ])
+    ]),
+
+    new DefinePlugin({
+      "process.env": {
+        NODE_ENV: JSON.stringify(nodeEnv),
+        APP_VERSION: JSON.stringify(version)
+      }
+    }),
   ],
 
   optimization: {

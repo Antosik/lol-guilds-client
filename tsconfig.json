@@ -4,6 +4,7 @@
     "target": "ES2018",
     "sourceMap": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
 
     "allowJs": true,
     "checkJs": false,

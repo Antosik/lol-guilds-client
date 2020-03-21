@@ -39,3 +39,14 @@ export interface IFriend extends IFriendCore {
   summary: string;
   time: number;
 }
+
+export interface IFriendRequest {
+  direction: "in" | "out" | "both";
+  gameName?: string;
+  gameTag?: string;
+  id?: string;
+  name?: string;
+  note?: string;
+  pid?: string;
+  summonerId: number;
+}

@@ -5,6 +5,9 @@
   import { guildStore } from "@guilds-web/store/guild";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
+  function onMemberFriendRequest(event) {
+    rpc.invoke("guilds:member:friend-request", event.detail);
+  }
   function onMemberInvite(event) {
     rpc.invoke("guilds:member:invite", event.detail);
   }
@@ -58,7 +61,8 @@
 
     <MemberInviteList
       members={$guildStore.members}
-      on:member-invite={onMemberInvite} />
+      on:member-invite={onMemberInvite}
+      on:friend-request={onMemberFriendRequest} />
   {:catch}
     <h3>Произошла странная ошибка!</h3>
   {/await}

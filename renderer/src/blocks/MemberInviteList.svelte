@@ -10,10 +10,14 @@
   function inviteToParty(e) {
     dispatch("member-invite", e.detail);
   }
+  function sendFriendRequest(e) {
+    dispatch("friend-request", e.detail);
+  }
 
   function sortMembers(arr) {
     return arr.sort(
-      ({ status: s1 }, { status: s2 }) =>
+      ({ name: n1, status: s1 }, { name: n2, status: s2 }) =>
+        n1.localeCompare(n2) &&
         guildMemberStatusSortOrder.get(s1) - guildMemberStatusSortOrder.get(s2)
     );
   }
@@ -21,6 +25,9 @@
 
 <ul>
   {#each sortMembers(members) as member (member.name)}
-    <MemberInviteListItem {member} on:member-invite={inviteToParty} />
+    <MemberInviteListItem
+      {member}
+      on:member-invite={inviteToParty}
+      on:friend-request={sendFriendRequest} />
   {/each}
 </ul>

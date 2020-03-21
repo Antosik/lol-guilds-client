@@ -1,4 +1,4 @@
-import type { Configuration } from "webpack";
+import { Configuration, DefinePlugin } from "webpack";
 
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import { join as joinPath } from "path";
@@ -48,7 +48,13 @@ const config: Configuration = {
         from: joinPath(__dirname, "static"),
         to: joinPath(__dirname, "..", "target")
       }
-    ])
+    ]),
+
+    new DefinePlugin({
+      "process.env": {
+        NODE_ENV: JSON.stringify(nodeEnv)
+      }
+    }),
   ],
 
   optimization: {

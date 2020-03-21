@@ -6,6 +6,8 @@
   import { summonerStore } from "./store/summoner";
   import { routes } from "./routes";
 
+  import Version from "./sections/Version";
+
   onMount(() => {
     rpc.send("ui:reconnect");
 
@@ -21,3 +23,5 @@
 </script>
 
 <Router {routes} />
+
+<Version />

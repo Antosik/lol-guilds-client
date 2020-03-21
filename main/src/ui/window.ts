@@ -1,6 +1,7 @@
 import type { BrowserWindowConstructorOptions } from "electron";
 
 import { BrowserWindow } from "electron";
+import isDev from "electron-is-dev";
 import { join as joinPath } from "path";
 
 
@@ -20,7 +21,12 @@ export class Window extends BrowserWindow {
     super(settings);
 
     this.setMenuBarVisibility(false);
-    this.loadFile(joinPath("../", "index.html"));
+
+    if (isDev) {
+      this.loadFile(joinPath("target", "index.html"));
+    } else {
+      this.loadFile(joinPath("../", "index.html"));
+    }
 
     this.once("ready-to-show", () => {
       this.show();

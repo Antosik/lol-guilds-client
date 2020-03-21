@@ -5,12 +5,14 @@ import type { ClientRPC } from "./data/rpc";
 import type { Window } from "./ui/window";
 
 import { createGuildsAPIClient } from "./api/guilds";
-import { createLCUAPIClient } from "./api/lcu";
-import { createRPC } from "./data/rpc";
-import { createWindow } from "./ui/window";
 import { IPagedRequest } from "./api/guilds/interfaces/IGuildsAPI";
 import { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
+import { createLCUAPIClient } from "./api/lcu";
 import { IFriendCore } from "./api/lcu/interfaces/IFriend";
+import { createRPC } from "./data/rpc";
+import { createWindow } from "./ui/window";
+
+import { autoUpdater } from "./utils/autoupdater";
 
 
 export class MainApplication {
@@ -39,6 +41,7 @@ export class MainApplication {
 
     this.initCoreEvents();
     this.initGuildHandlers();
+    this.initVersionEvents();
   }
 
   public get window() {
@@ -52,6 +55,8 @@ export class MainApplication {
       this._rpc.on("ui:reconnect", this._onLCUConnect);
       this._rpc.on("lcu:connect", this._onLCUConnect);
       this._rpc.on("lcu:disconnect", this._onLCUDisconnect);
+
+      autoUpdater.checkForUpdatesAndNotify();
     }
   }
 
@@ -104,6 +109,56 @@ export class MainApplication {
       });
       this._rpc.setHandler("guilds:member-status:subscribe", async (club_id: number) => {
         return this._subscribeToGuildMembersStatus(club_id);
+      });
+    }
+  }
+
+  private initVersionEvents() {
+    autoUpdater.on("error", () => {
+      if (this._rpc !== undefined) {
+        this._rpc.send("version:update:error");
+      }
+    });
+
+    autoUpdater.on("checking-for-update", () => {
+      if (this._rpc !== undefined) {
+        this._rpc.send("version:update:process");
+      }
+    });
+
+    autoUpdater.on("update-available", () => {
+      if (this._rpc !== undefined) {
+        this._rpc.send("version:update:available");
+      }
+    });
+
+    autoUpdater.on("update-not-available", () => {
+      if (this._rpc !== undefined) {
+        this._rpc.send("version:update:not-available");
+      }
+    });
+
+    autoUpdater.on("download-progress", (e) => {
+      if (this._rpc !== undefined) {
+        this._rpc.send("version:update:downloading", (e.percent as number).toFixed(2));
+      }
+    });
+
+    autoUpdater.on("update-downloaded", () => {
+      if (this._rpc !== undefined) {
+        this._rpc.send("version:update:ready");
+      }
+    });
+
+    if (this._rpc !== undefined) {
+      this._rpc.setHandler("version:get", () => {
+        return autoUpdater.currentVersion.version;
+      });
+      this._rpc.setHandler("version:check", () => {
+        return autoUpdater.checkForUpdates();
+      });
+      this._rpc.setHandler("version:install", () => {
+        return autoUpdater.quitAndInstall();
       });
     }
   }

@@ -1,7 +1,8 @@
 name: Release CI
 
 on:
-  push
+  push:
+    branches: [ master ]
 
 jobs:
   release:

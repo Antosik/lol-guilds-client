@@ -1,8 +1,10 @@
 import type { IInvitation } from "../interfaces/IInvitation";
 import type { IFriendRequest } from "../interfaces/IFriend";
+import type { ILobbyCore } from "../interfaces/ILobby";
 import type { ISummonerCore } from "../interfaces/ISummoner";
 
 import { EInvitationState } from "../interfaces/IInvitation";
+import { EQueueId } from "../interfaces/ILobby";
 
 
 export function constructInvitation(accountId: number): IInvitation {
@@ -21,5 +23,11 @@ export function constructFriendRequest(summoner: ISummonerCore): IFriendRequest 
     direction: "out",
     pid: `${summoner.puuid}@ru1.pvp.net`,
     summonerId: summoner.summonerId
+  };
+}
+
+export function constructLobby(type: EQueueId = EQueueId.a): ILobbyCore {
+  return {
+    queueId: type
   };
 }

@@ -8,8 +8,9 @@ import type { IFriend, IFriendCore } from "./interfaces/IFriend";
 import type { ISummoner, ISummonerCore } from "./interfaces/ISummoner";
 
 import { createLCUApi } from "./api";
-import { constructInvitationForSummoners, constructFriendRequest } from "./helpers/invites";
+import { EQueueId } from "./interfaces/ILobby";
 import { createLCUStore } from "./store";
+import { constructInvitationForSummoners, constructFriendRequest, constructLobby } from "./helpers/construct";
 
 
 export class LCUClient {
@@ -89,6 +90,16 @@ export class LCUClient {
     const data = await this.api.request("/lol-chat/v1/friends");
     const friendsRaw = data as IFriend[];
     return friendsRaw.map(({ availability, id, name, summonerId }) => ({ availability, id, name, summonerId }));
+  }
+
+  public async createLobby(type = EQueueId.DraftPick): Promise<boolean> {
+    try {
+      const body = constructLobby(type);
+      await this.api.request("/lol-lobby/v2/lobby", body, "POST");
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 
   public async sendInviteByNickname(nicknames: string[]): Promise<boolean> {

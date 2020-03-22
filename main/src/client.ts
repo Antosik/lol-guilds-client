@@ -4,6 +4,8 @@ import type { LCUClient } from "./api/lcu";
 import type { ClientRPC } from "./data/rpc";
 import type { Window } from "./ui/window";
 
+import { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
+
 import { createGuildsAPIClient } from "./api/guilds";
 import { IPagedRequest } from "./api/guilds/interfaces/IGuildsAPI";
 import { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
@@ -64,10 +66,20 @@ export class MainApplication {
     if (this._rpc !== undefined) {
       this._rpc.setHandler("guilds:member:invite", async (nickname: string) => {
         if (!this._lcuClient) return null;
+
+        const currentGameflow = await this._lcuClient.getStatus();
+        if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) return null;
+        if (currentGameflow !== EGameflowStatus.Lobby) { await this._lcuClient.createLobby(); }
+
         return this._lcuClient.sendInviteByNickname([nickname]);
       });
       this._rpc.setHandler("guilds:member:invite-all", async (nicknames: string[]) => {
         if (!this._lcuClient) return null;
+
+        const currentGameflow = await this._lcuClient.getStatus();
+        if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) return null;
+        if (currentGameflow !== EGameflowStatus.Lobby) { await this._lcuClient.createLobby(); }
+
         return this._lcuClient.sendInviteByNickname(nicknames);
       });
       this._rpc.setHandler("guilds:member:friend-request", async (nickname: string) => {

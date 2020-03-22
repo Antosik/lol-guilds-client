@@ -3,6 +3,7 @@
   import { guildMemberStatusSortOrder } from "@guilds-shared/helpers/gameflow";
   import MemberInviteListItem from "./MemberInviteListItem.svelte";
 
+  export let allowInvite = true;
   export let members = [];
 
   const dispatch = createEventDispatcher();
@@ -27,6 +28,7 @@
   {#each sortMembers(members) as member (member.name)}
     <MemberInviteListItem
       {member}
+      {allowInvite}
       on:member-invite={inviteToParty}
       on:friend-request={sendFriendRequest} />
   {/each}

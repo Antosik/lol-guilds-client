@@ -68,6 +68,7 @@ export class MainApplication {
         if (!this._lcuClient) return null;
 
         const currentGameflow = await this._lcuClient.getStatus();
+        if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) return null;
         if (currentGameflow !== EGameflowStatus.Lobby) { await this._lcuClient.createLobby(); }
 
         return this._lcuClient.sendInviteByNickname([nickname]);
@@ -76,6 +77,7 @@ export class MainApplication {
         if (!this._lcuClient) return null;
 
         const currentGameflow = await this._lcuClient.getStatus();
+        if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) return null;
         if (currentGameflow !== EGameflowStatus.Lobby) { await this._lcuClient.createLobby(); }
 
         return this._lcuClient.sendInviteByNickname(nicknames);

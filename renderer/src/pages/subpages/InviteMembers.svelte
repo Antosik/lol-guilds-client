@@ -29,6 +29,7 @@
     });
 
   $: guildMembersToInvite = $guildStore.members.filter(({ name }) => name.toLowerCase() !== $summonerStore.summoner.displayName.toLowerCase());
+  $: allowInvite = $summonerStore.status === "None" || $summonerStore.status === "Lobby";
 
   const memberStatusUpdate = member => guildStore.setMemberStatus(member);
 
@@ -63,6 +64,7 @@
     </button>
 
     <MemberInviteList
+      {allowInvite}
       members={guildMembersToInvite}
       on:member-invite={onMemberInvite}
       on:friend-request={onMemberFriendRequest} />

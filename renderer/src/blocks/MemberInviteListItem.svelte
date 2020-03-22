@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import GuildMemberStatus from "../components/GuildMemberStatus.svelte";
 
+  export let allowInvite = true;
   export let member = undefined;
 
   const dispatch = createEventDispatcher();
@@ -49,7 +50,7 @@
         <img src="./images/icons/user.svg" alt="Отправить заявку в друзья" />
       </button>
     {/if}
-    {#if member.status === 'chat' || member.status === 'away' || member.status === 'unknown'}
+    {#if allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown')}
       <button
         class="guild-member__invite flex-center"
         type="button"

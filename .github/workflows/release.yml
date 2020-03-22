@@ -1,0 +1,35 @@
+name: Release CI
+
+on:
+  push
+
+jobs:
+  release:
+
+    name: Releasing on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        node_version: ['10']
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node_version }}
+
+    - name: npm install and build
+      run: |
+        npm ci
+        npm run compile
+      env:
+        CI: true
+        
+    - name: npm release
+      run: |
+        npx electron-builder --config ./electron-builder.json --publish onTagOrDraft
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}

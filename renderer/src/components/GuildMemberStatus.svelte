@@ -1,5 +1,6 @@
 <script>
   import { guildMemberStatusLocale } from "@guilds-shared/helpers/gameflow";
+  import Tooltip from "../components/Tooltip.svelte";
 
   export let statusCode = "unknown";
   export let showText = true;
@@ -49,5 +50,9 @@
 
   {#if showText}
     <span class="status__text">{guildMemberStatusLocale.get(statusCode)}</span>
+  {/if}
+
+  {#if statusCode === 'unknown'}
+    <Tooltip text="Чтобы видеть статус игрока, добавьте его в друзья" />
   {/if}
 </span>

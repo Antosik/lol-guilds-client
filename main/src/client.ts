@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import type { BrowserWindowConstructorOptions } from "electron";
 import type { GuildsClient } from "./api/guilds";
 import type { LCUClient } from "./api/lcu";
 import type { ClientRPC } from "./data/rpc";
@@ -33,8 +34,8 @@ export class MainApplication {
   private _guildsClient?: GuildsClient;
 
 
-  public init() {
-    this._window = createWindow();
+  public init(options?: { window: BrowserWindowConstructorOptions }) {
+    this._window = createWindow(options?.window);
     this._rpc = createRPC(this._window);
     this._lcuClient = createLCUAPIClient(this._rpc);
 

@@ -1,4 +1,5 @@
 import { app } from "electron";
+import windowStateKeeper from "electron-window-state";
 
 import { MainApplication } from "./client";
 
@@ -19,7 +20,21 @@ if (!gotTheLock) {
   });
 
   app.on("ready", () => {
-    appInstance.init();
+    const windowState = windowStateKeeper({
+      defaultWidth: 800,
+      defaultHeight: 600,
+    });
+    appInstance.init({
+      window: {
+        x: windowState.x,
+        y: windowState.y,
+        width: windowState.width,
+        height: windowState.height
+      }
+    });
+    if (appInstance.window) {
+      windowState.manage(appInstance.window);
+    }
   });
 
   app.on("window-all-closed", () => {

@@ -108,12 +108,14 @@ button {
 }
 
 .not-found,
-.not-launched {
+.not-launched,
+.summoner-loading {
   flex-direction: column;
 }
 
 .not-found__button,
-.not-launched__button {
+.not-launched__button,
+.summoner-loading__button {
   margin: 12px auto;
   padding: 4px 8px;
 }

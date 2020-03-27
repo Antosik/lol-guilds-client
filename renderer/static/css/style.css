@@ -60,6 +60,21 @@ a {
   text-decoration: none;
   position: relative;
 }
+a.active.use-active {
+  color: var(--main-primary);
+}
+a.active.use-active:after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+
+  margin: 0 auto;
+  width: 75%;
+  height: 2px;
+  background: var(--main-primary);
+}
 
 .mini-block,
 button {

@@ -74,6 +74,6 @@
       </IntersectionObs>
     {/if}
   {:else}
-    <h4>Нет данных</h4>
+    <p>Нет данных</p>
   {/if}
 </div>

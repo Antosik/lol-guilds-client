@@ -3,19 +3,19 @@
 </script>
 
 {#if !guild}
-  <h3>Гильдия</h3>
-  <div>Нет данных</div>
+  <h3>Гильдия - ???</h3>
+  <p>Нет данных</p>
 {:else}
   <h3>Гильдия - {guild.club.lol_name}</h3>
   {#if guild.rank === 0}
-    <div>
+    <p>
       К сожалению, гильдия не набрала достаточное количество очков для участия.
-    </div>
+    </p>
     {#if guild.points !== 0}
-      <div>Очков - {guild.points}</div>
+      <p>Очков - {guild.points}</p>
     {/if}
   {:else}
-    <div>Место в рейтинге - {guild.rank}</div>
-    <div>Очков - {guild.points}</div>
+    <p>Место в рейтинге - {guild.rank}</p>
+    <p>Очков - {guild.points}</p>
   {/if}
 {/if}

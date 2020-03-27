@@ -1,3 +1,17 @@
+:root {
+  --status-inactive-normal: hsl(202, 99%, 33%); /* #016AA7 */
+  --status-inactive-light: hsl(202, 69%, 56%); /* #41A3DC */
+  --status-active-normal: hsl(147, 99%, 33%); /* #02A64B */
+  --status-active-light: hsl(147, 69%, 56%); /* #42DD88 */
+  --status-away: hsl(0, 69%, 56%); /* #DC4141 */
+  --status-unknown: hsl(0, 0%, 40%); /* #666666 */
+  --main-primary: hsl(46, 52%, 92%); /* #F5F0DF */
+  --main-secondary: hsl(42, 40%, 60%); /* #C2AA70 */
+  --main-medium: hsl(42, 40%, 80%); /* #E0D4B8 */
+  --main-background: hsl(60, 5%, 8%); /* #161614 */
+  --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
+}
+
 html,
 body {
   width: 100%;
@@ -17,7 +31,7 @@ body {
 }
 
 body {
-  color: #f5f0df;
+  color: var(--main-primary);
   font-family: "BeaufortforLOL", sans-serif;
 
   background-image: url("../images/bg.jpg");
@@ -31,6 +45,9 @@ body {
   padding-bottom: 20px;
 }
 
+h1 {
+  text-align: center;
+}
 h2 {
   margin-top: 12px;
   margin-bottom: 8px;
@@ -43,7 +60,7 @@ ul {
 }
 
 a {
-  color: #cbab5c;
+  color: var(--main-secondary);
   text-decoration: none;
   position: relative;
 }
@@ -55,9 +72,9 @@ button {
   text-align: center;
   text-transform: uppercase;
 
-  color: #f5f0df;
-  border: 2px solid #c2aa70;
-  background-color: #161614;
+  color: var(--main-primary);
+  border: 2px solid var(--main-secondary);
+  background-color: var(--main-background);
 }
 
 .flex-center {
@@ -88,7 +105,6 @@ button {
   background: #c2aa70;
 }
 
-
 .guild-member {
   width: calc(100% - 20px);
   margin-right: 20px;
@@ -111,4 +127,11 @@ button {
   .guild-member {
     width: calc(25% - 20px);
   }
+}
+
+.not-found, .not-launched {
+  flex-direction: column;
+}
+.not-found__button, .not-launched__button {
+  margin: 12px auto;
 }

@@ -25,7 +25,7 @@
 </style>
 
 {#if $summonerStore.summoner}
-  <div class="summoner summoner--auth">
+  <div class="main-application">
     <SummonerInfo
       summoner={$summonerStore.summoner}
       guild={$guildStore}

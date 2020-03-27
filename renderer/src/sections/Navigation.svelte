@@ -4,15 +4,9 @@
 </script>
 
 <style>
-  nav {
-    padding: 8px 20px;
-  }
   a {
-    color: #cbab5c;
     padding: 4px 8px;
     margin: 2px;
-    text-decoration: none;
-    position: relative;
     text-transform: uppercase;
     font-size: 14px;
   }

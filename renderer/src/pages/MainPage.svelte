@@ -33,12 +33,12 @@
       style={$location === '/client/' ? 'normal' : 'light'}
       on:click-reconnect={LCUReconnect} />
     <Navigation />
-    <div class="subpages">
+    <main class="subpages">
       {#if !$guildStore.guild}
         <h2>Подключаемся к системе гильдий...</h2>
       {:else}
         <Router routes={subroutes} prefix={subprefix} />
       {/if}
-    </div>
+    </main>
   </div>
 {/if}

@@ -6,6 +6,23 @@
   import { summonerStore } from "@guilds-web/store/summoner";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
+  $: guildMembersToInvite = $guildStore.members.filter(
+    ({ name }) =>
+      name.toLowerCase() !== $summonerStore.summoner.displayName.toLowerCase()
+  );
+  $: allowInvite =
+    $summonerStore.status === "None" || $summonerStore.status === "Lobby";
+
+  const memberStatusUpdate = member => guildStore.setMemberStatus(member);
+  const membersLoadingPromise = rpc
+    .invoke("guilds:members", $guildStore.guild.id)
+    .then(members => guildStore.setMembers(members))
+    .then(() => {
+      rpc.invoke("guilds:member-status:subscribe", $guildStore.guild.id);
+      rpc.on("guilds:member-status:update", memberStatusUpdate);
+      return;
+    });
+
   function onMemberFriendRequest(event) {
     rpc.invoke("guilds:member:friend-request", event.detail);
   }
@@ -19,20 +36,6 @@
     rpc.invoke("guilds:member:invite-all", ready);
   }
 
-  const membersLoadingPromise = rpc
-    .invoke("guilds:members", $guildStore.guild.id)
-    .then(members => guildStore.setMembers(members))
-    .then(members => {
-      rpc.invoke("guilds:member-status:subscribe", $guildStore.guild.id);
-      rpc.on("guilds:member-status:update", memberStatusUpdate);
-      return members;
-    });
-
-  $: guildMembersToInvite = $guildStore.members.filter(({ name }) => name.toLowerCase() !== $summonerStore.summoner.displayName.toLowerCase());
-  $: allowInvite = $summonerStore.status === "None" || $summonerStore.status === "Lobby";
-
-  const memberStatusUpdate = member => guildStore.setMemberStatus(member);
-
   onDestroy(() => {
     rpc.removeListener("guilds:member-status:update", memberStatusUpdate);
   });
@@ -44,9 +47,17 @@
   }
 
   .guild-members__invite-all {
-    position: absolute;
-    top: 0;
-    right: 0;
+    padding: 4px 8px;
+    margin: 8px 0;
+  }
+
+  @media all and (min-width: 370px) {
+    .guild-members__invite-all {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 0;
+    }
   }
 </style>
 

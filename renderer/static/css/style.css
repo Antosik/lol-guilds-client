@@ -1,10 +1,10 @@
 :root {
-  --status-inactive-normal: hsl(202, 99%, 33%); /* #016AA7 */
-  --status-inactive-light: hsl(202, 69%, 56%); /* #41A3DC */
+  --status-game-normal: hsl(202, 99%, 33%); /* #016AA7 */
+  --status-game-light: hsl(202, 69%, 56%); /* #41A3DC */
   --status-active-normal: hsl(147, 99%, 33%); /* #02A64B */
   --status-active-light: hsl(147, 69%, 56%); /* #42DD88 */
   --status-away: hsl(0, 69%, 56%); /* #DC4141 */
-  --status-unknown: hsl(0, 0%, 40%); /* #666666 */
+  --status-unknown: hsl(0, 0%, 60%); /* #666666 */
   --main-primary: hsl(46, 52%, 92%); /* #F5F0DF */
   --main-secondary: hsl(42, 40%, 60%); /* #C2AA70 */
   --main-medium: hsl(42, 40%, 80%); /* #E0D4B8 */
@@ -46,8 +46,7 @@ h1 {
 }
 
 h2 {
-  margin-top: 12px;
-  margin-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 ul {
@@ -127,28 +126,4 @@ button {
     "navigation"
     "main";
   grid-gap: 14px;
-}
-
-.guild-member {
-  width: calc(100% - 20px);
-  margin-right: 20px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-@media all and (min-width: 576px) {
-  .guild-member {
-    width: calc(50% - 20px);
-  }
-}
-@media all and (min-width: 765px) {
-  .guild-member {
-    width: calc(33% - 20px);
-  }
-}
-@media all and (min-width: 1024px) {
-  .guild-member {
-    width: calc(25% - 20px);
-  }
 }

@@ -39,9 +39,13 @@
     color: var(--main-primary);
     background: transparent;
     border: none;
+    margin-left: 8px;
   }
   .season-selector__select option {
     background: var(--main-background);
+  }
+  .season-selector__schedule {
+    width: 100%;
   }
   .season-selector__schedule h3 {
     margin: 0;

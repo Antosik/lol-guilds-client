@@ -7,42 +7,44 @@
 </script>
 
 <style>
-  span .status__text {
-    color: #42dd88;
+  .guild-member-status {
+    --status-color-light: var(--status-active-light);
+    --status-color-normal: var(--status-active-normal);
   }
-  span .status__circle {
+  .guild-member-status .status__text {
+    color: var(--status-color-light);
+  }
+  .guild-member-status .status__circle {
     display: inline-block;
-    background: #02a64b;
-    border: 2px solid #42dd88;
+    background: var(--status-color-normal);
+    border: 2px solid var(--status-color-light);
     border-radius: 50%;
     width: 8px;
     height: 8px;
     margin-right: 4px;
+    margin-bottom: 1px;
   }
-  span.in-game .status__text {
-    color: #41a3dc;
+  .guild-member-status.in-game {
+    --status-color-light: var(--status-game-light);
+    --status-color-normal: var(--status-game-normal);
   }
-  span.in-game .status__circle {
-    background: #016aa7;
-    border: 2px solid #41a3dc;
+  .guild-member-status.away {
+    --status-color-light: var(--status-away);
+    --status-color-normal: transparent;
   }
-  span.away .status__text {
-    color: #97340c;
+  .guild-member-status.offline {
+    --status-color-light: var(--status-unknown);
+    --status-color-normal: transparent;
   }
-  span.away .status__circle {
-    background: transparent;
-    border: 2px solid #97340c;
-  }
-  span.offline .status__text {
-    color: #aaa;
-  }
-  span.offline .status__circle {
-    background: transparent;
-    border: 2px solid #aaa;
+
+  .status__tooltip {
+    margin-left: 10px;
+    margin-bottom: 2px;
   }
 </style>
 
 <span
+  class="guild-member-status"
   class:in-game={statusCode === 'dnd'}
   class:away={statusCode === 'away'}
   class:offline={statusCode === 'offline' || statusCode === 'unknown' || statusCode === 'mobile'}>
@@ -53,6 +55,8 @@
   {/if}
 
   {#if statusCode === 'unknown'}
-    <Tooltip text="Чтобы видеть статус игрока, добавьте его в друзья" />
+    <span class="status__tooltip">
+      <Tooltip text="Чтобы видеть статус игрока, добавьте его в друзья" />
+    </span>
   {/if}
 </span>

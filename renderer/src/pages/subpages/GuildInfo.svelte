@@ -5,6 +5,7 @@
   import { rpc } from "@guilds-web/data/rpc";
   import { guildStore } from "@guilds-web/store/guild";
   import GuildInfo from "@guilds-web/sections/GuildInfo";
+  import GuildDescriptions from "@guilds-web/sections/GuildDescriptions";
   import MemberList from "@guilds-web/blocks/MemberList.svelte";
 
   const membersLoadingPromise = rpc
@@ -13,27 +14,30 @@
 </script>
 
 <style>
-  h2,
-  h3 {
-    width: 100%;
-  }
   h2 {
     text-align: center;
+    margin: 0;
   }
-  .guild-info__info,
-  .guild-info__members {
-    margin: 24px 0;
-    display: flex;
-    flex-wrap: wrap;
+
+  .guild-info {
+    display: grid;
+    grid-template-areas:
+      "heading"
+      "info"
+      "descriptions"
+      "members";
+    grid-gap: 16px;
   }
 </style>
 
-<div>
+<div class="guild-info">
   <h2>Гильдия "{$guildStore.guild.club_name}"</h2>
 
   <div class="guild-info__info">
     <GuildInfo guild={$guildStore.guild} />
   </div>
+
+  <GuildDescriptions guild={$guildStore.guild} />
 
   <div class="guild-info__members">
     <h3>Члены гильдии</h3>

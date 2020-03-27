@@ -1,3 +1,17 @@
+:root {
+  --status-game-normal: hsl(202, 99%, 33%); /* #016AA7 */
+  --status-game-light: hsl(202, 69%, 56%); /* #41A3DC */
+  --status-active-normal: hsl(147, 99%, 33%); /* #02A64B */
+  --status-active-light: hsl(147, 69%, 56%); /* #42DD88 */
+  --status-away: hsl(0, 69%, 56%); /* #DC4141 */
+  --status-unknown: hsl(0, 0%, 60%); /* #666666 */
+  --main-primary: hsl(46, 52%, 92%); /* #F5F0DF */
+  --main-secondary: hsl(42, 40%, 60%); /* #C2AA70 */
+  --main-medium: hsl(42, 40%, 80%); /* #E0D4B8 */
+  --main-background: hsl(60, 5%, 8%); /* #161614 */
+  --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
+}
+
 html,
 body {
   width: 100%;
@@ -17,7 +31,7 @@ body {
 }
 
 body {
-  color: #f5f0df;
+  color: var(--main-primary);
   font-family: "BeaufortforLOL", sans-serif;
 
   background-image: url("../images/bg.jpg");
@@ -27,13 +41,12 @@ body {
   background-attachment: fixed;
 }
 
-#app {
-  padding-bottom: 20px;
+h1 {
+  text-align: center;
 }
 
-h2 {
-  margin-top: 12px;
-  margin-bottom: 8px;
+h2, h3 {
+    margin-bottom: 8px;
 }
 
 ul {
@@ -43,11 +56,27 @@ ul {
 }
 
 a {
-  color: #cbab5c;
+  color: var(--main-secondary);
   text-decoration: none;
   position: relative;
 }
+a.active.use-active {
+  color: var(--main-primary);
+}
+a.active.use-active:after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
 
+  margin: 0 auto;
+  width: 75%;
+  height: 2px;
+  background: var(--main-primary);
+}
+
+.mini-block,
 button {
   cursor: pointer;
   padding: 0.25rem;
@@ -55,9 +84,9 @@ button {
   text-align: center;
   text-transform: uppercase;
 
-  color: #f5f0df;
-  border: 2px solid #c2aa70;
-  background-color: #161614;
+  color: var(--main-primary);
+  border: 1px solid var(--main-secondary);
+  background-color: var(--main-background);
 }
 
 .flex-center {
@@ -88,27 +117,28 @@ button {
   background: #c2aa70;
 }
 
+#app {
+  padding-bottom: 20px;
+}
 
-.guild-member {
-  width: calc(100% - 20px);
-  margin-right: 20px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.not-found,
+.not-launched,
+.summoner-loading {
+  flex-direction: column;
 }
-@media all and (min-width: 576px) {
-  .guild-member {
-    width: calc(50% - 20px);
-  }
+
+.not-found__button,
+.not-launched__button,
+.summoner-loading__button {
+  margin: 12px auto;
+  padding: 4px 8px;
 }
-@media all and (min-width: 765px) {
-  .guild-member {
-    width: calc(33% - 20px);
-  }
-}
-@media all and (min-width: 1024px) {
-  .guild-member {
-    width: calc(25% - 20px);
-  }
+
+.main-application {
+  display: grid;
+  grid-template-areas: 
+    "header"
+    "navigation"
+    "main";
+  grid-gap: 14px;
 }

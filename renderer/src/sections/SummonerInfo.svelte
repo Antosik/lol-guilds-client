@@ -8,7 +8,6 @@
   export let style = "normal";
 
   const dispatch = createEventDispatcher();
-
   function LCUReconnect() {
     dispatch("click-reconnect");
   }
@@ -16,14 +15,18 @@
 
 <style>
   .summoner-info {
-    background: rgba(1, 4, 9, 0.65);
-    border-bottom: 1px solid #3d3d3b;
+    background: var(--main-background-transparent);
+    border-bottom: 1px solid var(--main-secondary);
     padding: 20px;
     position: relative;
   }
+
+  h1 {
+    text-align: left;
+  }
   h1 span {
     font-size: 16px;
-    color: #cbab5c;
+    color: var(--main-secondary);
     vertical-align: top;
   }
 
@@ -33,7 +36,7 @@
     justify-content: flex-end;
   }
   .summoner-info.light h1 {
-    font-size: 18px;
+    font-size: 20px;
   }
   .summoner-info.light h1 span {
     font-size: 14px;
@@ -41,6 +44,7 @@
   .summoner-info.light .summoner-info__status {
     margin-left: 4px;
     flex-grow: 0;
+    line-height: 24px;
   }
 
   .refresh {
@@ -50,15 +54,15 @@
     width: 30px;
     height: 30px;
     transform: translateY(-50%);
+    padding: 0.1em;
   }
 
   .refresh img {
     max-width: 100%;
-    filter: invert(0.75);
   }
 </style>
 
-<div class="summoner-info" class:light={style === 'light'}>
+<header class="summoner-info" class:light={style === 'light'}>
   <h1>
     {summoner.displayName}
     {#if guild.guild}
@@ -73,4 +77,4 @@
   <button type="button" class="refresh flex-center" on:click={LCUReconnect}>
     <img src="./images/icons/refresh.svg" alt="Обновить" />
   </button>
-</div>
+</header>

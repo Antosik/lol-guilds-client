@@ -10,15 +10,17 @@
 
   .tooltip-container .tooltip-icon,
   .tooltip-container .tooltip-data {
-    color: #f5f0df;
-    background-color: #161614;
-    border: 2px solid #c2aa70;
+    background-color: var(--main-background);
+    border: 1px solid var(--main-secondary);
   }
   .tooltip-container .tooltip-icon {
     border-radius: 50%;
-    width: 14px;
-    height: 14px;
-    font-size: 10px;
+    width: 16px;
+    height: 16px;
+  }
+  .tooltip-container .tooltip-icon__img {
+    width: 10px;
+    height: 10px;
   }
   .tooltip-container .tooltip-data {
     visibility: hidden;
@@ -36,6 +38,8 @@
 </style>
 
 <div class="tooltip-container">
-  <div class="tooltip-icon flex-center">i</div>
+  <div class="tooltip-icon flex-center">
+    <img src="./images/icons/i.svg" alt="Информация" class="tooltip-icon__img" />
+  </div>
   <div role="tooltip" class="tooltip-data flex-center">{text}</div>
 </div>

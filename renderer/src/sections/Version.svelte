@@ -1,10 +1,10 @@
 <script>
-  import pkg from "../../../package.json";
   import { onMount } from "svelte";
   import Router, { replace } from "svelte-spa-router";
-  import LoadingSpinner from "../components/LoadingSpinner.svelte";
 
   import { rpc } from "../data/rpc";
+  import LoadingSpinner from "../components/LoadingSpinner.svelte";
+  import pkg from "../../../package.json";
 
   const versionPromise = rpc.invoke("version:get");
   let updateCheckState;
@@ -36,100 +36,107 @@
         downloadProgress = state === "downloading" ? e : 0;
       })
     );
+
     rpc.invoke("version:check");
   });
 </script>
 
 <style>
-  a {
+  .version-block {
     position: fixed;
     bottom: 0;
     right: 0;
-
-    width: 30px;
-    height: 30px;
-
-    padding: 0.25rem;
-
-    text-align: center;
-    text-transform: uppercase;
-
-    color: #f5f0df;
-    border: 2px solid #c2aa70;
-    background-color: #161614;
+    font-size: 14px;
   }
 
-  a img {
+  .version-block__issues-link,
+  .version-block__version,
+  .version-block__update-state {
+    height: 30px;
+  }
+
+  .version-block__issues-link {
+    width: 30px;
+    padding: 0.25rem;
+  }
+
+  .version-block__issues-link__img {
     max-width: 100%;
     filter: invert(0.75);
     pointer-events: none;
   }
 
-  a .version-label {
+  .version-block__version {
     visibility: hidden;
 
     position: absolute;
     bottom: 28px;
-    right: -2px;
+    right: 0;
 
     width: 100px;
-    height: 30px;
-
-    background-color: #161614;
-    border: 2px solid #c2aa70;
   }
-  a:hover div {
+  .version-block:hover .version-block__version {
     visibility: visible;
   }
 
-  :global(.bug-link .loading-spinner) {
+  :global(.version-block .loading-spinner) {
     width: 15px;
     height: 15px;
     margin-right: 8px;
   }
 
-  .update-state {
-    background-color: #161614;
-    border: 2px solid #c2aa70;
+  .version-block__update-state {
     position: fixed;
-    width: 200px;
-    height: 30px;
     bottom: 0;
     right: 30px;
+
+    width: 200px;
   }
-  .update-state--downloading {
+  .version-block__update-state--downloading {
     flex-direction: column;
     justify-content: end;
   }
-  .update-state--downloading progress {
+  .version-block__update-state--downloading progress {
     position: absolute;
+    bottom: 0;
+
     width: 100%;
     height: 5px;
-    bottom: 0;
   }
 </style>
 
-<a href={pkg.bugs.url} class="flex-center bug-link">
-  <img src="./images/icons/bug.svg" alt="Сообщить об ошибке" />
+<div class="flex-center version-block">
+
+  <a href={pkg.bugs.url} class="flex-center version-block__issues-link mini-block">
+    <img
+      src="./images/icons/bug.svg"
+      alt="Сообщить об ошибке"
+      class="version-block__issues-link__img" />
+  </a>
   {#await versionPromise then version}
-    <div class="flex-center version-label" on:click={checkForUpdate}>
+    <button
+      type="button"
+      class="flex-center version-block__version"
+      on:click={checkForUpdate}>
       {#if updateCheckState === 'process'}
         <LoadingSpinner />
       {/if}
       {version}
-    </div>
+    </button>
   {/await}
-</a>
-{#if updateCheckState === 'available' || updateCheckState === 'downloading'}
-  <div class="flex-center update-state update-state--downloading">
-    <progress max="100" value={downloadProgress} />
-    Загрузка обновления
-  </div>
-{:else if updateCheckState === 'ready'}
-  <button
-    type="button"
-    class="flex-center update-state"
-    on:click={installUpdate}>
-    Установить обновление
-  </button>
-{/if}
+  {#if updateCheckState === 'available' || updateCheckState === 'downloading'}
+    <div
+      class="flex-center version-block__update-state
+      version-block__update-state--downloading mini-block">
+      <progress max="100" value={downloadProgress} />
+      Загрузка обновления
+    </div>
+  {:else if updateCheckState === 'ready'}
+    <button
+      type="button"
+      class="flex-center version-block__update-state mini-block"
+      on:click={installUpdate}>
+      Установить обновление
+    </button>
+  {/if}
+</div>

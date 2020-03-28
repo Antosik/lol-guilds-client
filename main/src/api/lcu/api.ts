@@ -133,9 +133,20 @@ export class LCUApi {
           this.disconnect();
         }
       });
+      this._socket.subscribe("/lol-chat/v1/session", (_, event) => {
+        if (event.data.sessionState === "loaded") {
+          this._rpc.emit("lcu:connect");
+        }
+      });
+    } else {
+      return this.disconnect();
     }
 
-    this._rpc.emit("lcu:connect");
+    return this.request("/lol-chat/v1/session").then((data: any) => {
+      if (data.sessionState === "loaded") {
+        this._rpc.emit("lcu:connect");
+      }
+    });
   }
 
   private _onDisconnect() {

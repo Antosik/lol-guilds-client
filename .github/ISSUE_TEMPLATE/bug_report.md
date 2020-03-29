@@ -1,19 +1,20 @@
-**Describe the bug**  
-A clear and concise description of what the bug is.  
+---
+name: Баг / Bug
+about: Если вы нашли ошибку, несоответствие и т.д. / If you found a bug, typo, etc.
+title: ''
+labels: ''
+assignees: ''
 
-**To Reproduce**  
-Steps to reproduce the behavior:  
-- Go to '...'  
-- Click on '....'  
-- Scroll down to '....'  
-- See error  
+---
 
-**Screenshots**  
-If applicable, add screenshots to help explain your problem.  
+**Опишите ошибку / Describe the bug**  
+Вкратце, в чем заключается данная ошибка / A clear and concise description of what the bug is.
 
-**Versions (please complete the following information):**  
-- Operating system: [e.g. Windows 10]  
-- Application Version [e.g. 0.0.5]  
+**Как ее получить / To Reproduce**  
+Какие шаги вы прошли, чтобы ее получить / Steps to reproduce the behavior.
 
-**Additional context**  
-Add any other context about the problem here.  
+**Скриншоты / Screenshots**  
+Если возможно, прикрепите скриншот с ошибкой / If applicable, add screenshots to help explain your problem.  
+
+**Среда выполнения / Environment:**  
+Опишите, в какой ОС и на какой версии приложения возникает ошибка / Describe in which OS and on which version of the application the error occurs.

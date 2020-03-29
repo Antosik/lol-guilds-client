@@ -1,8 +1,11 @@
-**Is your feature request related to a problem? Please describe.**  
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]  
+---
+name: Предложить идею / Feature request
+about: ''
+title: ''
+labels: ''
+assignees: ''
 
-**Describe the solution you'd like**  
-A clear and concise description of what you want to happen.  
+---
 
-**Additional context**  
-Add any other context or screenshots about the feature request here.  
+**Опишите вашу идею / Describe your feature request** 
+...

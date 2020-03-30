@@ -1,6 +1,6 @@
 ---
 name: Предложить идею / Feature request
-about: ''
+about: Что вы бы хотели добавить в клиент? / What would you like to add to the client?
 title: ''
 labels: ''
 assignees: ''

@@ -17,4 +17,4 @@ assignees: ''
 Если возможно, прикрепите скриншот с ошибкой / If applicable, add screenshots to provide more details about your problem.
 
 **Среда выполнения / Environment:**  
-Опишите, в какой ОС и на какой версии приложения возникает ошибка / Describe in which OS and on which version of the application the error occurs.
+Опишите, в какой ОС и на какой версии приложения возникает ошибка / Describe which OS and version your are using as well as the version of the League Guilds Client.

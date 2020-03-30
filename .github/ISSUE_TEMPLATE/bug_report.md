@@ -14,7 +14,7 @@ assignees: ''
 Какие шаги вы прошли, чтобы ее получить / Steps to reproduce the behavior.
 
 **Скриншоты / Screenshots**  
-Если возможно, прикрепите скриншот с ошибкой / If applicable, add screenshots to help explain your problem.  
+Если возможно, прикрепите скриншот с ошибкой / If applicable, add screenshots to provide more details about your problem.
 
 **Среда выполнения / Environment:**  
 Опишите, в какой ОС и на какой версии приложения возникает ошибка / Describe in which OS and on which version of the application the error occurs.

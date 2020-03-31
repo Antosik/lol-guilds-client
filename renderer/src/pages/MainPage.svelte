@@ -22,6 +22,11 @@
   .subpages {
     padding: 0 20px;
   }
+  .guilds_not-participating {
+    text-align: center;
+    height: 200px;
+    flex-direction: column;
+  }
 </style>
 
 {#if $summonerStore.summoner}
@@ -32,10 +37,19 @@
       status={$summonerStore.status}
       style={$location === '/client/' ? 'normal' : 'light'}
       on:click-reconnect={LCUReconnect} />
-    <Navigation />
+    {#if $guildStore.guild}
+      <Navigation />
+    {/if}
     <main class="subpages">
-      {#if !$guildStore.guild}
+      {#if $guildStore.guild === undefined}
         <h2>Подключаемся к системе гильдий...</h2>
+      {:else if $guildStore.guild === null}
+        <div class="guilds_not-participating flex-center">
+          <h2>Вы не участвуете в программе "Гильдий".</h2>
+          <p>
+            Выбрать Гильдию можно в клиенте Лиги на главной странице во вкладке Гильдии
+          </p>
+        </div>
       {:else}
         <Router routes={subroutes} prefix={subprefix} />
       {/if}

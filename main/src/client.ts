@@ -209,6 +209,7 @@ export class MainApplication {
   }
   private _onLCUDisconnect() {
     if (this._rpc !== undefined) this._rpc.send("lcu:disconnect");
+    if (this._lcuClient !== undefined) { this._lcuClient.store.delete("summoner"); this._lcuClient.store.delete("token"); };
   }
   // #endregion
 

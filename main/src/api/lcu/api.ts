@@ -69,6 +69,8 @@ export class LCUApi {
 
           if (retry === 0) {
             return this.disconnect();
+          } else if (retry === -1) {
+            throw err;
           }
 
           return this.request(url, body, method, retry - 1);

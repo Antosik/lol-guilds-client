@@ -2,6 +2,7 @@
   import { createEventDispatcher, onMount, onDestroy } from "svelte";
 
   import { rpc } from "@guilds-web/data/rpc";
+  import { appStore } from "@guilds-web/store/app";
   import { guildStore } from "@guilds-web/store/guild";
   import { summonerStore } from "@guilds-web/store/summoner";
   
@@ -25,17 +26,28 @@
       return;
     });
 
-  function onMemberFriendRequest(event) {
-    rpc.invoke("guilds:member:friend-request", event.detail);
+  function handleMemberResponses(result) {
+    if (!result.status) {
+      appStore.addNotification("Не удалось отправить запрос");
+    } else if (result.notfound && result.notfound.length) {
+      const notfound = Array.isArray(result.notfound) ? result.notfound.join(", ") : result.notfound;
+      appStore.addNotification(`Не удалось найти призывателей: ${notfound}`);
+    }
   }
-  function onMemberInvite(event) {
-    rpc.invoke("guilds:member:invite", event.detail);
+  async function onMemberFriendRequest(event) {
+    const result = await rpc.invoke("guilds:member:friend-request", event.detail);
+    handleMemberResponses(result);
   }
-  function onMemberInviteAll() {
+  async function onMemberInvite(event) {
+    const result = await rpc.invoke("guilds:member:invite", event.detail);
+    handleMemberResponses(result);
+  }
+  async function onMemberInviteAll() {
     const ready = $guildStore.members
       .filter(member => ["chat", "away", "unknown"].includes(member.status))
       .map(member => member.name);
-    rpc.invoke("guilds:member:invite-all", ready);
+    const result = await rpc.invoke("guilds:member:invite-all", ready);
+    handleMemberResponses(result);
   }
 
   onDestroy(() => {

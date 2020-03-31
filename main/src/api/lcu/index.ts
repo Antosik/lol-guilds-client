@@ -69,15 +69,19 @@ export class LCUClient {
     return data as EGameflowStatus;
   }
 
-  public async getSummonerByName(name: string): Promise<ISummonerCore> {
+  public async getSummonerByName(name: string): Promise<ISummonerCore | string> {
     const summonersFromStore = this.store.get("summoners");
     const summonerFromStore = summonersFromStore.find(({ displayName }) => displayName.toLowerCase() === name.toLowerCase());
     if (summonerFromStore !== undefined) {
       return summonerFromStore;
     }
 
-    const data = await this.api.request(`/lol-summoner/v1/summoners?name=${encodeURI(name)}`);
+    const data = await this.api.request(`/lol-summoner/v1/summoners?name=${encodeURI(name)}`, undefined, "GET", -1).catch(() => null);
     const summoner = data as ISummoner;
+
+    if (summoner === null) {
+      return name;
+    }
 
     this.store.set("summoners", [
       ...summonersFromStore,
@@ -102,26 +106,42 @@ export class LCUClient {
     return true;
   }
 
-  public async sendInviteByNickname(nicknames: string[]): Promise<boolean> {
+  public async sendInviteByNickname(nicknames: string[]): Promise<{ status: boolean, notfound?: string[] }> {
     try {
       const summoners = await Promise.all(nicknames.map((nickname) => this.getSummonerByName(nickname)));
-      const body = constructInvitationForSummoners(summoners);
+
+      const notFoundSummoners: string[] = [];
+      const foundSummoners: ISummonerCore[] = [];
+      summoners.forEach(summoner => {
+        if (typeof summoner === "string") {
+          notFoundSummoners.push(summoner);
+        } else {
+          foundSummoners.push(summoner);
+        }
+      });
+
+      const body = constructInvitationForSummoners(foundSummoners);
       await this.api.request("lol-lobby/v2/lobby/invitations", body, "POST");
+
+      return { status: true, notfound: notFoundSummoners };
     } catch (e) {
-      return false;
+      return { status: false };
     }
-    return true;
   }
 
-  public async sendFriendRequestByNickname(nickname: string): Promise<boolean> {
+  public async sendFriendRequestByNickname(nickname: string): Promise<{ status: boolean, notfound?: string }> {
     try {
       const summoner = await this.getSummonerByName(nickname);
+      if (typeof summoner === "string") {
+        return { status: true, notfound: nickname };
+      }
+
       const body = constructFriendRequest(summoner);
       await this.api.request("/lol-chat/v1/friend-requests", body, "POST");
+      return { status: true };
     } catch (e) {
-      return false;
+      return { status: false };
     }
-    return true;
   }
 }
 

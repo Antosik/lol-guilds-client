@@ -4,6 +4,8 @@
   import { rpc } from "@guilds-web/data/rpc";
   import { guildStore } from "@guilds-web/store/guild";
   import { summonerStore } from "@guilds-web/store/summoner";
+  
+  import Loading from "@guilds-web/blocks/Loading.svelte";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
   $: guildMembersToInvite = $guildStore.members.filter(
@@ -65,7 +67,7 @@
   <h2>Члены гильдии</h2>
 
   {#await membersLoadingPromise}
-    <h3>Загружаем список членов гильдии...</h3>
+    <Loading>Загружаем список членов гильдии...</Loading>
   {:then}
     <button
       type="button"

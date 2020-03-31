@@ -6,6 +6,7 @@
   import { guildStore } from "@guilds-web/store/guild";
 
   import IntersectionObs from "@guilds-web/components/IntersectionObs";
+  import Loading from "@guilds-web/blocks/Loading.svelte";
   import GuildStats from "@guilds-web/sections/GuildStats";
   import GuildsRatingTable from "@guilds-web/sections/GuildsRatingTable";
 
@@ -14,6 +15,7 @@
   let guilds = [];
   let currentPage = 1;
   let myRatingLoadingPromise;
+  let initialRatingLoading = true;
 
   $: season_id = Number(params.season_id);
   $: stage_id = Number(params.stage_id);
@@ -24,6 +26,7 @@
   function afterNavigation() {
     guilds = [];
     currentPage = 1;
+    initialRatingLoading = true;
     myRatingLoadingPromise = !season_id
       ? undefined
       : !stage_id
@@ -37,6 +40,7 @@
       : !stage_id
       ? rpc.invoke("guilds:rating:season", season_id, { page }).then(list => {
           guilds = [...guilds, ...list];
+        initialRatingLoading = false;
         })
       : rpc
           .invoke("guilds:rating:stage", season_id, stage_id, {
@@ -44,6 +48,7 @@
           })
           .then(list => {
             guilds = [...guilds, ...list];
+            initialRatingLoading = false;
           });
   }
 </script>
@@ -57,7 +62,7 @@
 <div class="my-guild-rating">
   {#await myRatingLoadingPromise}
     <h3>Гильдия</h3>
-    <div>Загружаем информацию о гильдии...</div>
+    <Loading>Загружаем информацию о гильдии...</Loading>
   {:then guild}
     <GuildStats {guild} />
   {/await}
@@ -70,9 +75,11 @@
 
     {#if (!stage_id && guilds.length < 500) || (stage_id && guilds.length < 25)}
       <IntersectionObs on:intersect={() => currentPage++}>
-        Загружаем еще одну страницу...
+        <Loading>Загружаем еще одну страницу...</Loading>
       </IntersectionObs>
     {/if}
+  {:else if initialRatingLoading}
+    <Loading>Загружаем рейтинг...</Loading>
   {:else}
     <p>Нет данных</p>
   {/if}

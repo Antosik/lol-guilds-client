@@ -7,6 +7,8 @@
     rating_subprefix as subprefix,
     rating_subroutes as subroutes
   } from "@guilds-web/routes/subroutes";
+  
+  import Loading from "@guilds-web/blocks/Loading.svelte";
   import RatingNavigation from "@guilds-web/sections/RatingNavigation";
 
   export let params = {};
@@ -34,7 +36,7 @@
 <div class="rating-page">
 
   {#await seasonsLoadingPromise}
-    <h2>Загружаем список сезонов...</h2>
+    <Loading>Загружаем список сезонов...</Loading>
   {:then seasons}
     {#if season_id && season_info}
       <RatingNavigation
@@ -42,7 +44,7 @@
         selectedSeason={season_id}
         selectedStage={stage_id} />
     {:else}
-      <p>Идет загрузка...</p>
+      <Loading>Загружаем рейтинг...</Loading>
     {/if}
 
     <Router routes={subroutes} prefix={subprefix} />

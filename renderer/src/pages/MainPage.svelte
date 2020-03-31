@@ -7,6 +7,7 @@
   import { guildStore } from "../store/guild";
   import { subroutes, subprefix } from "../routes";
 
+  import Loading from "../blocks/Loading.svelte";
   import SummonerInfo from "../sections/SummonerInfo.svelte";
   import Navigation from "../sections/Navigation.svelte";
 
@@ -16,9 +17,6 @@
 </script>
 
 <style>
-  h2 {
-    text-align: center;
-  }
   .subpages {
     padding: 0 20px;
   }
@@ -42,7 +40,7 @@
     {/if}
     <main class="subpages">
       {#if $guildStore.guild === undefined}
-        <h2>Подключаемся к системе гильдий...</h2>
+        <Loading>Подключаемся к системе гильдий...</Loading>
       {:else if $guildStore.guild === null}
         <div class="guilds_not-participating flex-center">
           <h2>Вы не участвуете в программе "Гильдий".</h2>

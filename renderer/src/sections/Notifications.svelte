@@ -13,6 +13,7 @@
     position: fixed;
     top: 20px;
     right: 20px;
+    max-width: 300px;
   }
 </style>
 

@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import { fade, slide } from "svelte/transition";
 
   export let id = "";
   export let text = "";
@@ -10,9 +11,17 @@
 
 <style>
   .notification {
-    text-transform: none;
+    padding: 0.25rem;
+    text-align: center;
+    color: var(--main-primary);
+    border: 1px solid var(--main-secondary);
+    background-color: var(--main-background);
   }
-  
+
+  .notification__text {
+    width: calc(100% - 20px);
+  }
+
   .notification__close-button {
     width: 18px;
     height: 18px;
@@ -27,9 +36,12 @@
   }
 </style>
 
-<li class="mini-block notification">
-  <button type="button" on:click={onClose} class="notification__close-button flex-center">
+<li class="notification" transition:fade|local={{ duration: 200 }}>
+  <button
+    type="button"
+    on:click={onClose}
+    class="notification__close-button flex-center">
     <img src="./images/icons/close.svg" alt="Закрыть уведомление" />
   </button>
-  <p>{text}</p>
+  <p class="notification__text">{text}</p>
 </li>

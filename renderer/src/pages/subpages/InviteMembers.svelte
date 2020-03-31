@@ -31,7 +31,8 @@
     if (!result.status) {
       appStore.addNotification("Не удалось отправить запрос");
     } else if (result.notfound) {
-      appStore.addNotification(`Не удалось найти призывателей: ${result.notfound}`);
+      const notfound = Array.isArray(result.notfound) ? result.notfound.join(", ") : result.notfound;
+      appStore.addNotification(`Не удалось найти призывателей: ${notfound}`);
     }
   }
   async function onMemberFriendRequest(event) {

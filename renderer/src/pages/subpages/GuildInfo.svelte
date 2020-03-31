@@ -4,9 +4,11 @@
 
   import { rpc } from "@guilds-web/data/rpc";
   import { guildStore } from "@guilds-web/store/guild";
+
+  import Loading from "@guilds-web/blocks/Loading.svelte";
+  import MemberList from "@guilds-web/blocks/MemberList.svelte";
   import GuildInfo from "@guilds-web/sections/GuildInfo";
   import GuildDescriptions from "@guilds-web/sections/GuildDescriptions";
-  import MemberList from "@guilds-web/blocks/MemberList.svelte";
 
   const membersLoadingPromise = rpc
     .invoke("guilds:members", $guildStore.guild.id)
@@ -43,7 +45,7 @@
     <h3>Члены гильдии</h3>
 
     {#await membersLoadingPromise}
-      <h4>Загружаем список членов гильдии...</h4>
+      <Loading>Загружаем список членов гильдии...</Loading>
     {:then}
       <MemberList members={$guildStore.members} />
     {:catch}

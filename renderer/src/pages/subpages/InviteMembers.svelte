@@ -27,10 +27,9 @@
     });
 
   function handleMemberResponses(result) {
-    console.log(result);
     if (!result.status) {
       appStore.addNotification("Не удалось отправить запрос");
-    } else if (result.notfound) {
+    } else if (result.notfound && result.notfound.length) {
       const notfound = Array.isArray(result.notfound) ? result.notfound.join(", ") : result.notfound;
       appStore.addNotification(`Не удалось найти призывателей: ${notfound}`);
     }

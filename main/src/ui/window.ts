@@ -8,7 +8,7 @@ import { join as joinPath } from "path";
 export class Window extends BrowserWindow {
   constructor(options: BrowserWindowConstructorOptions = {}) {
     const settings: BrowserWindowConstructorOptions = {
-      title: "Guilds Client",
+      title: "League Guilds Client",
       width: 800,
       height: 600,
       show: false,

@@ -76,7 +76,7 @@ export class LCUClient {
       return summonerFromStore;
     }
 
-    const data = await this.api.request(`/lol-summoner/v1/summoners?name=${encodeURI(name)}`).catch(() => null);
+    const data = await this.api.request(`/lol-summoner/v1/summoners?name=${encodeURI(name)}`, undefined, "GET", -1).catch(() => null);
     const summoner = data as ISummoner;
 
     if (summoner === null) {

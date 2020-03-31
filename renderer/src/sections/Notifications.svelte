@@ -14,6 +14,7 @@
     top: 20px;
     right: 20px;
     max-width: 300px;
+    min-width: 200px;
   }
 </style>
 

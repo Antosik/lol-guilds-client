@@ -3,9 +3,12 @@
   import Router, { replace, location } from "svelte-spa-router";
 
   import { rpc } from "./data/rpc";
+  import { appStore } from "./store/app";
   import { summonerStore } from "./store/summoner";
   import { guildStore } from "./store/guild";
   import { routes } from "./routes";
+
+  import Notifications from "./sections/Notifications";
   import Version from "./sections/Version";
 
   const handleRouting = (auth, summoner) => {
@@ -17,6 +20,7 @@
   };
   $: handleRouting($summonerStore.auth, $summonerStore.summoner);
 
+  const onNotificationClose = e => appStore.removeNotification(e.detail);
   const onSummoner = e => summonerStore.setSummoner(e);
   const onGameflow = e => summonerStore.setStatus(e.data);
   const onConnect = e => summonerStore.setAuth(true);
@@ -47,3 +51,6 @@
 
 <Router {routes} />
 <Version />
+<Notifications
+  notifications={$appStore.notifications}
+  on:close={onNotificationClose} />

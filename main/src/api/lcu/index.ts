@@ -4,7 +4,7 @@ import type { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import type { LCUApi } from "./api";
 import type { IStorePrototype } from "./store";
 import type { IIdToken } from "./interfaces/IIdToken";
-import type { IFriend, IFriendCore } from "./interfaces/IFriend";
+import type { IFriend, IFriendCore, IFriendRequest } from "./interfaces/IFriend";
 import type { ISummoner, ISummonerCore } from "./interfaces/ISummoner";
 
 import { createLCUApi } from "./api";
@@ -96,6 +96,11 @@ export class LCUClient {
     return friendsRaw.map(({ availability, id, name, summonerId }) => ({ availability, id, name, summonerId }));
   }
 
+  private async getSendedFriendRequests(): Promise<IFriendRequest[]> {
+    const data = await this.api.request("/lol-chat/v1/friend-requests");
+    return data as IFriendRequest[];
+  }
+
   public async createLobby(type = EQueueId.DraftPick): Promise<boolean> {
     try {
       const body = constructLobby(type);
@@ -121,7 +126,7 @@ export class LCUClient {
       });
 
       const body = constructInvitationForSummoners(foundSummoners);
-      await this.api.request("lol-lobby/v2/lobby/invitations", body, "POST");
+      await this.api.request("/lol-lobby/v2/lobby/invitations", body, "POST");
 
       return { status: true, notfound: notFoundSummoners };
     } catch (e) {
@@ -134,6 +139,12 @@ export class LCUClient {
       const summoner = await this.getSummonerByName(nickname);
       if (typeof summoner === "string") {
         return { status: true, notfound: nickname };
+      }
+
+      const sendedRequests = await this.getSendedFriendRequests();
+      const alreadySended = sendedRequests.find(request => request.summonerId === summoner.summonerId);
+      if (alreadySended) {
+        return { status: true };
       }
 
       const body = constructFriendRequest(summoner);

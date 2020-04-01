@@ -61,11 +61,14 @@ export class LCUApi {
       ? undefined
       : response.json()
         .then(res => {
-          if (res.errorCode) { throw new Error(res); }
+          if (res.errorCode) {
+            logError("ERROR: LCU API Request", res);
+            throw new Error(res);
+          }
           return res;
         })
         .catch(err => {
-          logError("ERROR: LCU API Request", JSON.stringify(err));
+          logError("ERROR: LCU API Request", err);
 
           if (retry === 0) {
             return this.disconnect();

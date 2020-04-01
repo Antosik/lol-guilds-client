@@ -83,6 +83,7 @@
     width: 15px;
     height: 15px;
     margin-right: 8px;
+    --border-width: 2px !important;
   }
 
   .version-block__update-state {
@@ -107,7 +108,9 @@
 
 <div class="flex-center version-block">
 
-  <a href={pkg.bugs.url} class="flex-center version-block__issues-link mini-block">
+  <a
+    href={pkg.bugs.url}
+    class="flex-center version-block__issues-link mini-block">
     <img
       src="./images/icons/bug.svg"
       alt="Сообщить об ошибке"

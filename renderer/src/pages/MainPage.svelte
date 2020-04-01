@@ -7,6 +7,7 @@
   import { guildStore } from "../store/guild";
   import { subroutes, subprefix } from "../routes";
 
+  import Loading from "../blocks/Loading.svelte";
   import SummonerInfo from "../sections/SummonerInfo.svelte";
   import Navigation from "../sections/Navigation.svelte";
 
@@ -16,11 +17,13 @@
 </script>
 
 <style>
-  h2 {
-    text-align: center;
-  }
   .subpages {
     padding: 0 20px;
+  }
+  .guilds_not-participating {
+    text-align: center;
+    height: 200px;
+    flex-direction: column;
   }
 </style>
 
@@ -32,10 +35,19 @@
       status={$summonerStore.status}
       style={$location === '/client/' ? 'normal' : 'light'}
       on:click-reconnect={LCUReconnect} />
-    <Navigation />
+    {#if $guildStore.guild}
+      <Navigation />
+    {/if}
     <main class="subpages">
-      {#if !$guildStore.guild}
-        <h2>Подключаемся к системе гильдий...</h2>
+      {#if $guildStore.guild === undefined}
+        <Loading>Подключаемся к системе гильдий...</Loading>
+      {:else if $guildStore.guild === null}
+        <div class="guilds_not-participating flex-center">
+          <h2>Вы не участвуете в программе "Гильдий".</h2>
+          <p>
+            Выбрать Гильдию можно в клиенте Лиги на главной странице во вкладке Гильдии
+          </p>
+        </div>
       {:else}
         <Router routes={subroutes} prefix={subprefix} />
       {/if}

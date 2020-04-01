@@ -5,7 +5,6 @@ import type { LCUClient } from "./api/lcu";
 import type { ClientRPC } from "./data/rpc";
 import type { Window } from "./ui/window";
 
-import { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 
 import { createGuildsAPIClient } from "./api/guilds";
 import { IPagedRequest } from "./api/guilds/interfaces/IGuildsAPI";
@@ -15,6 +14,8 @@ import { IFriendCore } from "./api/lcu/interfaces/IFriend";
 import { createRPC } from "./data/rpc";
 import { createWindow } from "./ui/window";
 
+import { guildMemberInvite } from "./handlers/guild-member-invite";
+import { guildMemberFriendRequest } from "./handlers/guild-member-friend-request";
 import { autoUpdater } from "./utils/autoupdater";
 
 
@@ -67,25 +68,15 @@ export class MainApplication {
     if (this._rpc !== undefined) {
       this._rpc.setHandler("guilds:member:invite", async (nickname: string) => {
         if (!this._lcuClient) return null;
-
-        const currentGameflow = await this._lcuClient.getStatus();
-        if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) return null;
-        if (currentGameflow !== EGameflowStatus.Lobby) { await this._lcuClient.createLobby(); }
-
-        return this._lcuClient.sendInviteByNickname([nickname]);
+        return guildMemberInvite([nickname], this._lcuClient);
       });
       this._rpc.setHandler("guilds:member:invite-all", async (nicknames: string[]) => {
         if (!this._lcuClient) return null;
-
-        const currentGameflow = await this._lcuClient.getStatus();
-        if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) return null;
-        if (currentGameflow !== EGameflowStatus.Lobby) { await this._lcuClient.createLobby(); }
-
-        return this._lcuClient.sendInviteByNickname(nicknames);
+        return guildMemberInvite(nicknames, this._lcuClient);
       });
       this._rpc.setHandler("guilds:member:friend-request", async (nickname: string) => {
         if (!this._lcuClient) return null;
-        return this._lcuClient.sendFriendRequestByNickname(nickname);
+        return guildMemberFriendRequest(nickname, this._lcuClient);
       });
 
       this._rpc.setHandler("guilds:club", async () => {
@@ -209,6 +200,7 @@ export class MainApplication {
   }
   private _onLCUDisconnect() {
     if (this._rpc !== undefined) this._rpc.send("lcu:disconnect");
+    if (this._lcuClient !== undefined) { this._lcuClient.store.delete("summoner"); this._lcuClient.store.delete("token"); };
   }
   // #endregion
 

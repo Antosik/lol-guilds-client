@@ -2,8 +2,11 @@
   import { createEventDispatcher, onMount, onDestroy } from "svelte";
 
   import { rpc } from "@guilds-web/data/rpc";
+  import { appStore } from "@guilds-web/store/app";
   import { guildStore } from "@guilds-web/store/guild";
   import { summonerStore } from "@guilds-web/store/summoner";
+  
+  import Loading from "@guilds-web/blocks/Loading.svelte";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
   $: guildMembersToInvite = $guildStore.members.filter(
@@ -22,18 +25,21 @@
       rpc.on("guilds:member-status:update", memberStatusUpdate);
       return;
     });
-
-  function onMemberFriendRequest(event) {
-    rpc.invoke("guilds:member:friend-request", event.detail);
+    
+  async function onMemberFriendRequest(event) {
+    const result = await rpc.invoke("guilds:member:friend-request", event.detail);
+    appStore.addNotification(result.message);
   }
-  function onMemberInvite(event) {
-    rpc.invoke("guilds:member:invite", event.detail);
+  async function onMemberInvite(event) {
+    const result = await rpc.invoke("guilds:member:invite", event.detail);
+    appStore.addNotification(result.message);
   }
-  function onMemberInviteAll() {
+  async function onMemberInviteAll() {
     const ready = $guildStore.members
       .filter(member => ["chat", "away", "unknown"].includes(member.status))
       .map(member => member.name);
-    rpc.invoke("guilds:member:invite-all", ready);
+    const result = await rpc.invoke("guilds:member:invite-all", ready);
+    appStore.addNotification(result.message);
   }
 
   onDestroy(() => {
@@ -65,7 +71,7 @@
   <h2>Члены гильдии</h2>
 
   {#await membersLoadingPromise}
-    <h3>Загружаем список членов гильдии...</h3>
+    <Loading>Загружаем список членов гильдии...</Loading>
   {:then}
     <button
       type="button"

@@ -61,14 +61,19 @@ export class LCUApi {
       ? undefined
       : response.json()
         .then(res => {
-          if (res.errorCode) { throw new Error(res); }
+          if (res.errorCode) {
+            logError("ERROR: LCU API Request", res);
+            throw new Error(res);
+          }
           return res;
         })
         .catch(err => {
-          logError("ERROR: LCU API Request", JSON.stringify(err));
+          logError("ERROR: LCU API Request", err);
 
           if (retry === 0) {
             return this.disconnect();
+          } else if (retry === -1) {
+            throw err;
           }
 
           return this.request(url, body, method, retry - 1);
@@ -133,9 +138,20 @@ export class LCUApi {
           this.disconnect();
         }
       });
+      this._socket.subscribe("/lol-chat/v1/session", (_, event) => {
+        if (event.data.sessionState === "loaded") {
+          this._rpc.emit("lcu:connect");
+        }
+      });
+    } else {
+      return this.disconnect();
     }
 
-    this._rpc.emit("lcu:connect");
+    return this.request("/lol-chat/v1/session").then((data: any) => {
+      if (data.sessionState === "loaded") {
+        this._rpc.emit("lcu:connect");
+      }
+    }).catch(e => logError("Connect error", e));;
   }
 
   private _onDisconnect() {

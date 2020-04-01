@@ -27,6 +27,28 @@
       "github"
     ]
   },
+  "dmg": {
+    "background": "build/macos/background.png",
+    "iconSize": 80,
+    "window": {
+      "x": 400,
+      "y": 100,
+      "width": 540,
+      "height": 380
+    },
+    "contents": [
+      {
+        "x": 130,
+        "y": 232.5
+      },
+      {
+        "x": 410,
+        "y": 232.5,
+        "type": "link",
+        "path": "/Applications"
+      }
+    ]
+  },
   "linux": {
     "target": [
       "AppImage"

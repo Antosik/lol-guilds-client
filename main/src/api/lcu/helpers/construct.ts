@@ -21,12 +21,14 @@ export function constructInvitationForSummoners(summoners: ISummonerCore[]): IIn
 export function constructFriendRequest(summoner: ISummonerCore): IFriendRequest {
   return {
     direction: "out",
+    id: `${summoner.puuid}@ru1.pvp.net`,
+    note: "",
     pid: `${summoner.puuid}@ru1.pvp.net`,
     summonerId: summoner.summonerId
   };
 }
 
-export function constructLobby(type: EQueueId = EQueueId.a): ILobbyCore {
+export function constructLobby(type: EQueueId = EQueueId.DraftPick): ILobbyCore {
   return {
     queueId: type
   };

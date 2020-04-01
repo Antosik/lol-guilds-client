@@ -25,29 +25,21 @@
       rpc.on("guilds:member-status:update", memberStatusUpdate);
       return;
     });
-
-  function handleMemberResponses(result) {
-    if (!result.status) {
-      appStore.addNotification("Не удалось отправить запрос");
-    } else if (result.notfound && result.notfound.length) {
-      const notfound = Array.isArray(result.notfound) ? result.notfound.join(", ") : result.notfound;
-      appStore.addNotification(`Не удалось найти призывателей: ${notfound}`);
-    }
-  }
+    
   async function onMemberFriendRequest(event) {
     const result = await rpc.invoke("guilds:member:friend-request", event.detail);
-    handleMemberResponses(result);
+    appStore.addNotification(result.message);
   }
   async function onMemberInvite(event) {
     const result = await rpc.invoke("guilds:member:invite", event.detail);
-    handleMemberResponses(result);
+    appStore.addNotification(result.message);
   }
   async function onMemberInviteAll() {
     const ready = $guildStore.members
       .filter(member => ["chat", "away", "unknown"].includes(member.status))
       .map(member => member.name);
     const result = await rpc.invoke("guilds:member:invite-all", ready);
-    handleMemberResponses(result);
+    appStore.addNotification(result.message);
   }
 
   onDestroy(() => {

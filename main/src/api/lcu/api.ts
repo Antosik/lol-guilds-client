@@ -148,7 +148,7 @@ export class LCUApi {
       if (data.sessionState === "loaded") {
         this._rpc.emit("lcu:connect");
       }
-    });
+    }).catch(e => logError("Connect error", e));;
   }
 
   private _onDisconnect() {

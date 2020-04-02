@@ -1,6 +1,8 @@
 import { app } from "electron";
 import windowStateKeeper from "electron-window-state";
 
+import "./utils/security";
+
 import { MainApplication } from "./client";
 
 

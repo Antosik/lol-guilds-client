@@ -110,6 +110,7 @@
 
   <a
     href={pkg.bugs.url}
+    target="_blank"
     class="flex-center version-block__issues-link mini-block">
     <img
       src="./images/icons/bug.svg"

@@ -108,6 +108,7 @@ export class MainApplication {
     if (!this._lcuClient.isConnected) {
       await this._lcuClient.connect();
     } else {
+      this._lcuClient.api.unsubscribe("/lol-gameflow/v1/gameflow-phase");
       this._lcuClient.api.subscribe("/lol-gameflow/v1/gameflow-phase");
 
       this._rpc.send("lcu:connect");

@@ -133,11 +133,14 @@ export class LCUApi {
     this._isConnected = true;
 
     if (this._socket) {
+      this._socket.unsubscribe("/process-control/v1/process");
       this._socket.subscribe("/process-control/v1/process", (_, event) => {
         if (event.data.status === "Stopping") {
           this.disconnect();
         }
       });
+
+      this._socket.unsubscribe("/lol-chat/v1/session");
       this._socket.subscribe("/lol-chat/v1/session", (_, event) => {
         if (event.data.sessionState === "loaded") {
           this._rpc.emit("lcu:connect");

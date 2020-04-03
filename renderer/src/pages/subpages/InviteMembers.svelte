@@ -27,18 +27,18 @@
     });
     
   async function onMemberFriendRequest(event) {
-    const result = await rpc.invoke("guilds:member:friend-request", event.detail);
+    const result = await rpc.invoke("lcu:friend-request", event.detail);
     appStore.addNotification(result.message);
   }
   async function onMemberInvite(event) {
-    const result = await rpc.invoke("guilds:member:invite", event.detail);
+    const result = await rpc.invoke("lcu:lobby-invite", event.detail);
     appStore.addNotification(result.message);
   }
   async function onMemberInviteAll() {
     const ready = $guildStore.members
       .filter(member => ["chat", "away", "unknown"].includes(member.status))
       .map(member => member.name);
-    const result = await rpc.invoke("guilds:member:invite-all", ready);
+    const result = await rpc.invoke("lcu:lobby-invite-all", ready);
     appStore.addNotification(result.message);
   }
 

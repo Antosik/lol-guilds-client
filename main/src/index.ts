@@ -1,3 +1,5 @@
+import type { IMainApplicationOptions } from "./client";
+
 import { app } from "electron";
 import windowStateKeeper from "electron-window-state";
 
@@ -11,11 +13,11 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
-  const appInstance = MainApplication.getInstance();
+  let appInstance: MainApplication;
 
   app.on("second-instance", () => {
     // Кто-то пытался запустить второй экземпляр, мы должны сфокусировать наше окно.
-    if (appInstance.window) {
+    if (appInstance?.window !== undefined) {
       if (appInstance.window.isMinimized()) appInstance.window.restore();
       appInstance.window.focus();
     }
@@ -26,17 +28,17 @@ if (!gotTheLock) {
       defaultWidth: 800,
       defaultHeight: 600,
     });
-    appInstance.init({
+
+    const options: IMainApplicationOptions = {
       window: {
         x: windowState.x,
         y: windowState.y,
         width: windowState.width,
         height: windowState.height
       }
-    });
-    if (appInstance.window) {
-      windowState.manage(appInstance.window);
-    }
+    };
+    appInstance = MainApplication.getInstance(options);
+    windowState.manage(appInstance.window);
   });
 
   app.on("window-all-closed", () => {

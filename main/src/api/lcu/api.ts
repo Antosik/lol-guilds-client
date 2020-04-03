@@ -4,6 +4,7 @@ import type { ClientRPC } from "@guilds-main/data/rpc";
 
 import { auth, connect, request } from "league-connect";
 import { logDebug, logError } from "@guilds-main/utils/log";
+import { ISession, ESessionState } from "./interfaces/ISession";
 
 
 export class LCUApi {
@@ -133,13 +134,17 @@ export class LCUApi {
     this._isConnected = true;
 
     if (this._socket) {
+      this._socket.unsubscribe("/process-control/v1/process");
       this._socket.subscribe("/process-control/v1/process", (_, event) => {
         if (event.data.status === "Stopping") {
           this.disconnect();
         }
       });
+
+      this._socket.unsubscribe("/lol-chat/v1/session");
       this._socket.subscribe("/lol-chat/v1/session", (_, event) => {
-        if (event.data.sessionState === "loaded") {
+        const sessionData = event.data as ISession;
+        if (sessionData.sessionState === ESessionState.Loaded) {
           this._rpc.emit("lcu:connect");
         }
       });
@@ -147,8 +152,9 @@ export class LCUApi {
       return this.disconnect();
     }
 
-    return this.request("/lol-chat/v1/session").then((data: any) => {
-      if (data.sessionState === "loaded") {
+    return this.request("/lol-chat/v1/session").then((data) => {
+      const sessionData = data as ISession;
+      if (sessionData.sessionState === ESessionState.Loaded) {
         this._rpc.emit("lcu:connect");
       }
     }).catch(e => logError("Connect error", e));;

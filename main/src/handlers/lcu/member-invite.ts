@@ -1,7 +1,9 @@
 import type { LCUClient } from "@guilds-main/api/lcu";
 import { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 
-export async function guildMemberInvite(nicknames: string[], lcuClient: LCUClient) {
+
+export async function guildMemberInvite(lcuClient: LCUClient, nicknames: string[]) {
+
   const currentGameflow = await lcuClient.getStatus();
   if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) {
     return { status: false, message: "Не удалось создать лобби" };

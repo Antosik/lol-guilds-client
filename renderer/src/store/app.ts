@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-import { randomId } from "../utils/functions";
+import { randomId } from "@guilds-shared/helpers/functions";
 
 export interface IAppStore {
   notifications: Array<{ id: string, text: string }>;

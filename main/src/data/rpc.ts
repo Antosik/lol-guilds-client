@@ -4,9 +4,11 @@ import type { BrowserWindow, IpcMainEvent, IpcMainInvokeEvent } from "electron";
 import { ipcMain } from "electron";
 import { EventEmitter } from "events";
 
+import { flowId } from "@guilds-shared/helpers/rpc";
+
 
 export class ClientRPC extends EventEmitter {
-  private _id = "flow";
+  private _id = flowId;
   private _window: BrowserWindow;
   private _handlers: Map<string, (...args: unknown[]) => unknown | Promise<unknown>>;
 

@@ -8,7 +8,7 @@ type GuildsEventRatingType = "guilds:rating:season" | "guilds:rating:stage";
 type GuildsEventStatsType = "guilds:stats:season" | "guilds:stats:stage";
 
 type GuildsEventType = "guilds:club" | GuildsEventSeasonsType | GuildsEventMembersType | GuildsEventRatingType | GuildsEventStatsType;
-type GuildsEventHandler = (guildsClient: GuildsClient) => (...args: any[]) => any | Promise<any>;
+type GuildsEventHandler = (guildsClient: GuildsClient) => (...args: any[]) => unknown | Promise<unknown>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export const guildsEventsHandlersMap = new Map<GuildsEventType, GuildsEventHandler>(
   [

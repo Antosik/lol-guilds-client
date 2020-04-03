@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { BrowserWindowConstructorOptions } from "electron";
 import type { GuildsClient } from "./api/guilds";
+import type { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
 import type { LCUClient } from "./api/lcu";
+import type { IFriendCore } from "./api/lcu/interfaces/IFriend";
 import type { ClientRPC } from "./data/rpc";
 import type { Window } from "./ui/window";
 
 import { createGuildsAPIClient } from "./api/guilds";
-import { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
 import { createLCUAPIClient } from "./api/lcu";
-import { IFriendCore } from "./api/lcu/interfaces/IFriend";
 
 import { createRPC } from "./data/rpc";
 import { lcuEventsHandlersMap } from "./handlers/lcu";
@@ -72,7 +72,7 @@ export class MainApplication {
 
   private initGuildHandlers() {
     for (const [eventType, eventHandler] of guildsEventsHandlersMap) {
-      this._rpc.setHandler(eventType, (...args: any[]) => {
+      this._rpc.setHandler(eventType, (...args: any[]) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         return this._guildsClient === undefined
           ? null
           : eventHandler(this._guildsClient)(...args);

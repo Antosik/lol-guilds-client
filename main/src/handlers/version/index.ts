@@ -2,7 +2,7 @@ import type { AppUpdater } from "electron-updater";
 
 
 type VersionEventType = "version:get" | "version:check" | "version:install";
-type VersionEventHandler = (appUpdater: AppUpdater) => (...args: any[]) => any | Promise<any>;
+type VersionEventHandler = (appUpdater: AppUpdater) => (...args: unknown[]) => unknown | Promise<unknown>;
 
 export const versionEventsMap = new Map<string, string>([
   ["error", "version:update:error"],

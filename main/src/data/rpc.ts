@@ -4,6 +4,7 @@ import type { BrowserWindow, IpcMainEvent, IpcMainInvokeEvent } from "electron";
 import { ipcMain } from "electron";
 import { EventEmitter } from "events";
 
+
 export class ClientRPC extends EventEmitter {
   private _id = "flow";
   private _window: BrowserWindow;
@@ -32,7 +33,7 @@ export class ClientRPC extends EventEmitter {
     this.wc.send(this._id, { event, data });
   }
 
-  public setHandler(event: string, handler: (...args: any[]) => any | Promise<any>): void {
+  public setHandler(event: string, handler: (...args: any[]) => unknown | Promise<unknown>): void { // eslint-disable-line @typescript-eslint/no-explicit-any
     this._handlers.set(event, handler);
   }
 

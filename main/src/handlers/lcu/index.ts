@@ -5,7 +5,7 @@ import { guildMemberFriendRequest } from "./member-friend-request";
 
 
 type LCUEventType = "lcu:lobby-invite" | "lcu:lobby-invite-all" | "lcu:friend-request";
-type LCUEventHandler = (lcuClient: LCUClient) => (...args: any[]) => any | Promise<any>;
+type LCUEventHandler = (lcuClient: LCUClient) => (...args: any[]) => unknown | Promise<unknown>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export const lcuEventsHandlersMap = new Map<LCUEventType, LCUEventHandler>(
   [

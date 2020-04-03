@@ -7,6 +7,7 @@ import type { IFriendCore } from "./api/lcu/interfaces/IFriend";
 import type { ClientRPC } from "./data/rpc";
 import type { Window } from "./ui/window";
 
+import { constructResult } from "@guilds-shared/helpers/rpc";
 import { createGuildsAPIClient } from "./api/guilds";
 import { createLCUAPIClient } from "./api/lcu";
 
@@ -55,6 +56,7 @@ export class MainApplication {
     return this._window;
   }
 
+
   // #region Init
   private initCoreEvents() {
     this._rpc.on("ui:reconnect", this._onLCUConnect);
@@ -74,17 +76,17 @@ export class MainApplication {
     for (const [eventType, eventHandler] of guildsEventsHandlersMap) {
       this._rpc.setHandler(eventType, (...args: any[]) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         return this._guildsClient === undefined
-          ? null
+          ? { status: "error" }
           : eventHandler(this._guildsClient)(...args);
       });
     }
 
     this._rpc.setHandler("guilds:members", (club_id: number) => {
-      if (!this._guildsClient) return null;
-      return this._getMembersWithStatus(club_id);
+      if (!this._guildsClient) return { status: "error" };
+      return constructResult(this._getMembersWithStatus(club_id));
     });
     this._rpc.setHandler("guilds:member-status:subscribe", async (club_id: number) => {
-      return this._subscribeToGuildMembersStatus(club_id);
+      return constructResult(this._subscribeToGuildMembersStatus(club_id));
     });
   }
 
@@ -134,6 +136,7 @@ export class MainApplication {
     this._lcuClient.store.delete("token");
   }
   // #endregion
+
 
   // #region Friends Logic
   private async _getMembersWithStatus(club_id: number): Promise<IInternalGuildMember[]> {

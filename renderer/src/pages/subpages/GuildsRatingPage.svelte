@@ -38,10 +38,12 @@
     return !season_id
       ? undefined
       : !stage_id
-      ? rpc.invoke("guilds:rating:season", season_id, { page }).then(list => {
-          guilds = [...guilds, ...list];
-        initialRatingLoading = false;
-        })
+      ? rpc
+          .invoke("guilds:rating:season", season_id, { page })
+          .then(list => {
+            guilds = [...guilds, ...list];
+            initialRatingLoading = false;
+          })
       : rpc
           .invoke("guilds:rating:stage", season_id, stage_id, {
             page

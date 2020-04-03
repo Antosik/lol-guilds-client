@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { BrowserWindow, IpcMainEvent, IpcMainInvokeEvent } from "electron";
+import type { IRPCHandlerResult } from "@guilds-shared/interfaces/IRPCHandler";
 
 import { ipcMain } from "electron";
 import { EventEmitter } from "events";
@@ -35,7 +36,7 @@ export class ClientRPC extends EventEmitter {
     this.wc.send(this._id, { event, data });
   }
 
-  public setHandler(event: string, handler: (...args: any[]) => unknown | Promise<unknown>): void { // eslint-disable-line @typescript-eslint/no-explicit-any
+  public setHandler(event: string, handler: (...args: any[]) => IRPCHandlerResult | Promise<IRPCHandlerResult>): void { // eslint-disable-line @typescript-eslint/no-explicit-any
     this._handlers.set(event, handler);
   }
 

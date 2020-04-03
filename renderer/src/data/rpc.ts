@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { IpcRendererEvent } from "electron";
+import type { IRPCHandlerResult } from "@guilds-shared/interfaces/IRPCHandler";
 
 import { ipcRenderer } from "electron";
 import { EventEmitter } from "events";
+import { appStore } from "../store/app";
 
 import { flowId } from "@guilds-shared/helpers/rpc";
 
@@ -25,8 +27,18 @@ export class ClientRPC extends EventEmitter {
     ipcRenderer.send(this._id, { event, data });
   }
 
-  public invoke(event: string, ...data: unknown[]): unknown | Promise<unknown> {
-    return ipcRenderer.invoke(this._id, { event, data });
+  public async invoke(event: string, ...data: unknown[]): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const response: IRPCHandlerResult = await ipcRenderer.invoke(this._id, { event, data });
+
+    if (response.notification !== undefined) {
+      appStore.addNotification(response.notification);
+    }
+
+    if (response.status === "error") {
+      throw new Error(response.notification || "Внутренняя ошибка сервера");
+    }
+
+    return response.data;
   }
 
   public destroy(): void {

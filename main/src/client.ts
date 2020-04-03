@@ -5,17 +5,16 @@ import type { LCUClient } from "./api/lcu";
 import type { ClientRPC } from "./data/rpc";
 import type { Window } from "./ui/window";
 
-
 import { createGuildsAPIClient } from "./api/guilds";
-import { IPagedRequest } from "./api/guilds/interfaces/IGuildsAPI";
 import { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
 import { createLCUAPIClient } from "./api/lcu";
 import { IFriendCore } from "./api/lcu/interfaces/IFriend";
-import { createRPC } from "./data/rpc";
-import { createWindow } from "./ui/window";
 
-import { guildMemberInvite } from "./handlers/guild-member-invite";
-import { guildMemberFriendRequest } from "./handlers/guild-member-friend-request";
+import { createRPC } from "./data/rpc";
+import { lcuEventsHandlersMap } from "./handlers/lcu";
+import { guildsEventsHandlersMap } from "./handlers/guild";
+import { versionEventsMap, versionEventsHandlersMap } from "./handlers/version";
+import { createWindow } from "./ui/window";
 import { autoUpdater } from "./utils/autoupdater";
 
 
@@ -47,6 +46,7 @@ export class MainApplication {
     this._onLCUDisconnect = this._onLCUDisconnect.bind(this);
 
     this.initCoreEvents();
+    this.initLCUHandlers();
     this.initGuildHandlers();
     this.initVersionEvents();
   }
@@ -64,52 +64,24 @@ export class MainApplication {
     autoUpdater.checkForUpdatesAndNotify();
   }
 
-  private initGuildHandlers() {
-    this._rpc.setHandler("guilds:member:invite", async (nickname: string) => {
-      return guildMemberInvite([nickname], this._lcuClient);
-    });
-    this._rpc.setHandler("guilds:member:invite-all", async (nicknames: string[]) => {
-      return guildMemberInvite(nicknames, this._lcuClient);
-    });
-    this._rpc.setHandler("guilds:member:friend-request", async (nickname: string) => {
-      return guildMemberFriendRequest(nickname, this._lcuClient);
-    });
+  private initLCUHandlers() {
+    for (const [eventType, eventHandler] of lcuEventsHandlersMap) {
+      this._rpc.setHandler(eventType, eventHandler(this._lcuClient));
+    }
+  }
 
-    this._rpc.setHandler("guilds:club", async () => {
-      if (!this._guildsClient) return null;
-      return this._guildsClient.getCurrentClub();
-    });
+  private initGuildHandlers() {
+    for (const [eventType, eventHandler] of guildsEventsHandlersMap) {
+      this._rpc.setHandler(eventType, (...args: any[]) => {
+        return this._guildsClient === undefined
+          ? null
+          : eventHandler(this._guildsClient)(...args);
+      });
+    }
+
     this._rpc.setHandler("guilds:members", (club_id: number) => {
       if (!this._guildsClient) return null;
       return this._getMembersWithStatus(club_id);
-    });
-    this._rpc.setHandler("guilds:members:stage", (club_id: number, season_id: number) => {
-      if (!this._guildsClient) return null;
-      return this._guildsClient.getGuildMembersStageRating(club_id, season_id);
-    });
-    this._rpc.setHandler("guilds:seasons", async () => {
-      if (!this._guildsClient) return null;
-      return this._guildsClient.api.getSeasons();
-    });
-    this._rpc.setHandler("guilds:season", async (season_id: number) => {
-      if (!this._guildsClient) return null;
-      return this._guildsClient.api.getSeason(season_id);
-    });
-    this._rpc.setHandler("guilds:rating:season", async (season_id: number, options?: IPagedRequest) => {
-      if (!this._guildsClient) return null;
-      return this._guildsClient.api.getTopClubsForSeasonWithId(season_id, options);
-    });
-    this._rpc.setHandler("guilds:rating:stage", async (season_id: number, stage_id: number, options?: IPagedRequest) => {
-      if (!this._guildsClient) return null;
-      return this._guildsClient.api.getTopClubsForStageWithId(stage_id, season_id, options);
-    });
-    this._rpc.setHandler("guilds:stats:season", async (season_id: number, club_id: number) => {
-      if (!this._guildsClient) return null;
-      return this._guildsClient.getGuildSeasonStats(season_id, club_id);
-    });
-    this._rpc.setHandler("guilds:stats:stage", async (season_id: number, stage_id: number, club_id: number) => {
-      if (!this._guildsClient) return null;
-      return this._guildsClient.getGuildStageStats(stage_id, season_id, club_id);
     });
     this._rpc.setHandler("guilds:member-status:subscribe", async (club_id: number) => {
       return this._subscribeToGuildMembersStatus(club_id);
@@ -117,39 +89,16 @@ export class MainApplication {
   }
 
   private initVersionEvents() {
-    autoUpdater.on("error", () => {
-      this._rpc.send("version:update:error");
-    });
-
-    autoUpdater.on("checking-for-update", () => {
-      this._rpc.send("version:update:process");
-    });
-
-    autoUpdater.on("update-available", () => {
-      this._rpc.send("version:update:available");
-    });
-
-    autoUpdater.on("update-not-available", () => {
-      this._rpc.send("version:update:not-available");
-    });
-
+    for (const [event, eventToSend] of versionEventsMap) {
+      autoUpdater.on(event, () => this._rpc.send(eventToSend));
+    }
     autoUpdater.on("download-progress", (e) => {
       this._rpc.send("version:update:downloading", (e.percent as number).toFixed(2));
     });
 
-    autoUpdater.on("update-downloaded", () => {
-      this._rpc.send("version:update:ready");
-    });
-
-    this._rpc.setHandler("version:get", () => {
-      return autoUpdater.currentVersion.version;
-    });
-    this._rpc.setHandler("version:check", () => {
-      return autoUpdater.checkForUpdates();
-    });
-    this._rpc.setHandler("version:install", () => {
-      return autoUpdater.quitAndInstall();
-    });
+    for (const [event, eventHandler] of versionEventsHandlersMap) {
+      this._rpc.setHandler(event, eventHandler(autoUpdater));
+    }
   }
   // #endregion
 

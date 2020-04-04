@@ -48,10 +48,7 @@ const config: Configuration = {
   plugins: [
     new DefinePlugin({
       VERSION: JSON.stringify(version),
-      ISSUES_URL: JSON.stringify(bugs.url),
-      "process.env": {
-        NODE_ENV: JSON.stringify(nodeEnv)
-      }
+      ISSUES_URL: JSON.stringify(bugs.url)
     }),
 
     new CopyWebpackPlugin([

@@ -1,18 +1,11 @@
 import type { GuildsClient } from "@guilds-main/api/guilds";
 import type { IPagedRequest } from "@guilds-main/api/guilds/interfaces/IGuildsAPI";
-import type { IRPCHandlerResult } from "@guilds-shared/interfaces/IRPCHandler";
+import type { IRPCHandlerFunc, GuildsEventType } from "@guilds-shared/interfaces/IRPCHandler";
 
 import { constructResult } from "@guilds-shared/helpers/rpc";
 
 
-type GuildsEventSeasonsType = "guilds:seasons" | "guilds:season";
-type GuildsEventMembersType = "guilds:members" | "guilds:members:season" | "guilds:members:stage";
-type GuildsEventRatingType = "guilds:rating:season" | "guilds:rating:stage";
-type GuildsEventStatsType = "guilds:stats:season" | "guilds:stats:stage";
-
-type GuildsEventType = "guilds:club" | GuildsEventSeasonsType | GuildsEventMembersType | GuildsEventRatingType | GuildsEventStatsType;
-type GuildsEventHandler = (guildsClient: GuildsClient) => (...args: any[]) => IRPCHandlerResult | Promise<IRPCHandlerResult>; // eslint-disable-line @typescript-eslint/no-explicit-any
-
+type GuildsEventHandler = (guildsClient: GuildsClient) => IRPCHandlerFunc;
 export const guildsEventsHandlersMap = new Map<GuildsEventType, GuildsEventHandler>(
   [
     ["guilds:club", (guildsClient: GuildsClient) => () => constructResult(guildsClient.getCurrentClub())],

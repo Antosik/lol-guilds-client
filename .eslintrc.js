@@ -9,6 +9,10 @@ module.exports = {
     "browser": true,
     "node": true
   },
+  "globals": {
+    "VERSION": "readonly",
+    "ISSUES_URL": "readonly"
+  },
   "extends": [
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",

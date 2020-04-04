@@ -9,7 +9,6 @@ import type { ICurrentSummonerResponse, IUserSeasonRatingResponse, IUserStageRat
 import fetch from "node-fetch";
 import { stringify as stringifyQuery } from "querystring";
 import { logDebug, logError } from "@guilds-main/utils/log";
-import pkg from "../../../../package.json";
 
 
 export class GuildsAPI {
@@ -136,7 +135,7 @@ export class GuildsAPI {
         "Accept": "application/json",
         "Authorization": `JWT ${this._token}`,
         "Content-Type": "application/json",
-        "User-Agent": `League Guilds Client v${pkg.version} (https://github.com/Antosik/lol-guilds-client)`
+        "User-Agent": `League Guilds Client v${VERSION} (https://github.com/Antosik/lol-guilds-client)`
       }
     })
       .catch(err => {

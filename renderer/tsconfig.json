@@ -1,16 +1,17 @@
 {
   "extends": "../tsconfig.json",
-  
+
   "compilerOptions": {
     "outDir": "../target/",
     "lib": [
       "DOM"
     ],
     "types": [
-      "@pyoner/svelte-types"
+      "@pyoner/svelte-types",
+      "../shared/env.d.ts"
     ]
   },
-  
+
   "include": [
     "./src/**/*",
   ]

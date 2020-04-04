@@ -1,4 +1,4 @@
-import type { Configuration } from "webpack";
+import { Configuration, DefinePlugin } from "webpack";
 
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
@@ -8,6 +8,8 @@ import { IgnorePlugin } from "webpack";
 
 import { preprocess } from "./svelte.config";
 import { alias } from "../webpack.config";
+import { version, bugs } from "../package.json";
+
 
 const nodeEnv = process.env.NODE_ENV || "development";
 const isProduction = nodeEnv === "production";
@@ -69,6 +71,11 @@ const config: Configuration = ({
   },
 
   plugins: [
+    new DefinePlugin({
+      VERSION: JSON.stringify(version),
+      ISSUES_URL: JSON.stringify(bugs.url)
+    }),
+
     new IgnorePlugin(/.*\.js.map$/i),
 
     new CopyWebpackPlugin([

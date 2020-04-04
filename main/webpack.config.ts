@@ -63,8 +63,15 @@ const config: Configuration = {
   ],
 
   optimization: {
+    nodeEnv: isProduction ? "production" : "development",
     minimize: isProduction,
-    minimizer: [new TerserPlugin()]
+    minimizer: [new TerserPlugin({
+      parallel: true,
+      sourceMap: true,
+      terserOptions: {
+        keep_fnames: true,
+      },
+    })]
   },
 }
 

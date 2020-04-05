@@ -4,6 +4,7 @@
 
   import { rpc } from "../data/rpc";
   import LoadingSpinner from "../components/LoadingSpinner.svelte";
+  import { ISSUES_URL } from "@guilds-shared/env";
 
   const versionPromise = rpc.invoke("version:get");
   let updateCheckState;

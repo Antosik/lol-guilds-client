@@ -9,6 +9,7 @@ import type { ICurrentSummonerResponse, IUserSeasonRatingResponse, IUserStageRat
 import fetch from "node-fetch";
 import { stringify as stringifyQuery } from "querystring";
 import { logDebug, logError } from "@guilds-main/utils/log";
+import { VERSION } from "@guilds-shared/env";
 
 
 export class GuildsAPI {

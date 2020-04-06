@@ -118,9 +118,19 @@ export class GuildsAPI {
 
   public async request(path: string, options: IRequestOptions, retry = 3): Promise<unknown> {
     const opts: IRequestOptions = { method: "GET", version: 1, body: undefined, ...options };
-    const result = await this._sendRequest(path, opts, retry);
+    const response = await this._sendRequest(path, opts, retry);
 
-    return result.status === 200 ? result.json() : undefined;
+    if (response.status === 204) {
+      return undefined;
+    }
+
+    const result = await response.json();
+
+    if (result.detail) {
+      throw new Error(result.detail);
+    }
+
+    return result;
   }
 
   private async _sendRequest(path: string, options: IRequestOptions, retry = 3): Promise<Response> {

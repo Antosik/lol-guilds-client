@@ -21,7 +21,7 @@ function createAppStore() {
         id: randomId(),
         text
       };
-      setTimeout(() => removeNotification(notification.id), 4000);
+      setTimeout(() => removeNotification(notification.id), 5000);
       return ({ ...state, notifications: [...state.notifications, notification] });
     });
   };

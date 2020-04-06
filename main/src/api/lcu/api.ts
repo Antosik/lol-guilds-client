@@ -62,7 +62,7 @@ export class LCUApi {
     const result = await response.json();
 
     if (result.errorCode) {
-      logError("ERROR: LCU API Request", result);
+      logError(`"[LCUAPI]: "${method} ${url}" ${response.status} "${body && JSON.stringify(body)}" --- ${JSON.stringify(result)}`);
       throw new Error(result);
     }
 
@@ -75,14 +75,14 @@ export class LCUApi {
       method,
       body: typeof body === "undefined" ? undefined : JSON.stringify(body)
     }, this._credentials)
-      .catch(err => {
-        logError("ERROR: LCU API Request", err);
+      .catch(error => {
+        logError(`"[LCUAPI]: "${method} ${url}" "${body && JSON.stringify(body)}" --- `, error);
 
         if (retry === 0) {
           this.disconnect();
-          throw err;
+          throw error;
         } else if (retry === -1) {
-          throw err;
+          throw error;
         }
 
         return this._sendRequest(url, body, method, retry - 1);

@@ -20,6 +20,7 @@
 
   .notification__text {
     width: calc(100% - 20px);
+    padding: 4px;
   }
 
   .notification__close-button {

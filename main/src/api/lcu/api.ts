@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import type { Response } from "node-fetch";
 import type { Credentials, LeagueWebSocket, EventResponse } from "league-connect";
 import type { ClientRPC } from "@guilds-main/data/rpc";
 
@@ -50,36 +51,42 @@ export class LCUApi {
   }
 
   public async request(url: string, body: string | object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET", retry = 3): Promise<unknown> {
-    logDebug(`LCU API Request: path - ${url}, body - ${JSON.stringify(body)}`);
+    const response = await this._sendRequest(url, body, method, retry);
 
-    const response = await request({
+    logDebug(`[LCUAPI]: "${method} ${url}" ${response.status} "${body && JSON.stringify(body)}"`);
+
+    if (response.status === 204) {
+      return undefined;
+    }
+
+    const result = await response.json();
+
+    if (result.errorCode) {
+      logError(`"[LCUAPI]: "${method} ${url}" ${response.status} "${body && JSON.stringify(body)}" --- ${JSON.stringify(result)}`);
+      throw new Error(result);
+    }
+
+    return result;
+  }
+
+  private async _sendRequest(url: string, body: string | object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET", retry = 3): Promise<Response> {
+    return request({
       url,
       method,
       body
-    }, this._credentials);
+    }, this._credentials)
+      .catch(error => {
+        logError(`"[LCUAPI]: "${method} ${url}" "${body && JSON.stringify(body)}" --- `, error);
 
-    return response.status === 204
-      ? undefined
-      : response.json()
-        .then(res => {
-          if (res.errorCode) {
-            logError("ERROR: LCU API Request", res);
-            throw new Error(res);
-          }
-          return res;
-        })
-        .catch(err => {
-          logError("ERROR: LCU API Request", err);
+        if (retry === 0) {
+          this.disconnect();
+          throw error;
+        } else if (retry === -1) {
+          throw error;
+        }
 
-          if (retry === 0) {
-            return this.disconnect();
-          } else if (retry === -1) {
-            throw err;
-          }
-
-          return this.request(url, body, method, retry - 1);
-        });
-
+        return this._sendRequest(url, body, method, retry - 1);
+      });
   }
   // #endregion
 

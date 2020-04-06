@@ -120,6 +120,8 @@ export class GuildsAPI {
     const opts: IRequestOptions = { method: "GET", version: 1, body: undefined, ...options };
     const response = await this._sendRequest(path, opts, retry);
 
+    logDebug(`[GuildsAPI]: "${opts.method} /${path}" ${response.status} "${opts.body && JSON.stringify(opts.body)}"`);
+
     if (response.status === 204) {
       return undefined;
     }
@@ -127,6 +129,7 @@ export class GuildsAPI {
     const result = await response.json();
 
     if (result.detail) {
+      logError(`"[GuildsAPI]: "${opts.method} /${path}" ${response.status} "${opts.body && JSON.stringify(opts.body)}" --- ${JSON.stringify(result)}`);
       throw new Error(result.detail);
     }
 
@@ -134,8 +137,6 @@ export class GuildsAPI {
   }
 
   private async _sendRequest(path: string, options: IRequestOptions, retry = 3): Promise<Response> {
-    logDebug(`Guilds API Request: path - ${path}, options - ${JSON.stringify(options)}`);
-
     const apiVersion = options.version === 2 ? "api-v2" : "api";
     const body = typeof options.body === "undefined" ? undefined : JSON.stringify(options.body);
 
@@ -149,11 +150,11 @@ export class GuildsAPI {
         "User-Agent": `League Guilds Client v${VERSION} (https://github.com/Antosik/lol-guilds-client)`
       }
     })
-      .catch(err => {
-        logError("ERROR: Guilds API Request", err);
+      .catch(error => {
+        logError(`"[GuildsAPI]: "${options.method} /${path}" "${body && JSON.stringify(body)}" --- `, error);
 
         if (retry === 0) {
-          throw err;
+          throw error;
         }
 
         return this._sendRequest(path, options, retry - 1);

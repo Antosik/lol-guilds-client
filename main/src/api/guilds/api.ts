@@ -120,6 +120,8 @@ export class GuildsAPI {
     const opts: IRequestOptions = { method: "GET", version: 1, body: undefined, ...options };
     const response = await this._sendRequest(path, opts, retry);
 
+    logDebug(`[GuildsAPI]: "${opts.method} /${path}" ${response.status} "${opts.body && JSON.stringify(opts.body)}" #${retry}`);
+
     if (response.status === 204) {
       return undefined;
     }
@@ -134,8 +136,6 @@ export class GuildsAPI {
   }
 
   private async _sendRequest(path: string, options: IRequestOptions, retry = 3): Promise<Response> {
-    logDebug(`Guilds API Request: path - ${path}, options - ${JSON.stringify(options)}`);
-
     const apiVersion = options.version === 2 ? "api-v2" : "api";
     const body = typeof options.body === "undefined" ? undefined : JSON.stringify(options.body);
 

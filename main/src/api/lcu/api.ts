@@ -50,13 +50,13 @@ export class LCUApi {
   }
 
   public async request(url: string, body: string | object | undefined = undefined, method: "GET" | "POST" | "PUT" | "DELETE" = "GET", retry = 3): Promise<unknown> {
-    logDebug(`LCU API Request: path - ${url}, body - ${JSON.stringify(body)}`);
-
     const response = await request({
       url,
       method,
       body
     }, this._credentials);
+
+    logDebug(`[LCUAPI]: "${method} ${url}" ${response.status} "${body && JSON.stringify(body)}" #${retry}`);
 
     return response.status === 204
       ? undefined

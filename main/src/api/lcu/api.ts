@@ -73,7 +73,7 @@ export class LCUApi {
     return request({
       url,
       method,
-      body: typeof body === "undefined" ? undefined : JSON.stringify(body)
+      body
     }, this._credentials)
       .catch(error => {
         logError(`"[LCUAPI]: "${method} ${url}" "${body && JSON.stringify(body)}" --- `, error);

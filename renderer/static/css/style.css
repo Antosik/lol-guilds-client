@@ -8,6 +8,7 @@
   --main-primary: hsl(46, 52%, 92%); /* #F5F0DF */
   --main-secondary: hsl(42, 40%, 60%); /* #C2AA70 */
   --main-medium: hsl(42, 40%, 80%); /* #E0D4B8 */
+  --main-dark: hsl(42, 16%, 44%); /* #C2AA70 */
   --main-background: hsl(60, 5%, 8%); /* #161614 */
   --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
 }
@@ -31,7 +32,7 @@ body {
 }
 
 body {
-  color: var(--main-primary);
+  color: var(--main-medium);
   font-family: "BeaufortforLOL", sans-serif;
 
   background-image: url("../images/bg.jpg");
@@ -39,6 +40,10 @@ body {
   background-position: center bottom;
   background-repeat: no-repeat;
   background-attachment: fixed;
+}
+
+h1, h2, h3, h4 {
+  color: var(--main-primary);
 }
 
 h1 {
@@ -114,7 +119,7 @@ button {
   background: #81785d;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #c2aa70;
+  background: var(--main-secondary);
 }
 
 #app {

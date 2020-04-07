@@ -8,10 +8,11 @@
 <style>
   table {
     width: 100%;
+    border-spacing: 0;
   }
   table td {
     text-align: center;
-    padding: 4px 8px;
+    padding: 8px;
   }
   table td:nth-child(2) {
     text-align: left;
@@ -20,8 +21,28 @@
     text-align: center;
     margin: 20px;
   }
+  tr {
+    position: relative;
+  }
   tr.my-guild {
     background: rgba(245, 240, 223, 0.2);
+  }
+  tr:not(:first-child):after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      to right, 
+      rgba(245, 240, 223, 0) 0%,
+      rgba(245, 240, 223, 0.2) 25%,
+      rgba(245, 240, 223, 0.2) 75%,
+      rgba(245, 240, 223, 0) 100%
+    );
+  }
+  tr:not(:first-child):hover {
+    background: rgba(245, 240, 223, 0.1);
   }
 </style>
 

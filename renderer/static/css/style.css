@@ -31,7 +31,7 @@ body {
 }
 
 body {
-  color: var(--main-primary);
+  color: var(--main-medium);
   font-family: "BeaufortforLOL", sans-serif;
 
   background-image: url("../images/bg.jpg");
@@ -39,6 +39,10 @@ body {
   background-position: center bottom;
   background-repeat: no-repeat;
   background-attachment: fixed;
+}
+
+h1, h2, h3, h4 {
+  color: var(--main-primary);
 }
 
 h1 {

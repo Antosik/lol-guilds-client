@@ -59,6 +59,10 @@
     font-size: 14px;
     margin: 0 12px;
   }
+
+  .stage-not-active {
+    color: var(--main-dark);
+  }
 </style>
 
 <div class="season-selector">
@@ -97,13 +101,19 @@
 
     {#each season_info.stages as stage (stage.id)}
       <li class="season-selector__stages-list-item">
-        <a
-          href={`/client/rating/season/${selectedSeason}/stage/${stage.id}`}
-          class="use-active"
-          use:link
-          use:active>
-          Этап {stage.number}
-        </a>
+        {#if stage.is_open}
+          <a
+            href={`/client/rating/season/${selectedSeason}/stage/${stage.id}`}
+            class="use-active"
+            use:link
+            use:active>
+            Этап {stage.number}
+          </a>
+        {:else}
+          <span class="stage-not-active">
+            Этап {stage.number}
+          </span>
+        {/if}
       </li>
     {/each}
   </ul>

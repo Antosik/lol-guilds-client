@@ -11,6 +11,8 @@
   --main-dark: hsl(42, 16%, 44%); /* #C2AA70 */
   --main-background: hsl(60, 5%, 8%); /* #161614 */
   --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
+  --game-win: var(--status-active-normal);
+  --game-lose: var(--status-away);
 }
 
 html,
@@ -111,6 +113,7 @@ button {
 
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: #201e19;
@@ -124,6 +127,13 @@ button {
 
 #app {
   padding-bottom: 20px;
+}
+
+.horizontal-scroll {
+  width: calc(100vw - 20px * 2);
+}
+.horizontal-scroll__scrollable {
+  padding-bottom: 10px;
 }
 
 .not-found,

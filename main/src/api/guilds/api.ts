@@ -116,6 +116,16 @@ export class GuildsAPI {
   // #endregion
 
 
+  // #region Misc APIs
+  public async getLatestGames(options?: IPagedRequest): Promise<IClubSeasonRatingResponse[]> {
+    const opts: IPagedRequest = { page: 1, per_page: 50, ...options };
+    const query = stringifyQuery(opts);
+    const data = await this.request(`contest/gameclub/?${query}`, { method: "GET", version: 2 });
+    const { results: rating = [] } = data as IPagedResponse<IClubSeasonRatingResponse>;
+    return rating;
+  }
+  // #endregion
+
   public async request(path: string, options: IRequestOptions, retry = 3): Promise<unknown> {
     const opts: IRequestOptions = { method: "GET", version: 1, body: undefined, ...options };
     const response = await this._sendRequest(path, opts, retry);

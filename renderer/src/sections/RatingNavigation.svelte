@@ -1,4 +1,6 @@
 <script>
+  import { format } from "date-fns";
+  import { ru } from "date-fns/locale";
   import { link, push } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
 
@@ -15,7 +17,7 @@
 
   const onSeasonChange = e => push(`/client/rating/season/${e.target.value}`);
   const formatDate = date =>
-    new Date(date).toLocaleDateString({}, { day: "numeric", month: "long" });
+    format(new Date(date), "d MMMM", { locale: ru });
 </script>
 
 <style>

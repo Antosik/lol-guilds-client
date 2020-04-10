@@ -123,9 +123,22 @@ export class GuildsClient {
       points: 0
     }];
 
-    const { games, points, rank, rank_reward } = await this.api.getSeasonRatingForMyClub(season_id);
+    const season_data = await this.api.getSeasonRatingForMyClub(season_id);
+    let { points } = season_data;
+    const { games, rank, rank_reward } = season_data;
+
     if (points !== 0) {
-      pathPoints.push({ points, rank, description: "Текущая позиция" });
+      pathPoints.push({ points, rank, description: "Вы тут" });
+
+    } else {
+      const season_info = this.api.getSeasonById(season_id);
+      const active_stage = (await season_info).stages.find(stage => stage.is_open && !stage.is_closed);
+
+      if (active_stage !== undefined) {
+        const stage_data = await this.api.getStageRatingForMyClub(active_stage.id, season_id);
+        pathPoints.push({ points: stage_data.points, rank, description: "Вы тут" });
+        points = stage_data.points;
+      }
     }
 
     pathPoints.push({
@@ -151,7 +164,7 @@ export class GuildsClient {
 
     const { games, points, rank, rank_reward } = await this.api.getStageRatingForMyClub(stage_id, season_id);
     if (points !== 0) {
-      pathPoints.push({ points, rank, description: "Текущая позиция" });
+      pathPoints.push({ points, rank, description: "Вы тут" });
     }
 
     pathPoints.push({

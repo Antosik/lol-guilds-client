@@ -2,12 +2,19 @@
   export let current = { points: 0, rank: 0 };
   export let points = [];
 
-  $: full_width = points.length ? points[points.length - 1].points + 250 : 0;
+  $: start_point = points.length ? points[0].points : 0;
+  $: full_width = points.length
+    ? points[points.length - 1].points - start_point + 1000
+    : 0;
+
+  const calculate_position = point =>
+    points.length ? ((point.points - start_point) / full_width) * 100 : 0;
+
   $: points_position = points.map(point => ({
     ...point,
-    position: (point.points / full_width) * 100
+    position: calculate_position(point)
   }));
-  $: current_position = full_width ? (current.points / full_width) * 100 : 0;
+  $: current_position = calculate_position(current);
 </script>
 
 <style>
@@ -47,6 +54,9 @@
   .guild-graph__point:first-child {
     transform: none;
   }
+  .guild-graph__point:last-child {
+    transform: translateX(-100%);
+  }
   .guild-graph__point__points {
     font-size: 12px;
   }
@@ -62,13 +72,16 @@
       {#each points_position as point}
         <line x1="{point.position}%" x2="{point.position}%" y1="0" y2="40px" />
       {/each}
+      <line x1="{current_position}%" x2="{current_position}%" y1="0" y2="30px" />
     </g>
   </svg>
   <div class="guild-graph__axis">
     {#each points_position as point}
       <div class="guild-graph__point" style={`left: ${point.position}%`}>
-        {point.description ? point.description : `Топ-${point.rank}`}
-        {#if point.points}
+        {#if point.description}
+          {point.description}
+        {:else if point.rank}Топ-{point.rank}{/if}
+        {#if point.points !== undefined}
           <div class="guild-graph__point__points">{point.points}pt</div>
         {/if}
       </div>

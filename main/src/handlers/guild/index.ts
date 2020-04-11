@@ -2,6 +2,7 @@ import type { GuildsClient } from "@guilds-main/api/guilds";
 import type { IPagedRequest } from "@guilds-main/api/guilds/interfaces/IGuildsAPI";
 import type { IRPCHandlerFunc, GuildsEventType } from "@guilds-shared/interfaces/IRPCHandler";
 
+import { getGuildSeasonPath, getGuildStagePath } from "./guild-path";
 import { constructResult } from "@guilds-shared/helpers/rpc";
 
 
@@ -20,7 +21,7 @@ export const guildsEventsHandlersMap = new Map<GuildsEventType, GuildsEventHandl
     ["guilds:rating:stage", (guildsClient: GuildsClient) => (season_id: number, stage_id: number, options?: IPagedRequest) => constructResult(guildsClient.api.getTopClubsForStageWithId(stage_id, season_id, options))],
     ["guilds:stats:season", (guildsClient: GuildsClient) => (season_id: number, club_id: number) => constructResult(guildsClient.getGuildSeasonStats(season_id, club_id))],
     ["guilds:stats:stage", (guildsClient: GuildsClient) => (season_id: number, stage_id: number, club_id: number) => constructResult(guildsClient.getGuildStageStats(stage_id, season_id, club_id))],
-    ["guilds:path:season", (guildsClient: GuildsClient) => (season_id: number) => constructResult(guildsClient.getGuildSeasonPath(season_id))],
-    ["guilds:path:stage", (guildsClient: GuildsClient) => (season_id: number, stage_id: number) => constructResult(guildsClient.getGuildStagePath(season_id, stage_id))],
+    ["guilds:path:season", (guildsClient: GuildsClient) => (season_id: number) => constructResult(getGuildSeasonPath(guildsClient, season_id))],
+    ["guilds:path:stage", (guildsClient: GuildsClient) => (season_id: number, stage_id: number) => constructResult(getGuildStagePath(guildsClient, season_id, stage_id))],
   ]
 );

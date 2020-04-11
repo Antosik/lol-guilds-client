@@ -1,6 +1,6 @@
 import type { GuildsAPI } from "./api";
 import type { IClubResponse, IClubSeasonRatingResponse, IClubStageRatingResponse } from "./interfaces/IAPIClub";
-import type { IInternalGuildMember, IInternalGuildMemberStagesRating, IInternalGuildMemberSeasonRating, IInternalGuildMemberStageRating, IInternalGuildPath, IInternalGuildPathPoint } from "./interfaces/IInternal";
+import type { IInternalGuildMember, IInternalGuildMemberStagesRating, IInternalGuildMemberSeasonRating, IInternalGuildMemberStageRating } from "./interfaces/IInternal";
 
 import { createGuildsApi } from "./api";
 
@@ -115,78 +115,6 @@ export class GuildsClient {
   public async getClubOnStageTopN(stage_id: number, season_id: number, place: number): Promise<IClubStageRatingResponse> {
     const clubs = await this.api.getTopClubsForStageWithId(stage_id, season_id, { page: Math.ceil(place / 10), per_page: 10 });
     return clubs[(place - 1) % 10];
-  }
-
-  public async getGuildSeasonPath(season_id: number): Promise<IInternalGuildPath> {
-    const pathPoints: IInternalGuildPathPoint[] = [{
-      description: "Старт",
-      points: 0
-    }];
-
-    const season_data = await this.api.getSeasonRatingForMyClub(season_id);
-    let { points } = season_data;
-    const { games, rank, rank_reward } = season_data;
-
-    if (points !== 0) {
-      pathPoints.push({ points, rank, description: "Вы тут" });
-
-    } else {
-      const season_info = this.api.getSeasonById(season_id);
-      const active_stage = (await season_info).stages.find(stage => stage.is_open && !stage.is_closed);
-
-      if (active_stage !== undefined) {
-        const stage_data = await this.api.getStageRatingForMyClub(active_stage.id, season_id);
-        pathPoints.push({ points: stage_data.points, rank, description: "Вы тут" });
-        points = stage_data.points;
-      }
-    }
-
-    pathPoints.push({
-      description: "Участие в сезоне",
-      points: 1000
-    });
-
-    const placesToGet = [500, 250, 100, 50, 10, 3, 2, 1].filter(place => rank === 0 ? place : place < rank).slice(0, 2);
-    const clubsOnPlaces = await Promise.all(placesToGet.map(place => this.getClubOnSeasonTopN(season_id, place)));
-    const clubsPathPoints = clubsOnPlaces.map<IInternalGuildPathPoint>(club => ({ rank: club.rank, points: club.points }));
-
-    return {
-      current_position: { games, points, rank, rank_reward },
-      points: [...pathPoints, ...clubsPathPoints]
-    };
-  }
-
-  public async getGuildStagePath(season_id: number, stage_id: number): Promise<IInternalGuildPath> {
-    const pathPoints: IInternalGuildPathPoint[] = [{
-      description: "Старт",
-      points: 0
-    }];
-
-    const { games, points, rank, rank_reward } = await this.api.getStageRatingForMyClub(stage_id, season_id);
-    if (points !== 0) {
-      pathPoints.push({ points, rank, description: "Вы тут" });
-    }
-
-    pathPoints.push({
-      description: "Участие в этапе",
-      points: 1000
-    });
-
-    if (points < 1000) {
-      return {
-        current_position: { games, points, rank, rank_reward },
-        points: pathPoints
-      };
-    }
-
-    const placesToGet = [15, 5, 1].filter(place => rank === 0 ? place : place < rank).slice(0, 2);
-    const clubsOnPlaces = await Promise.all(placesToGet.map(place => this.getClubOnStageTopN(stage_id, season_id, place)));
-    const clubsPathPoints = clubsOnPlaces.map<IInternalGuildPathPoint>(club => ({ rank: club.rank, points: club.points }));
-
-    return {
-      current_position: { games, points, rank, rank_reward },
-      points: [...pathPoints, ...clubsPathPoints]
-    };
   }
 }
 

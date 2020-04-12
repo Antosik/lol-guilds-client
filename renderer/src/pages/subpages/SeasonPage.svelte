@@ -91,8 +91,8 @@
     overflow-x: auto;
     scroll-snap-type: x proximity;
     grid-auto-flow: column;
-    grid-auto-columns: calc(20% - 20px);
-    grid-template-columns: repeat(5, 20%);
+    grid-auto-columns: 150px;
+    grid-template-columns: 150px;
   }
   .guild-rating__rank {
     margin-bottom: 12px;

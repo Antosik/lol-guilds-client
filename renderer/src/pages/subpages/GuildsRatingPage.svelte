@@ -55,12 +55,6 @@
   }
 </script>
 
-<style>
-  .my-guild-rating {
-    margin-bottom: 20px;
-  }
-</style>
-
 <div class="my-guild-rating">
   {#await myRatingLoadingPromise}
     <h3>Гильдия</h3>

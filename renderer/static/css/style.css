@@ -13,6 +13,7 @@
   --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
   --game-win: var(--status-active-normal);
   --game-lose: var(--status-away);
+  --grid-gap: 20px;
 }
 
 html,
@@ -126,7 +127,12 @@ button {
 }
 
 #app {
-  padding-bottom: 20px;
+  padding-bottom: var(--grid-gap);
+}
+
+.page {
+  display: grid;
+  gap: var(--grid-gap);
 }
 
 .horizontal-scroll {
@@ -155,5 +161,5 @@ button {
     "header"
     "navigation"
     "main";
-  grid-gap: 14px;
+  gap: var(--grid-gap);
 }

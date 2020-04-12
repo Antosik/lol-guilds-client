@@ -25,14 +25,7 @@
   });
 </script>
 
-<style>
-  .rating-page {
-    display: grid;
-    grid-gap: 20px;
-  }
-</style>
-
-<div class="rating-page">
+<div class="page rating-page">
 
   {#await seasonLoadingPromise}
     <Loading>Загружаем список сезонов...</Loading>

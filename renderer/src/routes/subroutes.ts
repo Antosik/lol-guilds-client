@@ -1,7 +1,6 @@
 import NotFoundPage from "../pages/NotFound.svelte";
 
 import InviteMembers from "../pages/subpages/InviteMembers.svelte";
-import GuildMyInfo from "../pages/subpages/GuildMyInfo.svelte";
 import GuildInfo from "../pages/subpages/GuildInfo.svelte";
 import GuildsRatingWrapper from "../pages/subpages/GuildsRatingWrapper.svelte";
 import GuildsRatingPage from "../pages/subpages/GuildsRatingPage.svelte";
@@ -11,7 +10,6 @@ import SeasonPage from "../pages/subpages/SeasonPage.svelte";
 export const subprefix = "/client";
 export const subroutes = {
   "/": InviteMembers,
-  "/me": GuildMyInfo,
   "/guild": GuildInfo,
   "/rating": GuildsRatingWrapper,
   "/rating/season/:season_id": GuildsRatingWrapper,

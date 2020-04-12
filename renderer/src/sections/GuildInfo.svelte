@@ -4,7 +4,6 @@
 
 <style>
   .guild-info__top {
-    margin: 12px 0;
     display: flex;
     flex-wrap: wrap;
     width: 100%;

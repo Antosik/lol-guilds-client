@@ -20,19 +20,9 @@
     text-align: center;
     margin: 0;
   }
-
-  .guild-info {
-    display: grid;
-    grid-template-areas:
-      "heading"
-      "info"
-      "descriptions"
-      "members";
-    grid-gap: 16px;
-  }
 </style>
 
-<div class="guild-info">
+<div class="page guild-info">
   <h2>Гильдия "{$guildStore.guild.club_name}"</h2>
 
   <div class="guild-info__info">

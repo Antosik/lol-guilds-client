@@ -33,7 +33,7 @@
   });
 </script>
 
-<div class="rating-page">
+<div class="page rating-page">
 
   {#await seasonsLoadingPromise}
     <Loading>Загружаем список сезонов...</Loading>

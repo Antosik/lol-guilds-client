@@ -22,7 +22,6 @@
 
 <style>
   .season-selector {
-    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
   }

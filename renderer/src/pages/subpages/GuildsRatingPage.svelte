@@ -16,6 +16,7 @@
   let currentPage = 1;
   let myRatingLoadingPromise;
   let initialRatingLoading = true;
+  let finished = false;
 
   $: season_id = Number(params.season_id);
   $: stage_id = Number(params.stage_id);
@@ -27,6 +28,7 @@
     guilds = [];
     currentPage = 1;
     initialRatingLoading = true;
+    finished = false;
     myRatingLoadingPromise = !season_id
       ? undefined
       : !stage_id
@@ -43,6 +45,10 @@
           .then(list => {
             guilds = [...guilds, ...list];
             initialRatingLoading = false;
+
+            if (list.length === 0) {
+              finished = true;
+            }
           })
       : rpc
           .invoke("guilds:rating:stage", season_id, stage_id, {
@@ -51,6 +57,10 @@
           .then(list => {
             guilds = [...guilds, ...list];
             initialRatingLoading = false;
+
+            if (list.length === 0) {
+              finished = true;
+            }
           });
   }
 </script>
@@ -69,7 +79,7 @@
   {#if guilds.length}
     <GuildsRatingTable {guilds} myGuildId={$guildStore.guild.id} />
 
-    {#if (!stage_id && guilds.length < 500) || (stage_id && guilds.length < 25)}
+    {#if !finished && ((!stage_id && guilds.length < 1500) || (stage_id && guilds.length < 25))}
       <IntersectionObs on:intersect={() => currentPage++}>
         <Loading>Загружаем еще одну страницу...</Loading>
       </IntersectionObs>

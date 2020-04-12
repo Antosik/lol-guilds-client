@@ -8,8 +8,12 @@
   --main-primary: hsl(46, 52%, 92%); /* #F5F0DF */
   --main-secondary: hsl(42, 40%, 60%); /* #C2AA70 */
   --main-medium: hsl(42, 40%, 80%); /* #E0D4B8 */
+  --main-dark: hsl(42, 16%, 44%); /* #C2AA70 */
   --main-background: hsl(60, 5%, 8%); /* #161614 */
   --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
+  --game-win: var(--status-active-normal);
+  --game-lose: var(--status-away);
+  --grid-gap: 20px;
 }
 
 html,
@@ -31,7 +35,7 @@ body {
 }
 
 body {
-  color: var(--main-primary);
+  color: var(--main-medium);
   font-family: "BeaufortforLOL", sans-serif;
 
   background-image: url("../images/bg.jpg");
@@ -39,6 +43,10 @@ body {
   background-position: center bottom;
   background-repeat: no-repeat;
   background-attachment: fixed;
+}
+
+h1, h2, h3, h4 {
+  color: var(--main-primary);
 }
 
 h1 {
@@ -106,6 +114,7 @@ button {
 
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: #201e19;
@@ -114,11 +123,23 @@ button {
   background: #81785d;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #c2aa70;
+  background: var(--main-secondary);
 }
 
 #app {
-  padding-bottom: 20px;
+  padding-bottom: var(--grid-gap);
+}
+
+.page {
+  display: grid;
+  gap: var(--grid-gap);
+}
+
+.horizontal-scroll {
+  width: calc(100vw - 20px * 2);
+}
+.horizontal-scroll__scrollable {
+  padding-bottom: 10px;
 }
 
 .not-found,
@@ -140,5 +161,5 @@ button {
     "header"
     "navigation"
     "main";
-  grid-gap: 14px;
+  gap: var(--grid-gap);
 }

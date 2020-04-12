@@ -31,5 +31,14 @@
         Рейтинг
       </a>
     </li>
+    <li>
+      <a
+        href="/client/current-season/"
+        class="flex-center use-active"
+        use:link
+        use:active={'/client/current-season/*'}>
+        Текущий сезон
+      </a>
+    </li>
   </ul>
 </nav>

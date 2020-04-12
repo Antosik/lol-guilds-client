@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-import { randomId } from "../utils/functions";
+import { randomId } from "@guilds-shared/helpers/functions";
 
 export interface IAppStore {
   notifications: Array<{ id: string, text: string }>;
@@ -21,7 +21,7 @@ function createAppStore() {
         id: randomId(),
         text
       };
-      setTimeout(() => removeNotification(notification.id), 4000);
+      setTimeout(() => removeNotification(notification.id), 5000);
       return ({ ...state, notifications: [...state.notifications, notification] });
     });
   };

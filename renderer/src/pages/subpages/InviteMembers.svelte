@@ -5,7 +5,7 @@
   import { appStore } from "@guilds-web/store/app";
   import { guildStore } from "@guilds-web/store/guild";
   import { summonerStore } from "@guilds-web/store/summoner";
-  
+
   import Loading from "@guilds-web/blocks/Loading.svelte";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
@@ -25,21 +25,18 @@
       rpc.on("guilds:member-status:update", memberStatusUpdate);
       return;
     });
-    
+
   async function onMemberFriendRequest(event) {
-    const result = await rpc.invoke("guilds:member:friend-request", event.detail);
-    appStore.addNotification(result.message);
+    await rpc.invoke("lcu:friend-request", event.detail);
   }
   async function onMemberInvite(event) {
-    const result = await rpc.invoke("guilds:member:invite", event.detail);
-    appStore.addNotification(result.message);
+    await rpc.invoke("lcu:lobby-invite", event.detail);
   }
   async function onMemberInviteAll() {
     const ready = $guildStore.members
       .filter(member => ["chat", "away", "unknown"].includes(member.status))
       .map(member => member.name);
-    const result = await rpc.invoke("guilds:member:invite-all", ready);
-    appStore.addNotification(result.message);
+    await rpc.invoke("lcu:lobby-invite-all", ready);
   }
 
   onDestroy(() => {

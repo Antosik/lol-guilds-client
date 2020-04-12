@@ -1,61 +1,58 @@
-import type { IpcRenderer } from "electron";
+/* eslint-disable @typescript-eslint/unbound-method */
+import type { IpcRendererEvent } from "electron";
+import type { IRPCHandlerResponse, RPCHandlerEventType } from "@guilds-shared/interfaces/IRPCHandler";
 
-import { EventEmitter } from "events";
 import { ipcRenderer } from "electron";
+import { EventEmitter } from "events";
+import { appStore } from "../store/app";
 
-export class ClientRPC {
-  id = "flow";
+import { flowId } from "@guilds-shared/helpers/rpc";
 
-  emitter: EventEmitter;
-  ipc: IpcRenderer;
+
+export class ClientRPC extends EventEmitter {
+  private _id: string = flowId;
 
   constructor() {
-    this.emitter = new EventEmitter();
+    super();
 
-    this.ipc = ipcRenderer;
-    this.ipc.on(this.id, this.ipcListener);
+    this.handleFlow = this.handleFlow.bind(this);
+    ipcRenderer.on(this._id, this.handleFlow);
 
-    this.emitter.emit("ready");
+    this.emit("ready");
   }
 
-  ipcListener = (_: unknown, { event, data }: { event: string, data: unknown }): void => {
-    this.emitter.emit(event, data);
-  };
 
-  on(ev: string, fn: (...args: unknown[]) => void): void {
-    this.emitter.on(ev, fn);
+  // #region Main
+  public send(event: string, data: unknown = undefined): void {
+    ipcRenderer.send(this._id, { event, data });
   }
 
-  once(ev: string, fn: (...args: unknown[]) => void): void {
-    this.emitter.once(ev, fn);
-  }
+  public async invoke(event: RPCHandlerEventType, ...data: unknown[]): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const response: IRPCHandlerResponse = await ipcRenderer.invoke(this._id, { event, data });
 
-  send(event: string, data: unknown): void {
-    if (!this.id) {
-      throw new Error("Not ready");
+    if (response.notification !== undefined) {
+      appStore.addNotification(response.notification);
     }
-    this.ipc.send(this.id, { event, data });
-  }
 
-  invoke(event: string, ...data: unknown[]): any | Promise<any> {
-    if (!this.id) {
-      throw new Error("Not ready");
+    if (response.status === "error") {
+      throw new Error(response.notification || "Внутренняя ошибка сервера");
     }
-    return this.ipc.invoke(this.id, { event, data });
+
+    return response.data;
   }
 
-  removeListener(ev: string, fn: (...args: unknown[]) => void): void {
-    this.emitter.removeListener(ev, fn);
-  }
-
-  removeAllListeners(): void {
-    this.emitter.removeAllListeners();
-  }
-
-  destroy(): void {
+  public destroy(): void {
     this.removeAllListeners();
-    this.ipc.removeAllListeners(this.id);
+    ipcRenderer.removeListener(this._id, this.handleFlow);
   }
+  // #endregion
+
+
+  // #region Flow handlers
+  private handleFlow(_: IpcRendererEvent, { event, data }: { event: string, data: unknown }): void {
+    super.emit(event, data);
+  }
+  // #endregion
 }
 
 export const rpc = new ClientRPC();

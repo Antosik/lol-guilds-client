@@ -9,7 +9,8 @@ import type { ICurrentSummonerResponse, IUserSeasonRatingResponse, IUserStageRat
 import fetch from "node-fetch";
 import { stringify as stringifyQuery } from "querystring";
 import { logDebug, logError } from "@guilds-main/utils/log";
-import pkg from "../../../../package.json";
+import { VERSION } from "@guilds-shared/env";
+import { IGameClubResponse } from "./interfaces/IAPIGames";
 
 
 export class GuildsAPI {
@@ -116,16 +117,37 @@ export class GuildsAPI {
   // #endregion
 
 
+  // #region Misc APIs
+  public async getLatestGames(options?: IPagedRequest): Promise<IGameClubResponse[]> {
+    const opts: IPagedRequest = { page: 1, per_page: 50, ...options };
+    const query = stringifyQuery(opts);
+    const data = await this.request(`contest/gameclub/?${query}`, { method: "GET", version: 2 });
+    const { results: rating = [] } = data as IPagedResponse<IGameClubResponse>;
+    return rating;
+  }
+  // #endregion
+
   public async request(path: string, options: IRequestOptions, retry = 3): Promise<unknown> {
     const opts: IRequestOptions = { method: "GET", version: 1, body: undefined, ...options };
-    const result = await this._sendRequest(path, opts, retry);
+    const response = await this._sendRequest(path, opts, retry);
 
-    return result.status === 200 ? result.json() : undefined;
+    logDebug(`[GuildsAPI]: "${opts.method} /${path}" ${response.status} "${opts.body && JSON.stringify(opts.body)}"`);
+
+    if (response.status === 204) {
+      return undefined;
+    }
+
+    const result = await response.json();
+
+    if (result.detail) {
+      logError(`"[GuildsAPI]: "${opts.method} /${path}" ${response.status} "${opts.body && JSON.stringify(opts.body)}" --- ${JSON.stringify(result)}`);
+      throw new Error(result.detail);
+    }
+
+    return result;
   }
 
   private async _sendRequest(path: string, options: IRequestOptions, retry = 3): Promise<Response> {
-    logDebug(`Guilds API Request: path - ${path}, options - ${JSON.stringify(options)}`);
-
     const apiVersion = options.version === 2 ? "api-v2" : "api";
     const body = typeof options.body === "undefined" ? undefined : JSON.stringify(options.body);
 
@@ -136,14 +158,14 @@ export class GuildsAPI {
         "Accept": "application/json",
         "Authorization": `JWT ${this._token}`,
         "Content-Type": "application/json",
-        "User-Agent": `League Guilds Client v${pkg.version} (https://github.com/Antosik/lol-guilds-client)`
+        "User-Agent": `League Guilds Client v${VERSION} (https://github.com/Antosik/lol-guilds-client)`
       }
     })
-      .catch(err => {
-        logError("ERROR: Guilds API Request", err);
+      .catch(error => {
+        logError(`"[GuildsAPI]: "${options.method} /${path}" "${body && JSON.stringify(body)}" --- `, error);
 
         if (retry === 0) {
-          throw err;
+          throw error;
         }
 
         return this._sendRequest(path, options, retry - 1);

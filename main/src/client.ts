@@ -1,41 +1,44 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { BrowserWindowConstructorOptions } from "electron";
 import type { GuildsClient } from "./api/guilds";
+import type { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
 import type { LCUClient } from "./api/lcu";
+import type { IFriendCore } from "./api/lcu/interfaces/IFriend";
 import type { ClientRPC } from "./data/rpc";
 import type { Window } from "./ui/window";
 
-
+import { constructResult } from "@guilds-shared/helpers/rpc";
 import { createGuildsAPIClient } from "./api/guilds";
-import { IPagedRequest } from "./api/guilds/interfaces/IGuildsAPI";
-import { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
 import { createLCUAPIClient } from "./api/lcu";
-import { IFriendCore } from "./api/lcu/interfaces/IFriend";
-import { createRPC } from "./data/rpc";
-import { createWindow } from "./ui/window";
 
-import { guildMemberInvite } from "./handlers/guild-member-invite";
-import { guildMemberFriendRequest } from "./handlers/guild-member-friend-request";
+import { createRPC } from "./data/rpc";
+import { lcuEventsHandlersMap } from "./handlers/lcu";
+import { guildsEventsHandlersMap } from "./handlers/guild";
+import { versionEventsMap, versionEventsHandlersMap } from "./handlers/version";
+import { createWindow } from "./ui/window";
 import { autoUpdater } from "./utils/autoupdater";
 
+
+export interface IMainApplicationOptions {
+  window: BrowserWindowConstructorOptions;
+}
 
 export class MainApplication {
   private static _instance: MainApplication;
 
-  public static getInstance(): MainApplication {
+  public static getInstance(options?: IMainApplicationOptions): MainApplication {
     if (!MainApplication._instance) {
-      MainApplication._instance = new MainApplication();
+      MainApplication._instance = new MainApplication(options);
     }
     return MainApplication._instance;
   }
 
-  private _window?: Window;
-  private _rpc?: ClientRPC;
-  private _lcuClient?: LCUClient;
+  private _window: Window;
+  private _rpc: ClientRPC;
+  private _lcuClient: LCUClient;
   private _guildsClient?: GuildsClient;
 
-
-  public init(options?: { window: BrowserWindowConstructorOptions }) {
+  constructor(options?: IMainApplicationOptions) {
     this._window = createWindow(options?.window);
     this._rpc = createRPC(this._window);
     this._lcuClient = createLCUAPIClient(this._rpc);
@@ -44,6 +47,7 @@ export class MainApplication {
     this._onLCUDisconnect = this._onLCUDisconnect.bind(this);
 
     this.initCoreEvents();
+    this.initLCUHandlers();
     this.initGuildHandlers();
     this.initVersionEvents();
   }
@@ -52,122 +56,50 @@ export class MainApplication {
     return this._window;
   }
 
+
   // #region Init
   private initCoreEvents() {
-    if (this._window !== undefined && this._rpc !== undefined) {
-      this._window.once("show", this._onLCUConnect);
-      this._rpc.on("ui:reconnect", this._onLCUConnect);
-      this._rpc.on("lcu:connect", this._onLCUConnect);
-      this._rpc.on("lcu:disconnect", this._onLCUDisconnect);
+    this._rpc.on("ui:reconnect", this._onLCUConnect);
+    this._rpc.on("lcu:connect", this._onLCUConnect);
+    this._rpc.on("lcu:disconnect", this._onLCUDisconnect);
 
-      autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+
+  private initLCUHandlers() {
+    for (const [eventType, eventHandler] of lcuEventsHandlersMap) {
+      this._rpc.setHandler(eventType, eventHandler(this._lcuClient));
     }
   }
 
   private initGuildHandlers() {
-    if (this._rpc !== undefined) {
-      this._rpc.setHandler("guilds:member:invite", async (nickname: string) => {
-        if (!this._lcuClient) return null;
-        return guildMemberInvite([nickname], this._lcuClient);
-      });
-      this._rpc.setHandler("guilds:member:invite-all", async (nicknames: string[]) => {
-        if (!this._lcuClient) return null;
-        return guildMemberInvite(nicknames, this._lcuClient);
-      });
-      this._rpc.setHandler("guilds:member:friend-request", async (nickname: string) => {
-        if (!this._lcuClient) return null;
-        return guildMemberFriendRequest(nickname, this._lcuClient);
-      });
-
-      this._rpc.setHandler("guilds:club", async () => {
-        if (!this._guildsClient) return null;
-        return this._guildsClient.getCurrentClub();
-      });
-      this._rpc.setHandler("guilds:members", (club_id: number) => {
-        if (!this._guildsClient) return null;
-        return this._getMembersWithStatus(club_id);
-      });
-      this._rpc.setHandler("guilds:members:stage", (club_id: number, season_id: number) => {
-        if (!this._guildsClient) return null;
-        return this._guildsClient.getGuildMembersStageRating(club_id, season_id);
-      });
-      this._rpc.setHandler("guilds:seasons", async () => {
-        if (!this._guildsClient) return null;
-        return this._guildsClient.api.getSeasons();
-      });
-      this._rpc.setHandler("guilds:season", async (season_id: number) => {
-        if (!this._guildsClient) return null;
-        return this._guildsClient.api.getSeason(season_id);
-      });
-      this._rpc.setHandler("guilds:rating:season", async (season_id: number, options?: IPagedRequest) => {
-        if (!this._guildsClient) return null;
-        return this._guildsClient.api.getTopClubsForSeasonWithId(season_id, options);
-      });
-      this._rpc.setHandler("guilds:rating:stage", async (season_id: number, stage_id: number, options?: IPagedRequest) => {
-        if (!this._guildsClient) return null;
-        return this._guildsClient.api.getTopClubsForStageWithId(stage_id, season_id, options);
-      });
-      this._rpc.setHandler("guilds:stats:season", async (season_id: number, club_id: number) => {
-        if (!this._guildsClient) return null;
-        return this._guildsClient.getGuildSeasonStats(season_id, club_id);
-      });
-      this._rpc.setHandler("guilds:stats:stage", async (season_id: number, stage_id: number, club_id: number) => {
-        if (!this._guildsClient) return null;
-        return this._guildsClient.getGuildStageStats(stage_id, season_id, club_id);
-      });
-      this._rpc.setHandler("guilds:member-status:subscribe", async (club_id: number) => {
-        return this._subscribeToGuildMembersStatus(club_id);
+    for (const [eventType, eventHandler] of guildsEventsHandlersMap) {
+      this._rpc.setHandler(eventType, (...args: any[]) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+        return this._guildsClient === undefined
+          ? { status: "error" }
+          : eventHandler(this._guildsClient)(...args);
       });
     }
+
+    this._rpc.setHandler("guilds:members", (club_id: number) => {
+      if (!this._guildsClient) return { status: "error" };
+      return constructResult(this._getMembersWithStatus(club_id));
+    });
+    this._rpc.setHandler("guilds:member-status:subscribe", async (club_id: number) => {
+      return constructResult(this._subscribeToGuildMembersStatus(club_id));
+    });
   }
 
   private initVersionEvents() {
-    autoUpdater.on("error", () => {
-      if (this._rpc !== undefined) {
-        this._rpc.send("version:update:error");
-      }
-    });
-
-    autoUpdater.on("checking-for-update", () => {
-      if (this._rpc !== undefined) {
-        this._rpc.send("version:update:process");
-      }
-    });
-
-    autoUpdater.on("update-available", () => {
-      if (this._rpc !== undefined) {
-        this._rpc.send("version:update:available");
-      }
-    });
-
-    autoUpdater.on("update-not-available", () => {
-      if (this._rpc !== undefined) {
-        this._rpc.send("version:update:not-available");
-      }
-    });
-
+    for (const [event, eventToSend] of versionEventsMap) {
+      autoUpdater.on(event, () => this._rpc.send(eventToSend));
+    }
     autoUpdater.on("download-progress", (e) => {
-      if (this._rpc !== undefined) {
-        this._rpc.send("version:update:downloading", (e.percent as number).toFixed(2));
-      }
+      this._rpc.send("version:update:downloading", (e.percent as number).toFixed(2));
     });
 
-    autoUpdater.on("update-downloaded", () => {
-      if (this._rpc !== undefined) {
-        this._rpc.send("version:update:ready");
-      }
-    });
-
-    if (this._rpc !== undefined) {
-      this._rpc.setHandler("version:get", () => {
-        return autoUpdater.currentVersion.version;
-      });
-      this._rpc.setHandler("version:check", () => {
-        return autoUpdater.checkForUpdates();
-      });
-      this._rpc.setHandler("version:install", () => {
-        return autoUpdater.quitAndInstall();
-      });
+    for (const [event, eventHandler] of versionEventsHandlersMap) {
+      this._rpc.setHandler(event, eventHandler(autoUpdater));
     }
   }
   // #endregion
@@ -175,38 +107,40 @@ export class MainApplication {
 
   // #region LCU Connect/Disconnect
   private async _onLCUConnect() {
-    if (this._rpc !== undefined && this._lcuClient !== undefined) {
-      if (!this._lcuClient.isConnected) {
-        await this._lcuClient.connect();
-      } else {
-        this._lcuClient.api.subscribe("/lol-gameflow/v1/gameflow-phase");
+    if (!this._lcuClient.isConnected) {
+      await this._lcuClient.connect();
+    } else {
+      this._lcuClient.api.unsubscribe("/lol-gameflow/v1/gameflow-phase");
+      this._lcuClient.api.subscribe("/lol-gameflow/v1/gameflow-phase");
 
-        this._rpc.send("lcu:connect");
+      this._rpc.send("lcu:connect");
 
-        const [summoner, gameflow, token] = await Promise.all([
-          this._lcuClient.getCurrentSummoner(),
-          this._lcuClient.getStatus(),
-          this._lcuClient.getIdToken(),
-        ]);
+      const [summoner, gameflow, token] = await Promise.all([
+        this._lcuClient.getCurrentSummoner(),
+        this._lcuClient.getStatus(),
+        this._lcuClient.getIdToken(),
+      ]);
 
-        this._guildsClient = createGuildsAPIClient(token);
+      this._guildsClient = createGuildsAPIClient(token);
 
-        this._rpc.send("guilds:connect");
+      this._rpc.send("guilds:connect");
 
-        this._rpc.send("lcu:summoner", summoner);
-        this._rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
-      }
+      this._rpc.send("lcu:summoner", summoner);
+      this._rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
     }
   }
   private _onLCUDisconnect() {
-    if (this._rpc !== undefined) this._rpc.send("lcu:disconnect");
-    if (this._lcuClient !== undefined) { this._lcuClient.store.delete("summoner"); this._lcuClient.store.delete("token"); };
+    this._rpc.send("lcu:disconnect");
+
+    this._lcuClient.store.delete("summoner");
+    this._lcuClient.store.delete("token");
   }
   // #endregion
 
+
   // #region Friends Logic
   private async _getMembersWithStatus(club_id: number): Promise<IInternalGuildMember[]> {
-    if (this._rpc !== undefined && this._lcuClient !== undefined && this._guildsClient !== undefined) {
+    if (this._guildsClient !== undefined) {
       const [guildMembers, friendsList] = await Promise.all([
         this._guildsClient.getGuildMembers(club_id),
         this._lcuClient.getFriendsList()
@@ -228,7 +162,7 @@ export class MainApplication {
   }
 
   private async _subscribeToGuildMembersStatus(club_id: number): Promise<void> {
-    if (this._rpc !== undefined && this._lcuClient !== undefined && this._guildsClient !== undefined) {
+    if (this._guildsClient !== undefined) {
       const [guildMembers, friendsList] = await Promise.all([
         this._guildsClient.getGuildMembers(club_id),
         this._lcuClient.getFriendsList()
@@ -241,30 +175,26 @@ export class MainApplication {
           this._subscribeToFriendStatus(friend);
         }
       });
-
     }
   }
 
   private _subscribeToFriendStatus(friend: IFriendCore) {
-    if (this._rpc !== undefined && this._lcuClient !== undefined) {
-      this._lcuClient.api.unsubscribe(`/lol-chat/v1/friends/${friend.id}`);
-      this._lcuClient.api.subscribeInternal(`/lol-chat/v1/friends/${friend.id}`);
+    this._lcuClient.api.unsubscribe(`/lol-chat/v1/friends/${friend.id}`);
+    this._lcuClient.api.subscribeInternal(`/lol-chat/v1/friends/${friend.id}`);
 
-
-      this._rpc.removeAllListeners(`lcu:lol-chat.v1.friends.${friend.id}`);
-      this._rpc.on(`lcu:lol-chat.v1.friends.${friend.id}`, ({ data }) => {
-        if (this._rpc !== undefined && data) {
-          const update = { ...friend, status: data.availability };
-          this._rpc.send("guilds:member-status:update", update);
-        }
-      });
-    }
+    this._rpc.removeAllListeners(`lcu:lol-chat.v1.friends.${friend.id}`);
+    this._rpc.on(`lcu:lol-chat.v1.friends.${friend.id}`, ({ data }) => {
+      if (data) {
+        const update = { ...friend, status: data.availability };
+        this._rpc.send("guilds:member-status:update", update);
+      }
+    });
   }
   // #endregion
 
 
   public destroy() {
-    if (this._rpc !== undefined) this._rpc.destroy();
-    if (this._lcuClient !== undefined) this._lcuClient.disconnect();
+    this._rpc.destroy();
+    this._lcuClient.disconnect();
   }
 }

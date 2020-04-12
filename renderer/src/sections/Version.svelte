@@ -4,7 +4,7 @@
 
   import { rpc } from "../data/rpc";
   import LoadingSpinner from "../components/LoadingSpinner.svelte";
-  import pkg from "../../../package.json";
+  import { ISSUES_URL } from "@guilds-shared/env";
 
   const versionPromise = rpc.invoke("version:get");
   let updateCheckState;
@@ -109,7 +109,8 @@
 <div class="flex-center version-block">
 
   <a
-    href={pkg.bugs.url}
+    href={ISSUES_URL}
+    target="_blank"
     class="flex-center version-block__issues-link mini-block">
     <img
       src="./images/icons/bug.svg"

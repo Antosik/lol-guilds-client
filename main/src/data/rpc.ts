@@ -1,13 +1,18 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { BrowserWindow, IpcMainEvent, IpcMainInvokeEvent } from "electron";
+import type { IRPCHandlerFunc, IRPCHandlerResponse } from "@guilds-shared/interfaces/IRPCHandler";
 
 import { ipcMain } from "electron";
 import { EventEmitter } from "events";
 
+import { logDebug } from "@guilds-main/utils/log";
+import { flowId } from "@guilds-shared/helpers/rpc";
+
+
 export class ClientRPC extends EventEmitter {
-  private _id = "flow";
+  private _id: string = flowId;
   private _window: BrowserWindow;
-  private _handlers: Map<string, (...args: unknown[]) => unknown | Promise<unknown>>;
+  private _handlers: Map<string, IRPCHandlerFunc>;
 
   constructor(window: BrowserWindow) {
     super();
@@ -32,7 +37,7 @@ export class ClientRPC extends EventEmitter {
     this.wc.send(this._id, { event, data });
   }
 
-  public setHandler(event: string, handler: (...args: any[]) => any | Promise<any>): void {
+  public setHandler(event: string, handler: IRPCHandlerFunc): void { // eslint-disable-line @typescript-eslint/no-explicit-any
     this._handlers.set(event, handler);
   }
 
@@ -53,11 +58,14 @@ export class ClientRPC extends EventEmitter {
     super.emit(event, data);
   }
 
-  private handleInvoke(_: IpcMainInvokeEvent, { event, data }: { event: string, data: unknown[] }): unknown | Promise<unknown> {
+  private handleInvoke(_: IpcMainInvokeEvent, { event, data }: { event: string, data: unknown[] }): IRPCHandlerResponse | Promise<IRPCHandlerResponse> {
     const handler = this._handlers.get(event);
+
     if (handler === undefined) {
-      return undefined;
+      logDebug(`Internal: unknown event - ${event}`);
+      return { status: "error", notification: "Внутренняя ошибка сервера" };
     }
+
     return handler(...data);
   }
   // #endregion

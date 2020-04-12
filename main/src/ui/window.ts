@@ -14,7 +14,7 @@ export class Window extends BrowserWindow {
       show: false,
       webPreferences: {
         nodeIntegration: true,
-        nodeIntegrationInSubFrames: true
+        enableRemoteModule: false
       },
       ...options
     };

@@ -7,13 +7,47 @@ export interface IInternalGuildMember {
   status?: string;
 }
 
-interface IInternalGuildMemberStageRating {
+
+// #region GuildMemberRating
+interface IInternalGuildMemberRatingData {
   id: number;
   points: number;
   games: number;
+}
+
+interface IInternalGuildMemberStageRatingData extends IInternalGuildMemberRatingData {
   stage_id: number;
+}
+
+export interface IInternalGuildMemberStageRating {
+  summoner: ISummonerResponse;
+  stage: IInternalGuildMemberStageRatingData;
 }
 export interface IInternalGuildMemberStagesRating {
   summoner: ISummonerResponse;
-  stages: IInternalGuildMemberStageRating[];
+  stages: IInternalGuildMemberStageRatingData[];
+}
+
+interface IInternalGuildMemberSeasonRatingData extends IInternalGuildMemberRatingData {
+  season_id: number;
+}
+export interface IInternalGuildMemberSeasonRating {
+  summoner: ISummonerResponse;
+  season: IInternalGuildMemberSeasonRatingData;
+}
+// #endregion
+
+
+export interface IInternalGuildPathPoint {
+  points: number;
+  rank?: number;
+  description?: string;
+}
+interface IInternalGuildCurrentPosition extends IInternalGuildPathPoint {
+  rank_reward: string;
+  games: number;
+}
+export interface IInternalGuildPath {
+  current_position: IInternalGuildCurrentPosition;
+  points: IInternalGuildPathPoint[];
 }

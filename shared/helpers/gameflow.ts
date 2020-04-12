@@ -20,7 +20,7 @@ export const gameflowLocale = new Map<EGameflowStatus, string>([
   [EGameflowStatus.Lobby, "В лобби"],
   [EGameflowStatus.Matchmaking, "В очереди"],
   [EGameflowStatus.CheckedIntoTournament, "Участвует в турнире"],
-  [EGameflowStatus.ReadyCheck, "Участвует в турнире"],
+  [EGameflowStatus.ReadyCheck, "Подтверждает готовность"],
   [EGameflowStatus.ChampSelect, "Выбирает чемпиона"],
   [EGameflowStatus.GameStart, "В игре"],
   [EGameflowStatus.FailedToLaunch, "В игре"],

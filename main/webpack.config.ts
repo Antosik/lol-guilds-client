@@ -5,9 +5,12 @@ import { join as joinPath } from "path";
 import TerserPlugin from "terser-webpack-plugin";
 
 import { alias } from "../webpack.config";
+import { version, bugs } from "../package.json";
+
 
 const nodeEnv = process.env.NODE_ENV || "development";
 const isProduction = nodeEnv === "production";
+
 
 const config: Configuration = {
   name: "guilds-app",
@@ -43,23 +46,29 @@ const config: Configuration = {
   },
 
   plugins: [
+    new DefinePlugin({
+      VERSION: JSON.stringify(version),
+      ISSUES_URL: JSON.stringify(bugs.url)
+    }),
+
     new CopyWebpackPlugin([
       {
         from: joinPath(__dirname, "static"),
         to: joinPath(__dirname, "..", "target")
       }
     ]),
-
-    new DefinePlugin({
-      "process.env": {
-        NODE_ENV: JSON.stringify(nodeEnv)
-      }
-    }),
   ],
 
   optimization: {
+    nodeEnv: isProduction ? "production" : "development",
     minimize: isProduction,
-    minimizer: [new TerserPlugin()]
+    minimizer: [new TerserPlugin({
+      parallel: true,
+      sourceMap: true,
+      terserOptions: {
+        keep_fnames: true,
+      },
+    })]
   },
 }
 

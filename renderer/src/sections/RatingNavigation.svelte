@@ -1,4 +1,6 @@
 <script>
+  import { format } from "date-fns";
+  import { ru } from "date-fns/locale";
   import { link, push } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
 
@@ -15,12 +17,11 @@
 
   const onSeasonChange = e => push(`/client/rating/season/${e.target.value}`);
   const formatDate = date =>
-    new Date(date).toLocaleDateString({}, { day: "numeric", month: "long" });
+    format(new Date(date), "d MMMM", { locale: ru });
 </script>
 
 <style>
   .season-selector {
-    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
   }
@@ -58,6 +59,10 @@
     text-transform: uppercase;
     font-size: 14px;
     margin: 0 12px;
+  }
+
+  .stage-not-active {
+    color: var(--main-dark);
   }
 </style>
 
@@ -97,13 +102,19 @@
 
     {#each season_info.stages as stage (stage.id)}
       <li class="season-selector__stages-list-item">
-        <a
-          href={`/client/rating/season/${selectedSeason}/stage/${stage.id}`}
-          class="use-active"
-          use:link
-          use:active>
-          Этап {stage.number}
-        </a>
+        {#if stage.is_open}
+          <a
+            href={`/client/rating/season/${selectedSeason}/stage/${stage.id}`}
+            class="use-active"
+            use:link
+            use:active>
+            Этап {stage.number}
+          </a>
+        {:else}
+          <span class="stage-not-active">
+            Этап {stage.number}
+          </span>
+        {/if}
       </li>
     {/each}
   </ul>

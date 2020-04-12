@@ -72,6 +72,7 @@
   "author": "Antosik",
   "license": "MIT",
   "dependencies": {
+    "date-fns": "^2.11.1",
     "electron-is-dev": "^1.1.0",
     "electron-log": "^4.1.0",
     "electron-store": "^5.1.1",

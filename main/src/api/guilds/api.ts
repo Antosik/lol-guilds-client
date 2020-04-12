@@ -10,6 +10,7 @@ import fetch from "node-fetch";
 import { stringify as stringifyQuery } from "querystring";
 import { logDebug, logError } from "@guilds-main/utils/log";
 import { VERSION } from "@guilds-shared/env";
+import { IGameClubResponse } from "./interfaces/IAPIGames";
 
 
 export class GuildsAPI {
@@ -115,6 +116,16 @@ export class GuildsAPI {
   }
   // #endregion
 
+
+  // #region Misc APIs
+  public async getLatestGames(options?: IPagedRequest): Promise<IGameClubResponse[]> {
+    const opts: IPagedRequest = { page: 1, per_page: 50, ...options };
+    const query = stringifyQuery(opts);
+    const data = await this.request(`contest/gameclub/?${query}`, { method: "GET", version: 2 });
+    const { results: rating = [] } = data as IPagedResponse<IGameClubResponse>;
+    return rating;
+  }
+  // #endregion
 
   public async request(path: string, options: IRequestOptions, retry = 3): Promise<unknown> {
     const opts: IRequestOptions = { method: "GET", version: 1, body: undefined, ...options };

@@ -8,8 +8,13 @@
   import { guildStore } from "./store/guild";
   import { routes } from "./routes";
 
+  import ScrollTopButton from "./components/ScrollTopButton";
   import Notifications from "./sections/Notifications";
   import Version from "./sections/Version";
+
+  let scrollY = 0;
+  const scrollToTop = () =>
+    document.body.scrollIntoView({ behavior: "smooth", block: "start" });
 
   const handleRouting = (auth, summoner) => {
     if (!auth) {
@@ -56,8 +61,13 @@
   });
 </script>
 
+<svelte:window bind:scrollY />
 <Router {routes} />
 <Version />
 <Notifications
   notifications={$appStore.notifications}
   on:close={onNotificationClose} />
+
+{#if scrollY > 1000}
+  <ScrollTopButton on:click={scrollToTop} />
+{/if}

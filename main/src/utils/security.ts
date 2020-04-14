@@ -5,8 +5,10 @@ app.on("web-contents-created", (_, contents) => {
     event.preventDefault();
   });
 
-  contents.on("will-navigate", (event) => {
-    event.preventDefault();
+  contents.on("will-navigate", (event, url) => {
+    if (event.sender.history[event.sender.history.length - 1] !== url) {
+      event.preventDefault();
+    }
   });
 
   contents.on("new-window", (event, url: string) => {

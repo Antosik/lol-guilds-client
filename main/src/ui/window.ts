@@ -11,6 +11,8 @@ export class Window extends BrowserWindow {
       title: "League Guilds Client",
       width: 800,
       height: 600,
+      minWidth: 350,
+      minHeight: 400,
       show: false,
       webPreferences: {
         nodeIntegration: true,

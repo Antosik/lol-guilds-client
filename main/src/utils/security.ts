@@ -14,3 +14,19 @@ app.on("web-contents-created", (_, contents) => {
     shell.openExternal(url);
   });
 });
+
+app.on("remote-require", (event) => {
+  event.preventDefault();
+});
+
+app.on("remote-get-builtin", (event) => {
+  event.preventDefault();
+});
+
+app.on("remote-get-global", (event) => {
+  event.preventDefault();
+});
+
+app.on("remote-get-current-web-contents", (event) => {
+  event.preventDefault();
+});

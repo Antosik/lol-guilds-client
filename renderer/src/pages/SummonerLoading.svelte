@@ -3,15 +3,23 @@
   import { replace } from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
+  import { appStore } from "../store/app";
   import { summonerStore } from "../store/summoner";
 
   function LCUReconnect() {
     rpc.send("ui:reconnect");
   }
 
-  $: if ($summonerStore.summoner) {
-    replace("/client/");
+  function onSummonerUpdate() {
+    if ($appStore.currentPage) {
+      const url = $appStore.currentPage;
+      replace(url);
+    } else {
+      replace("/client/");
+    }
   }
+
+  $: onSummonerUpdate($summonerStore.summoner);
 
   let connectTimeout = false;
   onMount(() => {

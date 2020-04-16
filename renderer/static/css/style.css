@@ -11,15 +11,18 @@
   --main-dark: hsl(42, 16%, 44%); /* #C2AA70 */
   --main-background: hsl(60, 5%, 8%); /* #161614 */
   --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
+  --main-background-transparent-dark: hsla(218, 80%, 2%, 0.85); /* rgba(1, 4, 9, 0.85) */
   --game-win: var(--status-active-normal);
   --game-lose: var(--status-away);
   --grid-gap: 20px;
+  --topbar-height: 24px;
 }
 
 html,
 body {
   width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 * {
@@ -36,6 +39,7 @@ body {
 
 body {
   color: var(--main-medium);
+  border: 1px solid var(--main-dark);
   font-family: "BeaufortforLOL", sans-serif;
 
   background-image: url("../images/bg.jpg");
@@ -126,8 +130,61 @@ button {
   background: var(--main-secondary);
 }
 
+.window-controls {
+  -webkit-app-region: drag;
+  height: var(--topbar-height);
+  z-index: 100;
+  width: 100%;
+  background: var(--main-background-transparent-dark);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.window-control {
+  -webkit-app-region: none;
+  color: var(--main-medium);
+  border: none;
+  width: calc(var(--topbar-height) * 1.5);
+  height: var(--topbar-height);
+  background: transparent;
+}
+.window-control > svg {
+  width: 50%;
+  height: auto;
+}
+.window-control#close-button > svg {
+  width: 34%;
+}
+.window-control > svg > rect,
+.window-control > svg > path {
+  stroke: currentColor;
+  fill: var(--main-background);
+}
+.window-control:hover, .window-control:focus {
+  background: var(--main-dark);
+}
+.window-control:focus {
+  color: var(--main-primary);
+}
+.window-control:hover > svg > rect,
+.window-control:hover > svg > path {
+  fill: var(--main-dark);
+}
+#unmaximize-button {
+  display: none;
+}
+.window-maximized #unmaximize-button {
+  display: flex !important;
+}
+.window-maximized #maximize-button {
+  display: none;
+}
+
 #app {
-  padding-bottom: var(--grid-gap);
+  width: 100vw;
+  height: calc(100vh - var(--topbar-height));
+  overflow: auto;
+  position: relative;
 }
 
 .page {
@@ -162,4 +219,5 @@ button {
     "navigation"
     "main";
   gap: var(--grid-gap);
+  padding-bottom: 20px;
 }

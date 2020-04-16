@@ -2,7 +2,7 @@ import type { BrowserWindowConstructorOptions } from "electron";
 
 import { BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
-import { join as joinPath } from "path";
+import { join as joinPath, resolve as resolvePath } from "path";
 
 
 export class Window extends BrowserWindow {
@@ -12,9 +12,10 @@ export class Window extends BrowserWindow {
       width: 800,
       height: 600,
       show: false,
+      frame: false,
       webPreferences: {
         nodeIntegration: true,
-        enableRemoteModule: false
+        preload: resolvePath("target/renderer", "preload.js")
       },
       ...options
     };

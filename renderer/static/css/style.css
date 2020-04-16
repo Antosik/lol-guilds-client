@@ -165,9 +165,12 @@ button {
 }
 .window-control:focus {
   color: var(--main-primary);
+  outline: none;
 }
 .window-control:hover > svg > rect,
-.window-control:hover > svg > path {
+.window-control:hover > svg > path,
+.window-control:focus > svg > rect,
+.window-control:focus > svg > path {
   fill: var(--main-dark);
 }
 #unmaximize-button {

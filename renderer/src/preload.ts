@@ -28,8 +28,6 @@ function handleWindowControls() {
   win.on("unmaximize", toggleMaximized);
 }
 
-console.log("AAAAAAAAAAA");
-
 document.onreadystatechange = () => {
   if (document.readyState === "complete") {
     handleWindowControls();

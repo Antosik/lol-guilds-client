@@ -7,6 +7,9 @@ import { join as joinPath, resolve as resolvePath } from "path";
 
 export class Window extends BrowserWindow {
   constructor(options: BrowserWindowConstructorOptions = {}) {
+    const htmlPath = isDev ? resolvePath("target", "index.html") : joinPath(process.resourcesPath, "index.html");
+    const preloadPath = isDev ? resolvePath("target/renderer", "preload.js") : joinPath(process.resourcesPath, "renderer", "preload.js");
+
     const settings: BrowserWindowConstructorOptions = {
       title: "League Guilds Client",
       width: 800,
@@ -17,19 +20,14 @@ export class Window extends BrowserWindow {
       frame: false,
       webPreferences: {
         nodeIntegration: true,
-        preload: resolvePath("target/renderer", "preload.js")
+        preload: preloadPath
       },
       ...options
     };
     super(settings);
 
     this.setMenuBarVisibility(false);
-
-    if (isDev) {
-      this.loadFile(joinPath("target", "index.html"));
-    } else {
-      this.loadFile(joinPath("../", "index.html"));
-    }
+    this.loadFile(htmlPath);
 
     this.once("ready-to-show", () => {
       this.show();

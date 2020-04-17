@@ -33,7 +33,7 @@
   }
   .season-selector__heading,
   .season-selector__select {
-    font-size: 1.5em;
+    font-size: 1.5rem;
     margin-bottom: 0;
   }
   .season-selector__select {
@@ -57,7 +57,6 @@
   }
   .season-selector__stages-list-item {
     text-transform: uppercase;
-    font-size: 14px;
     margin: 0 12px;
   }
 

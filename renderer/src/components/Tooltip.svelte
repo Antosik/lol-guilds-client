@@ -29,7 +29,7 @@
     width: 150px;
     height: 70px;
     transform: translate(-50%, -100%);
-    font-size: 14px;
+    font-size: 0.875rem;
     text-align: center;
   }
   .tooltip-container:hover .tooltip-data {

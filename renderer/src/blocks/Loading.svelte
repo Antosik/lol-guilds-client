@@ -6,7 +6,7 @@
   .loading-block {
     text-align: center;
     width: 100%;
-    font-size: 20px;
+    font-size: 1.25rem;
     flex-direction: column;
   }
   :global(.loading-block .loading-spinner) {

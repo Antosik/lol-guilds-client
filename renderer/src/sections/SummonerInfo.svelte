@@ -25,7 +25,7 @@
     text-align: left;
   }
   h1 span {
-    font-size: 16px;
+    font-size: 1rem;
     color: var(--main-secondary);
     vertical-align: top;
   }
@@ -36,10 +36,10 @@
     justify-content: flex-end;
   }
   .summoner-info.light h1 {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   .summoner-info.light h1 span {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .summoner-info.light .summoner-info__status {
     margin-left: 4px;

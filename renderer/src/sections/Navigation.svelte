@@ -8,7 +8,6 @@
     padding: 4px 8px;
     margin: 2px; 
     text-transform: uppercase;
-    font-size: 14px;
   }
 </style>
 

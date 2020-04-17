@@ -58,7 +58,7 @@
     transform: translateX(-100%);
   }
   .guild-graph__point__points {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
 </style>
 

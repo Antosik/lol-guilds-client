@@ -18,10 +18,6 @@
 </script>
 
 <style>
-  .time-ago,
-  .game-result {
-    font-size: 14px;
-  }
   .game-result {
     color: var(--game-lose);
   }

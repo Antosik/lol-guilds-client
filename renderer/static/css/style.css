@@ -37,6 +37,20 @@ body {
   box-sizing: inherit;
 }
 
+html {
+  font-size: 14px;
+}
+@media all and (min-width: 765px) {
+  html {
+    font-size: 16px;
+  }
+}
+@media all and (min-width: 1280px) {
+  html {
+    font-size: 18px;
+  }
+}
+
 body {
   color: var(--main-medium);
   border: 1px solid var(--main-dark);

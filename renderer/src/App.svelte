@@ -29,6 +29,7 @@
     const club = await rpc.invoke("guilds:club");
     guildStore.setGuildData(club);
   };
+  const alertOnlineStatus = () => rpc.send(navigator.onLine ? "lcu:connect" : "lcu:disconnect");
 
   onMount(() => {
     rpc.send("ui:reconnect");
@@ -38,6 +39,9 @@
     rpc.on("lcu:summoner", onSummoner);
     rpc.on("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
     rpc.on("guilds:connect", onGuilds);
+
+    window.addEventListener("online", alertOnlineStatus);
+    window.addEventListener("offline", alertOnlineStatus);
   });
 
   onDestroy(() => {
@@ -46,6 +50,9 @@
     rpc.removeListener("lcu:summoner", onSummoner);
     rpc.removeListener("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
     rpc.removeListener("guilds:connect", onGuilds);
+    
+    window.removeListener("online", alertOnlineStatus);
+    window.removeListener("offline", alertOnlineStatus);
   });
 </script>
 

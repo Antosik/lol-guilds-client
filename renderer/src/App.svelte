@@ -28,8 +28,14 @@
   const onNotificationClose = e => appStore.removeNotification(e.detail);
   const onSummoner = e => summonerStore.setSummoner(e);
   const onGameflow = e => summonerStore.setStatus(e.data);
-  const onConnect = e => summonerStore.setAuth(true);
-  const onDisconnect = e => summonerStore.setAuth(false);
+  const onConnect = e => {
+    guildStore.reset();
+    summonerStore.setAuth(true);
+  };
+  const onDisconnect = e => {
+    guildStore.reset();
+    summonerStore.setAuth(false);
+  };
   const onGuilds = async e => {
     const club = await rpc.invoke("guilds:club");
     guildStore.setGuildData(club);
@@ -55,7 +61,7 @@
     rpc.removeListener("lcu:summoner", onSummoner);
     rpc.removeListener("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
     rpc.removeListener("guilds:connect", onGuilds);
-    
+
     window.removeListener("online", alertOnlineStatus);
     window.removeListener("offline", alertOnlineStatus);
   });

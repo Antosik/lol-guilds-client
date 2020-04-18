@@ -7,13 +7,27 @@
   import { guildStore } from "../store/guild";
   import { subroutes, subprefix } from "../routes";
 
+  import ScrollTopButton from "../components/ScrollTopButton";
   import Loading from "../blocks/Loading.svelte";
   import SummonerInfo from "../sections/SummonerInfo.svelte";
   import Navigation from "../sections/Navigation.svelte";
 
-  function LCUReconnect() {
-    rpc.send("ui:reconnect");
-  }
+  let scrollY = 0;
+  const scrollToTop = () =>
+    $summonerStore.summoner &&
+    document
+      .querySelector(".main-application")
+      .scrollIntoView({ behavior: "smooth", block: "start" });
+
+  const LCUReconnect = () => rpc.send("ui:reconnect");
+  const onAppScroll = e => (scrollY = e.target.scrollTop);
+
+  onMount(() => {
+    document.querySelector("#app").addEventListener("scroll", onAppScroll);
+  });
+  onDestroy(() => {
+    document.querySelector("#app").removeEventListener("scroll", onAppScroll);
+  });
 </script>
 
 <style>
@@ -28,7 +42,7 @@
 </style>
 
 {#if $summonerStore.summoner}
-  <div class="main-application">
+  <div class="main-application" on:scroll={onAppScroll}>
     <SummonerInfo
       summoner={$summonerStore.summoner}
       guild={$guildStore}
@@ -45,7 +59,8 @@
         <div class="guilds_not-participating flex-center">
           <h2>Вы не участвуете в программе "Гильдий".</h2>
           <p>
-            Выбрать Гильдию можно в клиенте Лиги на главной странице во вкладке Гильдии
+            Выбрать Гильдию можно в клиенте Лиги на главной странице во вкладке
+            Гильдии
           </p>
         </div>
       {:else}
@@ -53,4 +68,8 @@
       {/if}
     </main>
   </div>
+
+  {#if scrollY > 500}
+    <ScrollTopButton on:click={scrollToTop} />
+  {/if}
 {/if}

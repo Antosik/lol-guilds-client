@@ -122,7 +122,7 @@
             {/if}
           </div>
           <GuildPlaceGraph
-            points={guild.points}
+            segments={guild.segments}
             current={guild.current_position} />
         {:else}
           <p>Нет данных</p>

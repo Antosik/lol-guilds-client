@@ -43,11 +43,19 @@ export interface IInternalGuildPathPoint {
   rank?: number;
   description?: string;
 }
-interface IInternalGuildCurrentPosition extends IInternalGuildPathPoint {
+export interface IInternalGuildPathSegment {
+  start: IInternalGuildPathPoint;
+  end: IInternalGuildPathPoint;
+  isCurrent: boolean;
+  progress: number;
+  points: IInternalGuildPathPoint[];
+  isTop?: boolean;
+}
+export interface IInternalGuildCurrentPosition extends IInternalGuildPathPoint {
   rank_reward: string;
   games: number;
 }
 export interface IInternalGuildPath {
   current_position: IInternalGuildCurrentPosition;
-  points: IInternalGuildPathPoint[];
+  segments: IInternalGuildPathSegment[];
 }

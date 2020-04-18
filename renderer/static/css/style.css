@@ -118,6 +118,26 @@ button {
   border: 1px solid var(--main-secondary);
   background-color: var(--main-background);
 }
+.mini-block:hover,
+button:hover {
+  background-color: var(--main-dark);
+}
+.mini-block:hover,
+button:focus {
+  border: 1px solid var(--main-medium);
+}
+.mini-block:disabled,
+.mini-block:disabled:hover,
+button:disabled,
+button:disabled:hover {
+  border: 1px solid var(--main-background-transparent);
+  background-color: 1px solid var(--main-background-transparent-dark);
+  color: 1px solid var(--main-dark);
+}
+.mini-block:disabled img,
+button:disabled img {
+  filter: brightness(0.3);
+}
 
 .flex-center {
   display: flex;
@@ -178,7 +198,8 @@ button {
   stroke: currentColor;
   fill: var(--main-background);
 }
-.window-control:hover, .window-control:focus {
+.window-control:hover,
+.window-control:focus {
   background: var(--main-dark);
 }
 .window-control:focus {
@@ -242,7 +263,6 @@ button {
   gap: var(--grid-gap);
   padding-bottom: 20px;
 }
-
 
 a[href*="discord.gg"]:before,
 a[href*="vk.com"]:before {

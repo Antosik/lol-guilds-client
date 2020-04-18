@@ -164,7 +164,7 @@ export class LCUApi {
       if (sessionData.sessionState === ESessionState.Loaded) {
         this._rpc.emit("lcu:connect");
       }
-    }).catch(e => logError("Connect error", e));;
+    }).catch(e => logError("[Connect Error]", e));
   }
 
   private _onDisconnect() {

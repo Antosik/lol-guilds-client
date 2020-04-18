@@ -8,8 +8,13 @@
   import { guildStore } from "./store/guild";
   import { routes } from "./routes";
 
+  import ScrollTopButton from "./components/ScrollTopButton";
   import Notifications from "./sections/Notifications";
   import Version from "./sections/Version";
+
+  let scrollY = 0;
+  const scrollToTop = () =>
+    document.body.scrollIntoView({ behavior: "smooth", block: "start" });
 
   const handleRouting = (auth, summoner) => {
     if (!auth) {
@@ -23,8 +28,14 @@
   const onNotificationClose = e => appStore.removeNotification(e.detail);
   const onSummoner = e => summonerStore.setSummoner(e);
   const onGameflow = e => summonerStore.setStatus(e.data);
-  const onConnect = e => summonerStore.setAuth(true);
-  const onDisconnect = e => summonerStore.setAuth(false);
+  const onConnect = e => {
+    guildStore.reset();
+    summonerStore.setAuth(true);
+  };
+  const onDisconnect = e => {
+    guildStore.reset();
+    summonerStore.setAuth(false);
+  };
   const onGuilds = async e => {
     const club = await rpc.invoke("guilds:club");
     guildStore.setGuildData(club);
@@ -50,14 +61,19 @@
     rpc.removeListener("lcu:summoner", onSummoner);
     rpc.removeListener("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
     rpc.removeListener("guilds:connect", onGuilds);
-    
+
     window.removeListener("online", alertOnlineStatus);
     window.removeListener("offline", alertOnlineStatus);
   });
 </script>
 
+<svelte:window bind:scrollY />
 <Router {routes} />
 <Version />
 <Notifications
   notifications={$appStore.notifications}
   on:close={onNotificationClose} />
+
+{#if scrollY > 1000}
+  <ScrollTopButton on:click={scrollToTop} />
+{/if}

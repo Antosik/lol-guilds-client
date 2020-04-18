@@ -108,6 +108,9 @@ export class MainApplication {
   // #region LCU Connect/Disconnect
   private async _onLCUConnect() {
     if (!this._lcuClient.isConnected) {
+      this._lcuClient.store.delete("summoner");
+      this._lcuClient.store.delete("token");
+
       await this._lcuClient.connect();
     } else {
       this._lcuClient.api.unsubscribe("/lol-gameflow/v1/gameflow-phase");

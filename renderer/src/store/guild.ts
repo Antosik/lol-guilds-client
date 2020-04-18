@@ -24,12 +24,14 @@ function createGuildStore() {
     const storeWithoutMember = store.members.filter(m => member.name !== m.name);
     return { ...store, members: [...storeWithoutMember, member] };
   });
+  const reset = () => update(getInitialStore);
 
   return {
     subscribe,
     setGuildData,
     setMembers,
-    setMemberStatus
+    setMemberStatus,
+    reset
   };
 }
 

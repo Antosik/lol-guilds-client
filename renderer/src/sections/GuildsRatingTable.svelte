@@ -41,7 +41,7 @@
       rgba(245, 240, 223, 0) 100%
     );
   }
-  tr:not(:first-child):hover {
+  tbody tr:hover {
     background: rgba(245, 240, 223, 0.1);
   }
 </style>

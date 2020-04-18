@@ -6,6 +6,7 @@ import windowStateKeeper from "electron-window-state";
 import "./utils/security";
 
 import { MainApplication } from "./client";
+import { logError } from "./utils/log";
 
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -47,3 +48,7 @@ if (!gotTheLock) {
     if (process.platform !== "darwin") app.quit();
   });
 }
+
+process.on("uncaughtException", (error) => {
+  logError("[UNCAUGHT]: ", error);
+});

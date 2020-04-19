@@ -7,6 +7,7 @@ import type { IFriendCore } from "./api/lcu/interfaces/IFriend";
 import type { ClientRPC } from "./data/rpc";
 import type { Window } from "./ui/window";
 
+import { EGuildMemberStatus } from "@guilds-shared/helpers/gameflow";
 import { constructResult } from "@guilds-shared/helpers/rpc";
 import { createGuildsAPIClient } from "./api/guilds";
 import { createLCUAPIClient } from "./api/lcu";
@@ -144,17 +145,23 @@ export class MainApplication {
   // #region Friends Logic
   private async _getMembersWithStatus(club_id: number): Promise<IInternalGuildMember[]> {
     if (this._guildsClient !== undefined) {
-      const [guildMembers, friendsList] = await Promise.all([
+      const [guildMembers, friendsList, bannedList] = await Promise.all([
         this._guildsClient.getGuildMembers(club_id),
-        this._lcuClient.getFriendsList()
+        this._lcuClient.getFriendsList(),
+        this._lcuClient.getBannedList()
       ]);
 
+      const bannedPlayersNames = bannedList.map<string>(player => player.name);
       const friendNameToDataMap = new Map<string, IFriendCore>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
       const guildMembersWithStatus = guildMembers.map(member => {
         const friend = friendNameToDataMap.get(member.name.toLowerCase());
+        const status = friend === undefined
+          ? bannedPlayersNames.includes(member.name)
+            ? EGuildMemberStatus.Banned : EGuildMemberStatus.Unknown
+          : friend.availability;
         return {
           ...member,
-          status: friend === undefined ? "unknown" : friend.availability
+          status
         };
       });
 

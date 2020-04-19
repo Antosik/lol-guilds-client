@@ -47,7 +47,7 @@
   class="guild-member-status"
   class:in-game={statusCode === 'dnd'}
   class:away={statusCode === 'away'}
-  class:offline={statusCode === 'offline' || statusCode === 'unknown' || statusCode === 'mobile'}>
+  class:offline={statusCode === 'offline' || statusCode === 'unknown' || statusCode === 'mobile' || statusCode === 'banned'}>
   <span class="status__circle" />
 
   {#if showText}

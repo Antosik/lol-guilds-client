@@ -9,7 +9,7 @@ const sortByPoints = (first: IInternalGuildPathPoint, second: IInternalGuildPath
 
 function constructSegment(guildPoint: IInternalGuildPathPoint, start: IInternalGuildPathPoint, end: IInternalGuildPathPoint): IInternalGuildPathSegment {
   const progress = calculateRelativeProgress(guildPoint.points, start.points, end.points);
-  const isCurrent = start.points < guildPoint.points && guildPoint.points < end.points;
+  const isCurrent = start.points <= guildPoint.points && guildPoint.points <= end.points;
 
   return {
     start,

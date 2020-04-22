@@ -67,6 +67,12 @@ export class GuildsAPI {
     return seasons.find((season) => season.is_open && !season.is_closed);
   }
 
+  public async getPreviousSeason(): Promise<ISeasonResponse | undefined> {
+    const data = await this.request("contest/season", { method: "GET", version: 2 });
+    const seasons = data as ISeasonResponse[];
+    return seasons.sort((a, b) => b.id - a.id)[0];
+  }
+
   public async getCurrentStage(): Promise<IStageResponse | undefined> {
     const currentSeason = await this.getCurrentSeason();
     if (currentSeason === undefined) { return undefined; }

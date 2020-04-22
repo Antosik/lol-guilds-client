@@ -17,6 +17,7 @@ export const guildsEventsHandlersMap = new Map<GuildsEventType, GuildsEventHandl
     ["guilds:seasons", (guildsClient: GuildsClient) => () => constructResult(guildsClient.api.getSeasons())],
     ["guilds:season", (guildsClient: GuildsClient) => (season_id: number) => constructResult(guildsClient.api.getSeason(season_id))],
     ["guilds:season:live", (guildsClient: GuildsClient) => () => constructResult(guildsClient.api.getCurrentSeason())],
+    ["guilds:season:prev", (guildsClient: GuildsClient) => () => constructResult(guildsClient.api.getPreviousSeason())],
     ["guilds:rating:season", (guildsClient: GuildsClient) => (season_id: number, options?: IPagedRequest) => constructResult(guildsClient.api.getTopClubsForSeasonWithId(season_id, options))],
     ["guilds:rating:stage", (guildsClient: GuildsClient) => (season_id: number, stage_id: number, options?: IPagedRequest) => constructResult(guildsClient.api.getTopClubsForStageWithId(stage_id, season_id, options))],
     ["guilds:stats:season", (guildsClient: GuildsClient) => (season_id: number, club_id: number) => constructResult(guildsClient.getGuildSeasonStats(season_id, club_id))],

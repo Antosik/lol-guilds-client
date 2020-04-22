@@ -17,8 +17,12 @@
   $: stage =
     stage_id && season && season.stages.find(stage => stage.id === stage_id);
 
-  let season = undefined;
-  const seasonLoadingPromise = rpc.invoke("guilds:season:live");
+  let season;
+  const seasonLoadingPromise = rpc
+    .invoke("guilds:season:live")
+    .then(liveSeason =>
+      liveSeason !== undefined ? liveSeason : rpc.invoke("guilds:season:prev")
+    );
 
   onMount(async () => {
     season = await seasonLoadingPromise;

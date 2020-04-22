@@ -6,7 +6,7 @@ export interface IRPCHandlerResponse {
   data?: unknown;
 }
 
-type GuildsEventSeasonsType = "guilds:seasons" | "guilds:season" | "guilds:season:live";
+type GuildsEventSeasonsType = "guilds:seasons" | "guilds:season" | "guilds:season:live" | "guilds:season:prev";
 type GuildsEventMembersType = "guilds:members" | "guilds:members:season" | "guilds:members:stage";
 type GuildsEventRatingType = "guilds:rating:season" | "guilds:rating:stage";
 type GuildsEventStatsType = "guilds:stats:season" | "guilds:stats:stage";

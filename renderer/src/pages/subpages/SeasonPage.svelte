@@ -12,8 +12,12 @@
 
   export let params = {};
 
-  let seasonLoadingPromise = rpc.invoke("guilds:season:live");
   let season;
+  let seasonLoadingPromise = rpc
+    .invoke("guilds:season:live")
+    .then(liveSeason =>
+      liveSeason !== undefined ? liveSeason : rpc.invoke("guilds:season:prev")
+    );
 
   let lastGames = [];
   let lastGamesPage = 1;
@@ -25,8 +29,8 @@
   $: guildRatingLoadingPromise = !season_id
     ? undefined
     : !stage_id
-    ? rpc.invoke("guilds:path:season", season_id)
-    : rpc.invoke("guilds:path:stage", season_id, stage_id);
+    ? rpc.invoke("guilds:path:season", season_id).then(res => { console.log(res); return res; })
+    : rpc.invoke("guilds:path:stage", season_id, stage_id).then(res => { console.log(res); return res; });
 
   $: afterNavigation($location);
   $: loadGames($location, lastGamesPage);

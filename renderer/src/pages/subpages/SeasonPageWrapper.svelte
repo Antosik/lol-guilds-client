@@ -3,6 +3,7 @@
   import Router, { link } from "svelte-spa-router";
 
   import { rpc } from "@guilds-web/data/rpc";
+  import { appStore } from "@guilds-web/store/app";
   import {
     season_subprefix as subprefix,
     season_subroutes as subroutes
@@ -37,7 +38,7 @@
     {#if season}
       <SeasonInfoNavigation {season} {stage} />
 
-      <Router routes={subroutes} prefix={subprefix} />
+      <Router routes={subroutes} prefix={subprefix} on:routeLoaded={appStore.setCurrentPageLoaded} />
     {:else}
       <p>Нет активного сезона!</p>
     {/if}

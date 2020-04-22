@@ -31,6 +31,10 @@ function createAppStore() {
     window.localStorage.setItem("currentPage", url);
     update(state => ({ ...state, currentPage: url }));
   };
+  const setCurrentPageLoaded = ({ detail: { location } }: { detail: { location: string } }) => {
+    window.localStorage.setItem("currentPage", location);
+    update(state => ({ ...state, currentPage: location }));
+  };
   const cleanCurrentPage = () => {
     window.localStorage.removeItem("currentPage");
     update(state => ({ ...state, currentPage: "" }));
@@ -45,6 +49,7 @@ function createAppStore() {
     addNotification,
     removeNotification,
     setCurrentPage,
+    setCurrentPageLoaded,
     cleanCurrentPage
   };
 }

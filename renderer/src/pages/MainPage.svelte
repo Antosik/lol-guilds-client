@@ -3,6 +3,7 @@
   import Router, { replace, location } from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
+  import { appStore } from "../store/app";
   import { summonerStore } from "../store/summoner";
   import { guildStore } from "../store/guild";
   import { subroutes, subprefix } from "../routes";
@@ -24,6 +25,9 @@
 
   onMount(() => {
     document.querySelector("#app").addEventListener("scroll", onAppScroll);
+    if (!$summonerStore.summoner) {
+      replace("/summoner-loading");
+    }
   });
   onDestroy(() => {
     document.querySelector("#app").removeEventListener("scroll", onAppScroll);
@@ -64,7 +68,7 @@
           </p>
         </div>
       {:else}
-        <Router routes={subroutes} prefix={subprefix} />
+        <Router routes={subroutes} prefix={subprefix} on:routeLoaded={appStore.setCurrentPageLoaded} />
       {/if}
     </main>
   </div>

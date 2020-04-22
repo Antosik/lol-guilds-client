@@ -3,6 +3,7 @@
   import Router, { link, push, location } from "svelte-spa-router";
 
   import { rpc } from "@guilds-web/data/rpc";
+  import { appStore } from "@guilds-web/store/app";
   import {
     rating_subprefix as subprefix,
     rating_subroutes as subroutes
@@ -47,7 +48,7 @@
       <Loading>Загружаем рейтинг...</Loading>
     {/if}
 
-    <Router routes={subroutes} prefix={subprefix} />
+    <Router routes={subroutes} prefix={subprefix} on:routeLoaded={appStore.setCurrentPageLoaded} />
   {:catch error}
     <p>Что-то пошло не так: {error.message}</p>
   {/await}

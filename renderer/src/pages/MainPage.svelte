@@ -25,6 +25,9 @@
 
   onMount(() => {
     document.querySelector("#app").addEventListener("scroll", onAppScroll);
+    if (!$summonerStore.summoner) {
+      replace("/summoner-loading");
+    }
   });
   onDestroy(() => {
     document.querySelector("#app").removeEventListener("scroll", onAppScroll);

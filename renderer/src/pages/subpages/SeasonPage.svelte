@@ -3,6 +3,7 @@
   import { location } from "svelte-spa-router";
 
   import { rpc } from "@guilds-web/data/rpc";
+  import { summonerStore } from "@guilds-web/store/summoner";
   import { guildStore } from "@guilds-web/store/guild";
 
   import GameInfo from "@guilds-web/components/GameInfo.svelte";
@@ -29,8 +30,14 @@
   $: guildRatingLoadingPromise = !season_id
     ? undefined
     : !stage_id
-    ? rpc.invoke("guilds:path:season", season_id).then(res => { console.log(res); return res; })
-    : rpc.invoke("guilds:path:stage", season_id, stage_id).then(res => { console.log(res); return res; });
+    ? rpc.invoke("guilds:path:season", season_id).then(res => {
+        console.log(res);
+        return res;
+      })
+    : rpc.invoke("guilds:path:stage", season_id, stage_id).then(res => {
+        console.log(res);
+        return res;
+      });
 
   $: afterNavigation($location);
   $: loadGames($location, lastGamesPage);
@@ -82,6 +89,15 @@
           );
   }
 
+  function findSummonerRating(summonerName, members = []) {
+    for (let i = 0, len = members.length; i < len; i++) {
+      if (members[i].summoner.summoner_name === summonerName) {
+        return `#${i + 1} (${members[i].results.points}pt)`;
+      }
+    }
+    return "Нет рейтинга";
+  }
+
   onMount(async () => {
     season = await seasonLoadingPromise;
   });
@@ -100,6 +116,10 @@
   }
   .guild-rating__rank {
     margin-bottom: 12px;
+  }
+
+  .top-members p {
+    margin: 4px 0;
   }
 </style>
 
@@ -140,6 +160,9 @@
         <Loading>Загружаем список...</Loading>
       {:then topMembers}
         {#if topMembers.length}
+          <p>
+            Личный рейтинг - {findSummonerRating($summonerStore.summoner.displayName, topMembers)}
+          </p>
           <ul class="horizontal-scroll__scrollable">
             {#each topMembers as member, i (member.summoner.id)}
               <li>
@@ -157,7 +180,7 @@
     </div>
 
     <div class="last-games horizontal-scroll">
-      <h3>Мои последние игры</h3>
+      <h3>Мои последние игры с гильдией</h3>
       {#if lastGames.length}
         <ul class="horizontal-scroll__scrollable">
           {#each lastGames as game, i (game.id)}

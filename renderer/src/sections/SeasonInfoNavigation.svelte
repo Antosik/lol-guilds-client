@@ -17,7 +17,7 @@
     const formatOptions = { addSuffix: true, locale: ru };
 
     if (now > endDate) {
-      const distance = formatDistance(now, endDate, formatOptions);
+      const distance = formatDistance(endDate, now, formatOptions);
       return `Закончился ${distance}`;
     } else if (now > startDate) {
       const distance = formatDistance(endDate, now, formatOptions);

@@ -44,7 +44,8 @@ export const enum EGuildMemberStatus {
   InGame = "dnd",
   Mobile = "mobile",
   Offline = "offline",
-  Unknown = "unknown"
+  Unknown = "unknown",
+  Banned = "banned"
 }
 
 export const guildMemberStatusLocale = new Map<EGuildMemberStatus, string>([
@@ -53,7 +54,8 @@ export const guildMemberStatusLocale = new Map<EGuildMemberStatus, string>([
   [EGuildMemberStatus.InGame, "В игре"],
   [EGuildMemberStatus.Offline, "Оффлайн"],
   [EGuildMemberStatus.Mobile, "League+"],
-  [EGuildMemberStatus.Unknown, "Неизвестно"]
+  [EGuildMemberStatus.Unknown, "Неизвестно"],
+  [EGuildMemberStatus.Banned, "Заблокирован"]
 ]);
 
 export const guildMemberStatusSortOrder = new Map<EGuildMemberStatus, number>([
@@ -62,5 +64,6 @@ export const guildMemberStatusSortOrder = new Map<EGuildMemberStatus, number>([
   [EGuildMemberStatus.Unknown, 2],
   [EGuildMemberStatus.InGame, 3],
   [EGuildMemberStatus.Mobile, 4],
-  [EGuildMemberStatus.Offline, 5],
+  [EGuildMemberStatus.Banned, 5],
+  [EGuildMemberStatus.Offline, 6],
 ]);

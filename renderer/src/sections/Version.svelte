@@ -46,7 +46,6 @@
     position: fixed;
     bottom: 0;
     right: 0;
-    font-size: 14px;
   }
 
   .version-block__issues-link,

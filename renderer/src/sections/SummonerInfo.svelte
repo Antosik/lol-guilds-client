@@ -1,6 +1,8 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import { location } from "svelte-spa-router";
   import SummonerStatus from "../components/SummonerStatus.svelte";
+  import { appStore } from "../store/app";
 
   export let summoner = undefined;
   export let status = "None";
@@ -8,9 +10,7 @@
   export let style = "normal";
 
   const dispatch = createEventDispatcher();
-  function LCUReconnect() {
-    dispatch("click-reconnect");
-  }
+  const pageReload = () => { appStore.setCurrentPage($location); window.location.reload(); };
 </script>
 
 <style>
@@ -25,7 +25,7 @@
     text-align: left;
   }
   h1 span {
-    font-size: 16px;
+    font-size: 1rem;
     color: var(--main-secondary);
     vertical-align: top;
   }
@@ -36,10 +36,10 @@
     justify-content: flex-end;
   }
   .summoner-info.light h1 {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   .summoner-info.light h1 span {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .summoner-info.light .summoner-info__status {
     margin-left: 4px;
@@ -74,7 +74,10 @@
       <SummonerStatus statusCode={status} showText={style !== 'light'} />
     </div>
   {/if}
-  <button type="button" class="refresh flex-center" on:click={LCUReconnect}>
+  <button
+    type="button"
+    class="refresh flex-center"
+    on:click={pageReload}>
     <img src="./images/icons/refresh.svg" alt="Обновить" />
   </button>
 </header>

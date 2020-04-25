@@ -1,90 +1,89 @@
 <script>
+  import GuildPlaceGraphAxis from "./GuildPlaceGraphAxis";
+  import GuildPlaceGraphTrack from "./GuildPlaceGraphTrack";
+
   export let current = { points: 0, rank: 0 };
-  export let points = [];
+  export let segments = [];
 
-  $: start_point = points.length ? points[0].points : 0;
-  $: full_width = points.length
-    ? points[points.length - 1].points - start_point + 1000
-    : 0;
+  const currentSegment = segments.find(segment => segment.isCurrent);
+  let selectedSegmentIndex = segments.indexOf(currentSegment);
 
-  const calculate_position = point =>
-    points.length ? ((point.points - start_point) / full_width) * 100 : 0;
+  $: selectedSegment = segments[selectedSegmentIndex];
 
-  $: points_position = points.map(point => ({
-    ...point,
-    position: calculate_position(point)
-  }));
-  $: current_position = calculate_position(current);
+  const prevSegment = () => (selectedSegmentIndex = selectedSegmentIndex - 1);
+  const nextSegment = () => (selectedSegmentIndex = selectedSegmentIndex + 1);
 </script>
 
 <style>
   .guild-graph {
-    height: 80px;
-  }
-  .guild-graph__figure {
-    width: calc(100% - 4px);
-    height: 40px;
-  }
-  .guild-graph__figure line {
-    stroke: var(--main-secondary);
-    stroke-width: 2px;
-  }
-  .guild-graph__bg,
-  .guild-graph__fg {
-    height: 20px;
-    stroke: var(--main-secondary);
-    stroke-width: 2px;
-  }
-  .guild-graph__bg {
-    fill: var(--main-background-transparent);
-  }
-  .guild-graph__fg {
-    fill: var(--main-medium);
+    display: flex;
+    align-items: center;
   }
 
-  .guild-graph__axis {
+  .guild-graph__nav {
+    border-radius: 50%;
+    flex-shrink: 0;
+    flex-grow: 0;
+    width: 24px;
+    height: 24px;
+    margin-top: -2px;
+  }
+  .guild-graph__nav--prev {
+    margin-right: 8px;
+  }
+  .guild-graph__nav--next {
+    margin-left: 8px;
+  }
+  .guild-graph__nav__img {
+    max-width: 80%;
+  }
+
+  .guild-graph__figure {
+    flex: 1 auto;
     position: relative;
   }
 
-  .guild-graph__point {
+  .guild-graph__track {
+    width: 100%;
+    height: 130px;
+  }
+
+  .guild-graph__axis {
     position: absolute;
-    transform: translateX(-50%);
-    text-align: center;
-  }
-  .guild-graph__point:first-child {
-    transform: none;
-  }
-  .guild-graph__point:last-child {
-    transform: translateX(-100%);
-  }
-  .guild-graph__point__points {
-    font-size: 12px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
   }
 </style>
 
 <div class="guild-graph">
-  <svg class="guild-graph__figure" text-rendering="optimizeLegibility">
-    <g>
-      <rect x="0" y="0" width="100%" class="guild-graph__bg" />
-      <rect x="0" y="0" width="{current_position}%" class="guild-graph__fg" />
-    </g>
-    <g class="lines">
-      {#each points_position as point}
-        <line x1="{point.position}%" x2="{point.position}%" y1="0" y2="40px" />
-      {/each}
-      <line x1="{current_position}%" x2="{current_position}%" y1="0" y2="30px" />
-    </g>
-  </svg>
-  <div class="guild-graph__axis">
-    {#each points_position as point}
-      <div class="guild-graph__point" style={`left: ${point.position}%`}>
-        {#if point.description}
-          {point.description}
-        {:else if point.rank}Топ-{point.rank}{/if}
-        {#if point.points !== undefined}
-          <div class="guild-graph__point__points">{point.points}pt</div>
-        {/if}
-      </div>
-    {/each}
+  <button
+    class="guild-graph__nav guild-graph__nav--prev flex-center"
+    type="button"
+    disabled={selectedSegmentIndex === 0}
+    on:click={prevSegment}>
+    <img
+      src="./images/icons/arrow-left.svg"
+      alt="Назад"
+      class="guild-graph__nav__img" />
+  </button>
+  <div class="guild-graph__figure">
+    <div class="guild-graph__track">
+      <GuildPlaceGraphTrack {...selectedSegment} currentPoint={current} />
+    </div>
+    <div class="guild-graph__axis">
+      <GuildPlaceGraphAxis {...selectedSegment} currentPoint={current} />
+    </div>
   </div>
+  <button
+    class="guild-graph__nav guild-graph__nav--next flex-center"
+    type="button"
+    disabled={selectedSegmentIndex === segments.length - 1}
+    on:click={nextSegment}>
+    <img
+      src="./images/icons/arrow-right.svg"
+      alt="Вперед"
+      class="guild-graph__nav__img" />
+  </button>
 </div>

@@ -1,20 +1,52 @@
 import { GuildsClient } from "@guilds-main/api/guilds";
-import { IInternalGuildPath, IInternalGuildPathPoint } from "@guilds-main/api/guilds/interfaces/IInternal";
+import { IClubRatingResponse } from "@guilds-main/api/guilds/interfaces/IAPIClub";
+import { IInternalGuildCurrentPosition, IInternalGuildPath, IInternalGuildPathPoint, IInternalGuildPathSegment } from "@guilds-main/api/guilds/interfaces/IInternal";
+import { calculateRelativeProgress } from "@guilds-shared/helpers/points";
 
 
-function absolutePointsToRelative(guildPoints: number, absolutePoints: IInternalGuildPathPoint[]): IInternalGuildPathPoint[] {
-  if (guildPoints < 3000) {
-    return absolutePoints;
+const guildRatingToPoint = (club: IClubRatingResponse): IInternalGuildPathPoint => ({ rank: club.rank, points: club.points });
+const sortByPoints = (first: IInternalGuildPathPoint, second: IInternalGuildPathPoint): number => first.points - second.points;
+
+function constructSegment(guildPoint: IInternalGuildPathPoint, start: IInternalGuildPathPoint, end: IInternalGuildPathPoint): IInternalGuildPathSegment {
+  const progress = calculateRelativeProgress(guildPoint.points, start.points, end.points);
+  const isCurrent = start.points <= guildPoint.points && guildPoint.points <= end.points;
+
+  return {
+    start,
+    end,
+    isCurrent,
+    progress,
+    points: []
+  };
+}
+
+function constructSegments(guildPoint: IInternalGuildPathPoint, points: IInternalGuildPathPoint[], topPoints: IInternalGuildPathPoint[] = []): IInternalGuildPathSegment[] {
+  const segments: IInternalGuildPathSegment[] = [];
+
+  for (let i = 0, len = points.length - 1; i < len; i++) {
+    const start: IInternalGuildPathPoint = points[i];
+    const end: IInternalGuildPathPoint = points[i + 1];
+
+    segments.push(constructSegment(guildPoint, start, end));
   }
 
-  const relativeStart = guildPoints - 3000;
-  const relativePoints = absolutePoints.filter((point) => point.points > relativeStart);
+  if (topPoints.length) {
+    segments.push(constructSegment(guildPoint, points[points.length - 1], topPoints[0]));
 
-  return [{ points: relativeStart }, ...relativePoints];
+    const topSegment = constructSegment(guildPoint, topPoints[0], topPoints[topPoints.length - 1]);
+    topSegment.points = topSegment.points.concat(topPoints.slice(1, topPoints.length - 1));
+    topSegment.isTop = true;
+
+    segments.push(topSegment);
+  }
+
+  return segments;
 }
 
 export async function getGuildSeasonPath(guildsClient: GuildsClient, season_id: number): Promise<IInternalGuildPath> {
-  const absolutePoints: IInternalGuildPathPoint[] = [{ points: 0 }];
+  let absolutePoints: IInternalGuildPathPoint[] = [
+    { points: 0 }, { description: "Старт", points: 1000 }
+  ];
 
   const season_data = await guildsClient.api.getSeasonRatingForMyClub(season_id);
   let { points } = season_data;
@@ -30,47 +62,46 @@ export async function getGuildSeasonPath(guildsClient: GuildsClient, season_id: 
     }
   }
 
-  absolutePoints.push({
-    description: "Старт",
-    points: 1000
-  });
+  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward };
 
-  const placesToGet = [500, 250, 100, 50, 10, 3, 2, 1].filter(place => rank === 0 ? place : place < rank).slice(0, 2);
-  const clubsOnPlaces = await Promise.all(placesToGet.map(place => guildsClient.getClubOnSeasonTopN(season_id, place)));
-  const clubsPathPoints = clubsOnPlaces.map<IInternalGuildPathPoint>(club => ({ rank: club.rank, points: club.points }));
+  const noticiablePlaces = [500, 250, 100, 50];
+  const clubOnNoticiablePlaces = await Promise.all(noticiablePlaces.map(place => guildsClient.getClubOnSeasonTopN(season_id, place)));
+  const clubsInTop10 = await guildsClient.api.getTopClubsForSeasonWithId(season_id, { page: 1, per_page: 10 });
+
+  absolutePoints = absolutePoints.concat(clubOnNoticiablePlaces.map<IInternalGuildPathPoint>(guildRatingToPoint)).sort(sortByPoints);
+  const topPoints = clubsInTop10.map<IInternalGuildPathPoint>(guildRatingToPoint).sort(sortByPoints);
 
   return {
-    current_position: { games, points, rank, rank_reward },
-    points: absolutePointsToRelative(points, [...absolutePoints, ...clubsPathPoints])
+    current_position: currentPosition,
+    segments: constructSegments(currentPosition, absolutePoints, topPoints)
   };
 }
 
 export async function getGuildStagePath(guildsClient: GuildsClient, season_id: number, stage_id: number): Promise<IInternalGuildPath> {
-  const absolutePoints: IInternalGuildPathPoint[] = [{
-    points: 0
-  }];
+  let absolutePoints: IInternalGuildPathPoint[] = [
+    { points: 0 }, { description: "Старт", points: 1000 }
+  ];
 
   const { games, points, rank, rank_reward } = await guildsClient.api.getStageRatingForMyClub(stage_id, season_id);
-
-  absolutePoints.push({
-    description: "Старт",
-    points: 1000
-  });
+  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward };
 
   if (points < 1000) {
     return {
-      current_position: { games, points, rank, rank_reward },
-      points: absolutePoints
+      current_position: currentPosition,
+      segments: constructSegments(currentPosition, absolutePoints)
     };
   }
 
-  const placesToGet = [15, 5, 1].filter(place => rank === 0 ? place : place < rank).slice(0, 2);
-  const clubsOnPlaces = await Promise.all(placesToGet.map(place => guildsClient.getClubOnStageTopN(stage_id, season_id, place)));
-  const clubsPathPoints = clubsOnPlaces.map<IInternalGuildPathPoint>(club => ({ rank: club.rank, points: club.points }));
+  const [clubOnTop15, clubsInTop5] = await Promise.all([
+    guildsClient.getClubOnStageTopN(stage_id, season_id, 15),
+    guildsClient.api.getTopClubsForStageWithId(stage_id, season_id, { page: 1, per_page: 5 })
+  ]);
 
+  absolutePoints = [...absolutePoints, guildRatingToPoint(clubOnTop15)].sort(sortByPoints);
+  const topPoints = clubsInTop5.map<IInternalGuildPathPoint>(guildRatingToPoint).sort(sortByPoints);
 
   return {
-    current_position: { games, points, rank, rank_reward },
-    points: absolutePointsToRelative(points, [...absolutePoints, ...clubsPathPoints])
+    current_position: currentPosition,
+    segments: constructSegments(currentPosition, absolutePoints, topPoints)
   };
 }

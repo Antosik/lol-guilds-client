@@ -28,7 +28,7 @@ export interface IClubResponse extends IBaseClubResponseV2 {
   owner: ISummonerResponse;
 }
 
-interface IClubRatingResponse {
+export interface IClubRatingResponse {
   id: number;
   club: IClubResponseV1;
   rank_reward: string;

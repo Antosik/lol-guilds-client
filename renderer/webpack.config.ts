@@ -27,10 +27,13 @@ const config: Configuration = ({
     alias
   },
 
-  entry: joinPath(__dirname, "src/index.ts"),
+  entry: {
+    main: joinPath(__dirname, "src/index.ts"),
+    preload: joinPath(__dirname, "src/preload.ts")
+  },
   output: {
     path: joinPath(__dirname, "..", "target/renderer"),
-    filename: "bundle.js"
+    filename: "[name].js"
   },
 
   module: {
@@ -62,7 +65,7 @@ const config: Configuration = ({
       {
         test: /\.css$/,
         use: [
-          isProduction ? MiniCssExtractPlugin.loader : "style-loader",
+          MiniCssExtractPlugin.loader,
           { loader: "css-loader", options: { importLoaders: 1 } },
           { loader: "postcss-loader" }
         ]

@@ -11,15 +11,18 @@
   --main-dark: hsl(42, 16%, 44%); /* #C2AA70 */
   --main-background: hsl(60, 5%, 8%); /* #161614 */
   --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
+  --main-background-transparent-dark: hsla(218, 80%, 2%, 0.85); /* rgba(1, 4, 9, 0.85) */
   --game-win: var(--status-active-normal);
   --game-lose: var(--status-away);
   --grid-gap: 20px;
+  --topbar-height: 24px;
 }
 
 html,
 body {
   width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 * {
@@ -34,8 +37,23 @@ body {
   box-sizing: inherit;
 }
 
+html {
+  font-size: 14px;
+}
+@media all and (min-width: 765px) {
+  html {
+    font-size: 16px;
+  }
+}
+@media all and (min-width: 1280px) {
+  html {
+    font-size: 18px;
+  }
+}
+
 body {
   color: var(--main-medium);
+  border: 1px solid var(--main-dark);
   font-family: "BeaufortforLOL", sans-serif;
 
   background-image: url("../images/bg.jpg");
@@ -45,7 +63,10 @@ body {
   background-attachment: fixed;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   color: var(--main-primary);
 }
 
@@ -53,8 +74,9 @@ h1 {
   text-align: center;
 }
 
-h2, h3 {
-    margin-bottom: 8px;
+h2,
+h3 {
+  margin-bottom: 8px;
 }
 
 ul {
@@ -96,6 +118,26 @@ button {
   border: 1px solid var(--main-secondary);
   background-color: var(--main-background);
 }
+.mini-block:hover,
+button:hover {
+  background-color: var(--main-dark);
+}
+.mini-block:hover,
+button:focus {
+  border: 1px solid var(--main-medium);
+}
+.mini-block:disabled,
+.mini-block:disabled:hover,
+button:disabled,
+button:disabled:hover {
+  border: 1px solid var(--main-background-transparent);
+  background-color: 1px solid var(--main-background-transparent-dark);
+  color: 1px solid var(--main-dark);
+}
+.mini-block:disabled img,
+button:disabled img {
+  filter: brightness(0.3);
+}
 
 .flex-center {
   display: flex;
@@ -126,8 +168,65 @@ button {
   background: var(--main-secondary);
 }
 
+.window-controls {
+  -webkit-app-region: drag;
+  height: var(--topbar-height);
+  z-index: 100;
+  width: 100%;
+  background: var(--main-background-transparent-dark);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.window-control {
+  -webkit-app-region: none;
+  color: var(--main-medium);
+  border: none;
+  width: calc(var(--topbar-height) * 1.5);
+  height: var(--topbar-height);
+  background: transparent;
+}
+.window-control > svg {
+  width: 50%;
+  height: auto;
+}
+.window-control#close-button > svg {
+  width: 34%;
+}
+.window-control > svg > rect,
+.window-control > svg > path {
+  stroke: currentColor;
+  fill: var(--main-background);
+}
+.window-control:hover,
+.window-control:focus {
+  background: var(--main-dark);
+}
+.window-control:focus {
+  color: var(--main-primary);
+  outline: none;
+}
+.window-control:hover > svg > rect,
+.window-control:hover > svg > path,
+.window-control:focus > svg > rect,
+.window-control:focus > svg > path {
+  fill: var(--main-dark);
+}
+#unmaximize-button {
+  display: none;
+}
+.window-maximized #unmaximize-button {
+  display: flex !important;
+}
+.window-maximized #maximize-button {
+  display: none;
+}
+
 #app {
-  padding-bottom: var(--grid-gap);
+  width: 100vw;
+  height: calc(100vh - var(--topbar-height));
+  overflow: auto;
+  position: relative;
 }
 
 .page {
@@ -157,9 +256,39 @@ button {
 
 .main-application {
   display: grid;
-  grid-template-areas: 
+  grid-template-areas:
     "header"
     "navigation"
     "main";
   gap: var(--grid-gap);
+  padding-bottom: 20px;
+}
+
+a[href*="discord.gg"]:before,
+a[href*="vk.com"]:before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  margin: 0 2px -4px 4px;
+}
+br + a[href*="discord.gg"]:before,
+br + a[href*="vk.com"]:before {
+  margin-left: 0;
+}
+a[href*="discord.gg"]:before {
+  background-image: url(../images/icons/discord.svg);
+}
+a[href*="vk.com"]:before {
+  background-image: url(../images/icons/vk.svg);
+}
+
+.md-description * {
+  text-align: left;
+}
+
+.md-description ul {
+  margin-left: 20px;
+  list-style: initial;
 }

@@ -5,6 +5,7 @@ import type { LCUApi } from "./api";
 import type { IStorePrototype } from "./store";
 import type { IIdToken } from "./interfaces/IIdToken";
 import type { IFriend, IFriendCore, IFriendRequest } from "./interfaces/IFriend";
+import type { IBanned, IBannedCore } from "./interfaces/IBanned";
 import type { ISummoner, ISummonerCore } from "./interfaces/ISummoner";
 
 import { createLCUApi } from "./api";
@@ -99,6 +100,12 @@ export class LCUClient {
   private async getSendedFriendRequests(): Promise<IFriendRequest[]> {
     const data = await this.api.request("/lol-chat/v1/friend-requests");
     return data as IFriendRequest[];
+  }
+
+  public async getBannedList(): Promise<IBannedCore[]> {
+    const data = await this.api.request("/lol-chat/v1/blocked-players");
+    const bannedRaw = data as IBanned[];
+    return bannedRaw.map(({ id, name, summonerId }) => ({ id, name, summonerId }));
   }
 
   public async createLobby(type = EQueueId.DraftPick): Promise<boolean> {

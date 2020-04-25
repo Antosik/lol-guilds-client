@@ -3,6 +3,7 @@
   import Router, { link } from "svelte-spa-router";
 
   import { rpc } from "@guilds-web/data/rpc";
+  import { appStore } from "@guilds-web/store/app";
   import {
     season_subprefix as subprefix,
     season_subroutes as subroutes
@@ -17,8 +18,12 @@
   $: stage =
     stage_id && season && season.stages.find(stage => stage.id === stage_id);
 
-  let season = undefined;
-  const seasonLoadingPromise = rpc.invoke("guilds:season:live");
+  let season;
+  const seasonLoadingPromise = rpc
+    .invoke("guilds:season:live")
+    .then(liveSeason =>
+      liveSeason !== undefined ? liveSeason : rpc.invoke("guilds:season:prev")
+    );
 
   onMount(async () => {
     season = await seasonLoadingPromise;
@@ -33,7 +38,7 @@
     {#if season}
       <SeasonInfoNavigation {season} {stage} />
 
-      <Router routes={subroutes} prefix={subprefix} />
+      <Router routes={subroutes} prefix={subprefix} on:routeLoaded={appStore.setCurrentPageLoaded} />
     {:else}
       <p>Нет активного сезона!</p>
     {/if}

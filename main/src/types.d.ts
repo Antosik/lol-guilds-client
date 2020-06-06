@@ -1,7 +1,9 @@
 declare interface IInternalGuildMember {
+  puuid?: string;
   name: string;
   role: EGuildAPIMemberRoleResponse;
   status?: string;
+  game?: string;
 }
 
 declare interface IInternalGuildPathPoint {

@@ -42,7 +42,7 @@
 <li class="guild-member">
   <div class="guild-member__info">
     <div>{member.name}</div>
-    <GuildMemberStatus statusCode={member.status} />
+    <GuildMemberStatus statusCode={member.status} gameName={member.game} />
   </div>
   <div class="guild-member__buttons">
     {#if member.status === 'unknown'}

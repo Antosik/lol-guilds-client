@@ -1,4 +1,6 @@
 <script>
+  export let icon = "i";
+  export let label = "Информация";
   export let text = "";
 </script>
 
@@ -26,8 +28,9 @@
     visibility: hidden;
     position: absolute;
     top: -10px;
-    width: 150px;
-    height: 70px;
+    min-width: 124px;
+    min-height: 30px;
+    padding: 8px;
     transform: translate(-50%, -100%);
     font-size: 0.875rem;
     text-align: center;
@@ -39,7 +42,7 @@
 
 <div class="tooltip-container">
   <div class="tooltip-icon flex-center">
-    <img src="./images/icons/i.svg" alt="Информация" class="tooltip-icon__img" />
+    <img src="./images/icons/{icon}.svg" alt={label} class="tooltip-icon__img" />
   </div>
   <div role="tooltip" class="tooltip-data flex-center">{text}</div>
 </div>

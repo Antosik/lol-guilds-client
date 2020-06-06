@@ -20,7 +20,8 @@ export class MultiService {
         name: member.summoner.summoner_name,
         role: member.role,
         status: friend?.availability ?? EGuildMemberStatus.Unknown,
-        game: friend?.productName
+        game: friend?.productName,
+        note: friend?.note
       };
     });
   }

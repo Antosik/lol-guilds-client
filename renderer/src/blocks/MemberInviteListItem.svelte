@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import GuildMemberStatus from "../components/GuildMemberStatus.svelte";
+  import Tooltip from "../components/Tooltip.svelte";
 
   export let allowInvite = true;
   export let member = undefined;
@@ -37,12 +38,20 @@
     width: 12px;
     height: 12px;
   }
+  .guild-member__info .note__tooltip {
+    margin-left: 4px;
+  }
 </style>
 
 <li class="guild-member">
   <div class="guild-member__info">
     <div>{member.name}</div>
     <GuildMemberStatus statusCode={member.status} gameName={member.game} />
+    {#if member.note}
+      <span class="note__tooltip">
+        <Tooltip text={member.note} label="Заметка" icon="note"/>
+      </span>
+    {/if}
   </div>
   <div class="guild-member__buttons">
     {#if member.status === 'unknown'}

@@ -41,7 +41,7 @@ export class GuildsService {
   public async getGuildMembersSeasonRating(club_id?: number, season_id?: number): Promise<unknown> {
     if (club_id === undefined || season_id === undefined) { return []; }
 
-    const members = await this._guildsApi.getMembersRatingForSeasonWithId(season_id);
+    const members = await this._guildsApi.getMembersRatingForSeasonWithId(club_id, season_id);
 
     return members
       .sort((m1, m2) => m2.points - m1.points)
@@ -63,7 +63,7 @@ export class GuildsService {
   public async getGuildMembersStageRating(club_id?: number, season_id?: number, stage_id?: number): Promise<unknown> {
     if (club_id === undefined || season_id === undefined || stage_id === undefined) { return []; }
 
-    const members = await this._guildsApi.getMembersRatingForStageWithSeasonId(season_id);
+    const members = await this._guildsApi.getMembersRatingForStageWithSeasonId(club_id, season_id);
 
     return members
       .filter(member => member.stage === stage_id)

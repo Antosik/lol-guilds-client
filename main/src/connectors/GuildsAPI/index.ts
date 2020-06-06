@@ -28,13 +28,13 @@ export class GuildsAPI {
     return members.sort(({ summoner: { summoner_name: n1 } }, { summoner: { summoner_name: n2 } }) => n1.localeCompare(n2));
   }
 
-  public async getMembersRatingForSeasonWithId(season_id: number): Promise<IGuildAPIUserSeasonRatingResponse[]> {
-    const members = await this.request(`contest/season/${season_id}/userseasonrating`, { method: "GET", version: 2 }) as IGuildAPIUserSeasonRatingResponse[];
+  public async getMembersRatingForSeasonWithId(club_id: number, season_id: number): Promise<IGuildAPIUserSeasonRatingResponse[]> {
+    const members = await this.request(`contest/season/${season_id}/userseasonrating?club=${club_id}`, { method: "GET", version: 2 }) as IGuildAPIUserSeasonRatingResponse[];
     return members.sort(({ points: n1 }, { points: n2 }) => n2 - n1);
   }
 
-  public async getMembersRatingForStageWithSeasonId(season_id: number): Promise<IGuildAPIUserStageRatingResponse[]> {
-    const members = await this.request(`contest/season/${season_id}/userstagerating`, { method: "GET", version: 2 }) as IGuildAPIUserStageRatingResponse[];
+  public async getMembersRatingForStageWithSeasonId(club_id: number, stage_id: number): Promise<IGuildAPIUserStageRatingResponse[]> {
+    const members = await this.request(`contest/season/${stage_id}/userstagerating?club=${club_id}`, { method: "GET", version: 2 }) as IGuildAPIUserStageRatingResponse[];
     return members.sort(({ points: n1 }, { points: n2 }) => n2 - n1);
   }
   // #endregion Club API

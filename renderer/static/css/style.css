@@ -53,9 +53,9 @@ html {
 
 body {
   color: var(--main-medium);
-  border: 1px solid var(--main-dark);
   font-family: "BeaufortforLOL", sans-serif;
 
+  background-color: var(--main-background);
   background-image: url("../images/bg.jpg");
   background-size: cover;
   background-position: center bottom;
@@ -177,6 +177,9 @@ button:disabled img {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+
+  border: 1px solid var(--main-dark);
+  border-bottom: 0;
 }
 .window-control {
   -webkit-app-region: none;
@@ -227,6 +230,8 @@ button:disabled img {
   height: calc(100vh - var(--topbar-height));
   overflow: auto;
   position: relative;
+  border: 1px solid var(--main-dark);
+  border-top: 0;
 }
 
 .page {

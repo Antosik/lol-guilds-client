@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import MainPage from "../pages/MainPage.svelte";
 import SummonerLoading from "../pages/SummonerLoading.svelte";
 import NotLaunchedPage from "../pages/NotLaunched.svelte";

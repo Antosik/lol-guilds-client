@@ -1,4 +1,5 @@
-<script>
+<script>import app from ".";
+
   import { onMount, onDestroy } from "svelte";
   import Router, { replace, location } from "svelte-spa-router";
 
@@ -11,14 +12,16 @@
   import Notifications from "./sections/Notifications";
   import Version from "./sections/Version";
 
-
   const handleRouting = (auth, summoner) => {
     if (!auth) {
       replace("/not-launched/");
     } else if (auth && !summoner) {
       replace("/summoner-loading/");
+    } else {
+      replace($appStore.currentPage)
     }
   };
+
   $: handleRouting($summonerStore.auth, $summonerStore.summoner);
 
   const onNotificationClose = e => appStore.removeNotification(e.detail);
@@ -39,24 +42,24 @@
   const onOnlineChange = () => rpc.send(navigator.onLine ? "lcu:connect" : "lcu:disconnect");
 
   onMount(() => {
-    rpc.send("ui:reconnect");
+    rpc.invoke("lcu:connect");
 
-    rpc.on("lcu:connect", onConnect);
-    rpc.on("lcu:disconnect", onDisconnect);
+    rpc.on("lcu:connected", onConnect);
+    rpc.on("lcu:disconnected", onDisconnect);
     rpc.on("lcu:summoner", onSummoner);
-    rpc.on("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
-    rpc.on("guilds:connect", onGuilds);
+    rpc.on("lcu:gameflow-phase", onGameflow);
+    rpc.on("guilds:connected", onGuilds);
 
     window.addEventListener("online", onOnlineChange);
     window.addEventListener("offline", onOnlineChange);
   });
 
   onDestroy(() => {
-    rpc.removeListener("lcu:connect", onConnect);
-    rpc.removeListener("lcu:disconnect", onDisconnect);
+    rpc.removeListener("lcu:connected", onConnect);
+    rpc.removeListener("lcu:disconnected", onDisconnect);
     rpc.removeListener("lcu:summoner", onSummoner);
-    rpc.removeListener("lcu:lol-gameflow.v1.gameflow-phase", onGameflow);
-    rpc.removeListener("guilds:connect", onGuilds);
+    rpc.removeListener("lcu:gameflow-phase", onGameflow);
+    rpc.removeListener("guilds:connected", onGuilds);
 
     window.removeListener("online", onOnlineChange);
     window.removeListener("offline", onOnlineChange);

@@ -4,7 +4,6 @@ import { BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import { join as joinPath, resolve as resolvePath } from "path";
 
-
 export class Window extends BrowserWindow {
   constructor(options: BrowserWindowConstructorOptions = {}) {
     const htmlPath = isDev ? resolvePath("target", "index.html") : joinPath(process.resourcesPath, "index.html");
@@ -27,11 +26,7 @@ export class Window extends BrowserWindow {
     super(settings);
 
     this.setMenuBarVisibility(false);
-    this.loadFile(htmlPath);
-
-    this.once("ready-to-show", () => {
-      this.show();
-    });
+    void this.loadFile(htmlPath);
   }
 }
 

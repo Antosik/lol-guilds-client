@@ -1,210 +1,79 @@
-/* eslint-disable @typescript-eslint/unbound-method */
-import type { BrowserWindowConstructorOptions } from "electron";
-import type { GuildsClient } from "./api/guilds";
-import type { IInternalGuildMember } from "./api/guilds/interfaces/IInternal";
-import type { LCUClient } from "./api/lcu";
-import type { IFriendCore } from "./api/lcu/interfaces/IFriend";
-import type { ClientRPC } from "./data/rpc";
+import type { AppUpdater } from "electron-updater";
 import type { Window } from "./ui/window";
 
-import { EGuildMemberStatus } from "@guilds-shared/helpers/gameflow";
-import { constructResult } from "@guilds-shared/helpers/rpc";
-import { createGuildsAPIClient } from "./api/guilds";
-import { createLCUAPIClient } from "./api/lcu";
+import { autoUpdater } from "electron-updater";
 
-import { createRPC } from "./data/rpc";
-import { lcuEventsHandlersMap } from "./handlers/lcu";
-import { guildsEventsHandlersMap } from "./handlers/guild";
-import { versionEventsMap, versionEventsHandlersMap } from "./handlers/version";
-import { createWindow } from "./ui/window";
-import { autoUpdater } from "./utils/autoupdater";
+import { LCUAPI } from "./connectors/LCUAPI";
+import { GuildsAPI } from "./connectors/GuildsAPI";
+import { LCUAPISocket } from "./connectors/LCUAPI/socket";
+import { GuildsController } from "./controllers/guilds";
+import { LCUController } from "./controllers/lcu";
+import { VersionController } from "./controllers/version";
+import { MainRPC } from "./utils/rpc";
+import { VersionService } from "./services/version";
+import { GuildsService } from "./services/guilds";
+import { LCUService } from "./services/lcu";
+import { MultiController } from "./controllers/multi";
 
 
-export interface IMainApplicationOptions {
-  window: BrowserWindowConstructorOptions;
-}
-
-export class MainApplication {
-  private static _instance: MainApplication;
-
-  public static getInstance(options?: IMainApplicationOptions): MainApplication {
-    if (!MainApplication._instance) {
-      MainApplication._instance = new MainApplication(options);
-    }
-    return MainApplication._instance;
-  }
+export class LeagueGuildsClient {
+  private _lcuApi: LCUAPI;
+  private _lcuApiSocket: LCUAPISocket;
+  private _appUpdater: AppUpdater;
 
   private _window: Window;
-  private _rpc: ClientRPC;
-  private _lcuClient: LCUClient;
-  private _guildsClient?: GuildsClient;
+  private _rpc: MainRPC;
+  private _guildsApi: GuildsAPI;
 
-  constructor(options?: IMainApplicationOptions) {
-    this._window = createWindow(options?.window);
-    this._rpc = createRPC(this._window);
-    this._lcuClient = createLCUAPIClient(this._rpc);
+  private _versionService: VersionService;
+  private _versionController: VersionController;
 
-    this._onLCUConnect = this._onLCUConnect.bind(this);
-    this._onLCUDisconnect = this._onLCUDisconnect.bind(this);
+  private _lcuService: LCUService;
+  private _lcuController: LCUController;
 
-    this.initCoreEvents();
-    this.initLCUHandlers();
-    this.initGuildHandlers();
-    this.initVersionEvents();
+  private _guildsService: GuildsService;
+  private _guildsController: GuildsController;
+
+  private _multiController: MultiController;
+
+  public static mount(window: Window): LeagueGuildsClient {
+    return new this(window);
   }
 
-  public get window() {
-    return this._window;
-  }
+  constructor(window: Window) {
 
+    this._window = window;
+    this._rpc = new MainRPC(window);
 
-  // #region Init
-  private initCoreEvents() {
-    this._rpc.on("ui:reconnect", this._onLCUConnect);
-    this._rpc.on("lcu:connect", this._onLCUConnect);
-    this._rpc.on("lcu:disconnect", this._onLCUDisconnect);
+    this._lcuApi = new LCUAPI();
+    this._lcuApiSocket = new LCUAPISocket();
+    this._guildsApi = new GuildsAPI();
+    this._appUpdater = autoUpdater;
 
-    autoUpdater.checkForUpdatesAndNotify();
-  }
+    this._versionService = new VersionService(this._appUpdater);
+    this._versionController = new VersionController(this._rpc, this._versionService);
+    this._versionController.handleEvents();
 
-  private initLCUHandlers() {
-    for (const [eventType, eventHandler] of lcuEventsHandlersMap) {
-      this._rpc.setHandler(eventType, eventHandler(this._lcuClient));
-    }
-  }
+    this._lcuService = new LCUService(this._lcuApi, this._lcuApiSocket);
+    this._lcuController = new LCUController(this._rpc, this._lcuService);
+    this._lcuController.handleEvents();
 
-  private initGuildHandlers() {
-    for (const [eventType, eventHandler] of guildsEventsHandlersMap) {
-      this._rpc.setHandler(eventType, (...args: any[]) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-        return this._guildsClient === undefined
-          ? { status: "error" }
-          : eventHandler(this._guildsClient)(...args);
-      });
-    }
+    this._guildsService = new GuildsService(this._guildsApi);
+    this._guildsController = new GuildsController(this._rpc, this._guildsService);
+    this._guildsController.handleEvents();
 
-    this._rpc.setHandler("guilds:members", (club_id: number) => {
-      if (!this._guildsClient) return { status: "error" };
-      return constructResult(this._getMembersWithStatus(club_id));
-    });
-    this._rpc.setHandler("guilds:member-status:subscribe", async (club_id: number) => {
-      return constructResult(this._subscribeToGuildMembersStatus(club_id));
+    this._multiController = new MultiController(this._rpc, this._guildsService, this._lcuService);
+    this._multiController.handleEvents();
+
+    this._rpc.addListener("lcu:connected", async () => {
+      const token = await this._lcuApi.getIdToken();
+      this._guildsApi.setToken(token);
+      this._rpc.send("guilds:connected");
     });
   }
 
-  private initVersionEvents() {
-    for (const [event, eventToSend] of versionEventsMap) {
-      autoUpdater.on(event, () => this._rpc.send(eventToSend));
-    }
-    autoUpdater.on("download-progress", (e) => {
-      this._rpc.send("version:update:downloading", (e.percent as number).toFixed(2));
-    });
-
-    for (const [event, eventHandler] of versionEventsHandlersMap) {
-      this._rpc.setHandler(event, eventHandler(autoUpdater));
-    }
-  }
-  // #endregion
-
-
-  // #region LCU Connect/Disconnect
-  private async _onLCUConnect() {
-    if (!this._lcuClient.isConnected) {
-      this._lcuClient.store.delete("summoner");
-      this._lcuClient.store.delete("token");
-
-      await this._lcuClient.connect();
-    } else {
-      this._lcuClient.api.unsubscribe("/lol-gameflow/v1/gameflow-phase");
-      this._lcuClient.api.subscribe("/lol-gameflow/v1/gameflow-phase");
-
-      this._rpc.send("lcu:connect");
-
-      const [summoner, gameflow, token] = await Promise.all([
-        this._lcuClient.getCurrentSummoner(),
-        this._lcuClient.getStatus(),
-        this._lcuClient.getIdToken(),
-      ]);
-
-      this._guildsClient = createGuildsAPIClient(token);
-
-      this._rpc.send("guilds:connect");
-
-      this._rpc.send("lcu:summoner", summoner);
-      this._rpc.send("lcu:lol-gameflow.v1.gameflow-phase", { data: gameflow });
-    }
-  }
-  private _onLCUDisconnect() {
-    this._rpc.send("lcu:disconnect");
-
-    this._lcuClient.store.delete("summoner");
-    this._lcuClient.store.delete("token");
-  }
-  // #endregion
-
-
-  // #region Friends Logic
-  private async _getMembersWithStatus(club_id: number): Promise<IInternalGuildMember[]> {
-    if (this._guildsClient !== undefined) {
-      const [guildMembers, friendsList, bannedList] = await Promise.all([
-        this._guildsClient.getGuildMembers(club_id),
-        this._lcuClient.getFriendsList(),
-        this._lcuClient.getBannedList()
-      ]);
-
-      const bannedPlayersNames = bannedList.map<string>(player => player.name);
-      const friendNameToDataMap = new Map<string, IFriendCore>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
-      const guildMembersWithStatus = guildMembers.map(member => {
-        const friend = friendNameToDataMap.get(member.name.toLowerCase());
-        const status = friend === undefined
-          ? bannedPlayersNames.includes(member.name)
-            ? EGuildMemberStatus.Banned : EGuildMemberStatus.Unknown
-          : friend.availability;
-        return {
-          ...member,
-          status
-        };
-      });
-
-      return guildMembersWithStatus;
-    }
-
-    return [];
-  }
-
-  private async _subscribeToGuildMembersStatus(club_id: number): Promise<void> {
-    if (this._guildsClient !== undefined) {
-      const [guildMembers, friendsList] = await Promise.all([
-        this._guildsClient.getGuildMembers(club_id),
-        this._lcuClient.getFriendsList()
-      ]);
-
-      const friendNameToDataMap = new Map<string, IFriendCore>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
-      guildMembers.forEach(member => {
-        const friend = friendNameToDataMap.get(member.name.toLowerCase());
-        if (friend !== undefined) {
-          this._subscribeToFriendStatus(friend);
-        }
-      });
-    }
-  }
-
-  private _subscribeToFriendStatus(friend: IFriendCore) {
-    this._lcuClient.api.unsubscribe(`/lol-chat/v1/friends/${friend.id}`);
-    this._lcuClient.api.subscribeInternal(`/lol-chat/v1/friends/${friend.id}`);
-
-    this._rpc.removeAllListeners(`lcu:lol-chat.v1.friends.${friend.id}`);
-    this._rpc.on(`lcu:lol-chat.v1.friends.${friend.id}`, ({ data }) => {
-      if (data) {
-        const update = { ...friend, status: data.availability };
-        this._rpc.send("guilds:member-status:update", update);
-      }
-    });
-  }
-  // #endregion
-
-
-  public destroy() {
+  public destroy(): void {
     this._rpc.destroy();
-    this._lcuClient.disconnect();
+    this._lcuApiSocket.disconnect();
   }
 }

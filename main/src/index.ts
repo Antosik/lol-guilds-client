@@ -1,45 +1,30 @@
-import type { IMainApplicationOptions } from "./client";
-
 import { app } from "electron";
-import windowStateKeeper from "electron-window-state";
 
-import "./utils/security";
-
-import { MainApplication } from "./client";
+import { LeagueGuildsClient } from "./client";
+import { Window } from "./ui/window";
+import { WindowStateSaver } from "./ui/windowStateSaver";
 import { logError } from "./utils/log";
+import "./utils/security";
 
 
 const gotTheLock = app.requestSingleInstanceLock();
 
+let window: Window;
+const windowStateSaver = new WindowStateSaver();
+
 if (!gotTheLock) {
   app.quit();
-} else {
-  let appInstance: MainApplication;
 
-  app.on("second-instance", () => {
-    // Кто-то пытался запустить второй экземпляр, мы должны сфокусировать наше окно.
-    if (appInstance?.window !== undefined) {
-      if (appInstance.window.isMinimized()) appInstance.window.restore();
-      appInstance.window.focus();
-    }
-  });
+} else {
 
   app.on("ready", () => {
-    const windowState = windowStateKeeper({
-      defaultWidth: 800,
-      defaultHeight: 600,
+    window = new Window({ ...windowStateSaver.getState() });
+    window.once("ready-to-show", () => {
+      window.show();
     });
+    windowStateSaver.manage(window);
 
-    const options: IMainApplicationOptions = {
-      window: {
-        x: windowState.x,
-        y: windowState.y,
-        width: windowState.width,
-        height: windowState.height
-      }
-    };
-    appInstance = MainApplication.getInstance(options);
-    windowState.manage(appInstance.window);
+    LeagueGuildsClient.mount(window);
   });
 
   app.on("window-all-closed", () => {

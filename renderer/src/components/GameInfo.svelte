@@ -21,6 +21,7 @@
   .game-result {
     color: var(--game-lose);
   }
+
   .game-result.game-result--win {
     color: var(--game-win);
   }

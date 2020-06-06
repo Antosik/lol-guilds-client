@@ -1,7 +1,7 @@
 import { autoUpdater } from "electron-updater";
-import log from "./log";
+import Log from "./log";
 
 autoUpdater.autoDownload = true;
-autoUpdater.logger = log;
+autoUpdater.logger = Log;
 
 export { autoUpdater };

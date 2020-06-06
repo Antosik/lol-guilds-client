@@ -2,7 +2,7 @@
   import { rpc } from "../data/rpc";
 
   function LCUReconnect() {
-    rpc.send("ui:reconnect");
+    rpc.invoke("lcu:connect");
   }
 </script>
 

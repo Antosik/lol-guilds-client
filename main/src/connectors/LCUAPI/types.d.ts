@@ -40,6 +40,7 @@ declare enum ELCUAPIFriendStatus {
 declare interface ILCUAPIFriendCoreResponse extends ILCUAPISocialCoreResponse {
   availability: ELCUAPIFriendStatus;
   productName: string;
+  note: string;
 }
 
 declare interface ILCUAPIFriendResponse extends ILCUAPIFriendCoreResponse {

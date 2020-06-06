@@ -34,7 +34,7 @@
     width: 100%;
     height: 1px;
     background: linear-gradient(
-      to right, 
+      to right,
       rgba(245, 240, 223, 0) 0%,
       rgba(245, 240, 223, 0.2) 25%,
       rgba(245, 240, 223, 0.2) 75%,

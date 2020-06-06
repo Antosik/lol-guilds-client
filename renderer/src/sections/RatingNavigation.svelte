@@ -70,7 +70,7 @@
   <div class="season-selector__info">
     <h2 class="season-selector__heading">Сезон:</h2>
 
-    <select class="season-selector__select" on:change={onSeasonChange}>
+    <select class="season-selector__select" on:blur={onSeasonChange}>
       {#each seasons as season (season.id)}
         <option value={season.id}>{season.title}</option>
       {/each}

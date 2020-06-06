@@ -5,14 +5,12 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Antosik/lol-guilds-client)](https://github.com/Antosik/lol-guilds-client/releases/latest)
 [![Dev chat](https://discordapp.com/api/guilds/674622411559403530/widget.png?style=shield)](https://discord.gg/u5WAH8k)
 
-
 ## Как использовать
 
-1. [Скачайте](https://github.com/Antosik/lol-guilds-client/releases/latest) и установите последнюю версию приложения
-2. Запустите клиент [League of Legends](https://ru.leagueoflegends.com/ru-ru/)
-3. Запустите клиент Гильдий
-4. :tada:
-
+1.  [Скачайте](https://github.com/Antosik/lol-guilds-client/releases/latest) и установите последнюю версию приложения
+2.  Запустите клиент [League of Legends](https://ru.leagueoflegends.com/ru-ru/)
+3.  Запустите клиент Гильдий
+4.  :tada:
 
 ## Скриншоты
 
@@ -41,16 +39,14 @@
   </tr>
 </table>
 
-
 ## Как помочь разработке
 
-- [Делитесь с нами](https://github.com/Antosik/lol-guilds-client/issues) вашими идеями
-- Если нашли баг - [напишите](https://github.com/Antosik/lol-guilds-client/issues) об этом
-
+-   [Делитесь с нами](https://github.com/Antosik/lol-guilds-client/issues) вашими идеями
+-   Если нашли баг - [напишите](https://github.com/Antosik/lol-guilds-client/issues) об этом
 
 ## Ссылки
 
-- [Благодарности](https://github.com/Antosik/lol-guilds-client/wiki/Credits)
+-   [Благодарности](https://github.com/Antosik/lol-guilds-client/wiki/Credits)
 
 ## Attribution
 

@@ -7,19 +7,8 @@
   import { summonerStore } from "../store/summoner";
 
   function LCUReconnect() {
-    rpc.send("ui:reconnect");
+    rpc.invoke("lcu:connect");
   }
-
-  function onSummonerUpdate() {
-    if ($appStore.currentPage) {
-      const url = $appStore.currentPage;
-      replace(url);
-    } else {
-      replace("/client/");
-    }
-  }
-
-  $: onSummonerUpdate($summonerStore.summoner);
 
   let connectTimeout = false;
   onMount(() => {

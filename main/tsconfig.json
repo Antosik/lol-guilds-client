@@ -2,8 +2,7 @@
   "extends": "../tsconfig.json",
 
   "compilerOptions": {
-    "outDir": "../target/",
-    "types": ["../shared/env.d.ts"]
+    "outDir": "../target/"
   },
 
   "include": [

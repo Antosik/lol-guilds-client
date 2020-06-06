@@ -79,7 +79,7 @@ export class LCUAPI {
   // #region /lol-chat/ calls
   public async getFriendsList(): Promise<ILCUAPIFriendCoreResponse[]> {
     const friendsRaw = await this.request("/lol-chat/v1/friends") as ILCUAPIFriendResponse[];
-    return friendsRaw.map(({ availability, id, name, summonerId }) => ({ availability, id, name, summonerId }));
+    return friendsRaw.map(({ availability, id, name, summonerId, productName }) => ({ availability, id, name, summonerId, productName: productName.trim() }));
   }
 
   public async getSendedFriendRequests(): Promise<ILCUAPIFriendRequest[]> {

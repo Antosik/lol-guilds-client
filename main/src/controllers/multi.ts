@@ -42,19 +42,21 @@ export class MultiController {
   }
 
   private async _handleGetMembers(club_id: number) {
-    return Result.resolve(MultiService.getGuildMembersWithStatus(club_id, this._guildsService, this._lcuService));
+    return Result.resolve(MultiService.getGuildMembersWithBanned(club_id, this._guildsService, this._lcuService));
   }
 
   private async _handleSubscribeToMembersStatus(club_id: number) {
 
-    const members = await MultiService.getGuildMembersSubscribeTo(club_id, this._guildsService, this._lcuService);
+    const members = await MultiService.getGuildMembersWithStatus(club_id, this._guildsService, this._lcuService);
 
     for (const member of members) {
+      if (member.puuid === undefined) continue;
+
       this._lcuService
-        .removeListener(`lcu:lol-chat.v1.friends.${member.id}`)
-        .addListener(`lcu:lol-chat.v1.friends.${member.id}`, (data: ILCUAPIFriendCoreResponse) => {
+        .removeListener(`lcu:lol-chat.v1.friends.${member.puuid}`)
+        .addListener(`lcu:lol-chat.v1.friends.${member.puuid}`, (data: ILCUAPIFriendCoreResponse) => {
           if (data) {
-            const update = { ...member, status: data.availability };
+            const update: IInternalGuildMember = { ...member, status: data.availability, game: data.productName.trim() };
             this._rpc.send("guilds:member-status:update", update);
           }
         });

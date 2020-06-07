@@ -30,14 +30,8 @@
   $: guildRatingLoadingPromise = !season_id
     ? undefined
     : !stage_id
-    ? rpc.invoke("guilds:path:season", season_id).then(res => {
-        console.log(res);
-        return res;
-      })
-    : rpc.invoke("guilds:path:stage", season_id, stage_id).then(res => {
-        console.log(res);
-        return res;
-      });
+    ? rpc.invoke("guilds:path:season", season_id)
+    : rpc.invoke("guilds:path:stage", season_id, stage_id)
 
   $: afterNavigation($location);
   $: loadGames($location, lastGamesPage);

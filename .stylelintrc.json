@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-css-modules"
+  ],
+  "rules": {
+    "at-rule-empty-line-before": null,
+    "declaration-colon-newline-after": null,
+    "declaration-empty-line-before": null,
+    "no-descending-specificity": null,
+    "rule-empty-line-before": null,
+    "selector-pseudo-element-colon-notation": "single",
+    "value-list-comma-newline-after": null
+  }
+}

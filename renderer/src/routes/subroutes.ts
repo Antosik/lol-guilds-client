@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import NotFoundPage from "../pages/NotFound.svelte";
 
 import InviteMembers from "../pages/subpages/InviteMembers.svelte";

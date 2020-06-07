@@ -38,6 +38,10 @@ export const gameflowNotBusyStatusCode: EGameflowStatus[] = [
   EGameflowStatus.EndOfGame
 ];
 
+export const gameflowGameMap = new Map<string, string>([
+  ["Legends of Runeterra", "LoR"],
+]);
+
 export const enum EGuildMemberStatus {
   Away = "away",
   Online = "chat",

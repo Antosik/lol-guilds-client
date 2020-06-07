@@ -82,6 +82,7 @@
     width: 15px;
     height: 15px;
     margin-right: 8px;
+
     --border-width: 2px !important;
   }
 

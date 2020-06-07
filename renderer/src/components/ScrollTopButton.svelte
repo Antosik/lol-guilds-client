@@ -13,7 +13,7 @@
     border-radius: 50%;
 
     position: fixed;
-    right: 0px;
+    right: 0;
     bottom: 40px;
   }
   img {

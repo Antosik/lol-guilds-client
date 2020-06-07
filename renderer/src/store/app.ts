@@ -8,7 +8,7 @@ export interface IAppStore {
 }
 
 function createAppStore() {
-  const getInitialStore = (): IAppStore => ({ notifications: [], currentPage: "" });
+  const getInitialStore = (): IAppStore => ({ notifications: [], currentPage: "/client/" });
   const { subscribe, update } = writable<IAppStore>(getInitialStore());
 
   const removeNotification = (id: string) => {

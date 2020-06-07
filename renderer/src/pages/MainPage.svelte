@@ -20,7 +20,7 @@
       .querySelector(".main-application")
       .scrollIntoView({ behavior: "smooth", block: "start" });
 
-  const LCUReconnect = () => rpc.send("ui:reconnect");
+  const LCUReconnect = () => rpc.invoke("lcu:connect");
   const onAppScroll = e => (scrollY = e.target.scrollTop);
 
   onMount(() => {

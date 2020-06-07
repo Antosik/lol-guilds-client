@@ -10,7 +10,7 @@
 
   let time = new Date();
 
-  const formatDate = date => format(new Date(date), "d MMMM", { locale: ru });
+  const formatDate = (date) => format(new Date(date), "d MMMM", { locale: ru });
   const formatDateDistance = (now, start, end) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -68,7 +68,7 @@
     text-transform: uppercase;
     margin: 0 12px;
   }
-  
+
   .stage-not-active {
     color: var(--main-dark);
   }
@@ -109,9 +109,7 @@
             Этап {stage.number}
           </a>
         {:else}
-          <span class="stage-not-active">
-            Этап {stage.number}
-          </span>
+          <span class="stage-not-active">Этап {stage.number}</span>
         {/if}
       </li>
     {/each}

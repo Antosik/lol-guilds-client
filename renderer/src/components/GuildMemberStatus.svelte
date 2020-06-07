@@ -1,9 +1,17 @@
 <script>
-  import { guildMemberStatusLocale } from "@guilds-shared/helpers/gameflow";
+  import {
+    guildMemberStatusLocale,
+    gameflowGameMap,
+  } from "@guilds-shared/helpers/gameflow";
   import Tooltip from "../components/Tooltip.svelte";
 
   export let statusCode = "unknown";
+  export let gameName = "League of Legends";
   export let showText = true;
+
+  $: gameShortName = gameflowGameMap.has(gameName)
+    ? gameflowGameMap.get(gameName)
+    : gameName;
 </script>
 
 <style>
@@ -51,7 +59,10 @@
   <span class="status__circle" />
 
   {#if showText}
-    <span class="status__text">{guildMemberStatusLocale.get(statusCode)}</span>
+    <span class="status__text">
+      {guildMemberStatusLocale.get(statusCode)}
+      {#if gameShortName && gameShortName !== 'League of Legends'}({gameShortName}){/if}
+    </span>
   {/if}
 
   {#if statusCode === 'unknown'}

@@ -8,7 +8,6 @@
     ],
     "types": [
       "@pyoner/svelte-types",
-      "../shared/env.d.ts"
     ]
   },
 

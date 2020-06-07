@@ -9,6 +9,8 @@
   import Loading from "@guilds-web/blocks/Loading.svelte";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
+  let inviteState = "friends";
+
   $: guildMembersToInvite = $guildStore.members.filter(
     ({ name }) =>
       name.toLowerCase() !== $summonerStore.summoner.displayName.toLowerCase()
@@ -16,10 +18,10 @@
   $: allowInvite =
     $summonerStore.status === "None" || $summonerStore.status === "Lobby";
 
-  const memberStatusUpdate = member => guildStore.setMemberStatus(member);
+  const memberStatusUpdate = (member) => guildStore.setMemberStatus(member);
   const membersLoadingPromise = rpc
     .invoke("guilds:members", $guildStore.guild.id)
-    .then(members => guildStore.setMembers(members))
+    .then((members) => guildStore.setMembers(members))
     .then(() => {
       rpc.invoke("guilds:member-status:subscribe", $guildStore.guild.id);
       rpc.on("guilds:member-status:update", memberStatusUpdate);
@@ -32,10 +34,12 @@
   async function onMemberInvite(event) {
     await rpc.invoke("lcu:lobby-invite", event.detail);
   }
-  async function onMemberInviteAll() {
+  async function onMemberInviteMultiple() {
+    const statuses =
+      inviteState !== "all" ? ["chat", "away"] : ["chat", "away", "unknown"];
     const ready = $guildStore.members
-      .filter(member => ["chat", "away", "unknown"].includes(member.status))
-      .map(member => member.name);
+      .filter((member) => statuses.includes(member.status))
+      .map((member) => member.name);
     await rpc.invoke("lcu:lobby-invite-all", ready);
   }
 
@@ -52,6 +56,19 @@
   .guild-members__invite-all {
     padding: 4px 8px;
     margin: 8px 0;
+    display: flex;
+  }
+
+  .guild-members__invite-all select,
+  .guild-members__invite-all button {
+    height: 25px;
+  }
+
+  .guild-members__invite-all select {
+    width: 20px;
+    color: var(--main-primary);
+    background: var(--main-background);
+    text-transform: none;
   }
 
   @media all and (min-width: 370px) {
@@ -70,12 +87,18 @@
   {#await membersLoadingPromise}
     <Loading>Загружаем список членов гильдии...</Loading>
   {:then}
-    <button
-      type="button"
-      class="guild-members__invite-all flex-center"
-      on:click={onMemberInviteAll}>
-      Пригласить всех
-    </button>
+    <div class="guild-members__invite-all">
+      <button
+        type="button"
+        class="flex-center"
+        on:click={onMemberInviteMultiple}>
+        {#if inviteState === 'all'}Пригласить всех{:else}Пригласить друзей{/if}
+      </button>
+      <select bind:value={inviteState} class="mini-block">
+        <option value="friends">Пригласить друзей</option>
+        <option value="all">Пригласить всех</option>
+      </select>
+    </div>
 
     <MemberInviteList
       {allowInvite}

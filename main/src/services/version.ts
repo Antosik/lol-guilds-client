@@ -1,4 +1,4 @@
-import type { AppUpdater } from "electron-updater";
+import type { AppUpdater, UpdateCheckResult } from "electron-updater";
 
 
 export class VersionService {
@@ -20,7 +20,7 @@ export class VersionService {
     return this._appUpdater.currentVersion.version;
   }
 
-  public async checkForUpdates(): Promise<unknown> {
+  public async checkForUpdates(): Promise<UpdateCheckResult> {
     return await this._appUpdater.checkForUpdates();
   }
 

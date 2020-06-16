@@ -4,19 +4,20 @@
 
   import { rpc } from "../data/rpc";
   import LoadingSpinner from "../components/LoadingSpinner.svelte";
-  import { ISSUES_URL } from "@guilds-shared/env";
+  import { ISSUES_URL, RELEASES_URL } from "@guilds-shared/env";
 
   const versionPromise = rpc.invoke("version:get");
   let updateCheckState;
   let downloadProgress = 0;
+  let nextVersion;
 
-  const checkForUpdate = e => {
+  const checkForUpdate = (e) => {
     e.stopPropagation();
     e.preventDefault();
     rpc.invoke("version:check");
   };
 
-  const installUpdate = e => {
+  const installUpdate = (e) => {
     e.stopPropagation();
     e.preventDefault();
     rpc.invoke("version:install");
@@ -29,11 +30,14 @@
       "available",
       "not-available",
       "ready",
-      "error"
-    ].forEach(state =>
-      rpc.on(`version:update:${state}`, e => {
+      "error",
+      "portable",
+    ].forEach((state) =>
+      rpc.on(`version:update:${state}`, (e) => {
         updateCheckState = state;
         downloadProgress = state === "downloading" ? e : 0;
+        nextVersion =
+          state === "available" || state === "portable" ? e : undefined;
       })
     );
 
@@ -127,20 +131,27 @@
       {/if}
       {version}
     </button>
+    {#if updateCheckState === 'available' || updateCheckState === 'downloading'}
+      <div
+        class="flex-center version-block__update-state
+        version-block__update-state--downloading mini-block">
+        <progress max="100" value={downloadProgress} />
+        Загрузка обновления
+      </div>
+    {:else if updateCheckState === 'ready'}
+      <button
+        type="button"
+        class="flex-center version-block__update-state mini-block"
+        on:click={installUpdate}>
+        Установить обновление
+      </button>
+    {:else if updateCheckState === 'portable'}
+      <a
+        href={RELEASES_URL.replace('{}', nextVersion)}
+        target="_blank"
+        class="flex-center version-block__update-state mini-block">
+        Скачать обновление
+      </a>
+    {/if}
   {/await}
-  {#if updateCheckState === 'available' || updateCheckState === 'downloading'}
-    <div
-      class="flex-center version-block__update-state
-      version-block__update-state--downloading mini-block">
-      <progress max="100" value={downloadProgress} />
-      Загрузка обновления
-    </div>
-  {:else if updateCheckState === 'ready'}
-    <button
-      type="button"
-      class="flex-center version-block__update-state mini-block"
-      on:click={installUpdate}>
-      Установить обновление
-    </button>
-  {/if}
 </div>

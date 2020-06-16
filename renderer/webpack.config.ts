@@ -8,7 +8,7 @@ import { IgnorePlugin } from "webpack";
 
 import { preprocess } from "./svelte.config";
 import { alias } from "../webpack.config";
-import { version, bugs } from "../package.json";
+import { version, bugs, homepage } from "../package.json";
 
 
 const nodeEnv = process.env.NODE_ENV || "development";
@@ -76,7 +76,8 @@ const config: Configuration = ({
   plugins: [
     new DefinePlugin({
       VERSION: JSON.stringify(version),
-      ISSUES_URL: JSON.stringify(bugs.url)
+      ISSUES_URL: JSON.stringify(bugs.url),
+      RELEASES_URL: JSON.stringify(`${homepage}/releases/tag/v{}`)
     }),
 
     new IgnorePlugin(/.*\.js.map$/i),

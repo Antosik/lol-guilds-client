@@ -10,6 +10,7 @@ declare interface IInternalGuildPathPoint {
   points: number;
   rank?: number;
   description?: string;
+  absolute: boolean;
 }
 
 declare interface IInternalGuildPathSegment {

@@ -42,6 +42,9 @@
       .map((member) => member.name);
     await rpc.invoke("lcu:lobby-invite-all", ready);
   }
+  async function onMemberOpenChat(event) {
+    await rpc.invoke("lcu:open-chat", event.detail);
+  }
 
   onDestroy(() => {
     rpc.removeListener("guilds:member-status:update", memberStatusUpdate);
@@ -104,7 +107,8 @@
       {allowInvite}
       members={guildMembersToInvite}
       on:member-invite={onMemberInvite}
-      on:friend-request={onMemberFriendRequest} />
+      on:friend-request={onMemberFriendRequest} 
+      on:open-chat={onMemberOpenChat} />
   {:catch}
     <h3>Произошла странная ошибка!</h3>
   {/await}

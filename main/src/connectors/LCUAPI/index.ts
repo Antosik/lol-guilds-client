@@ -113,6 +113,29 @@ export class LCUAPI {
     const bannedRaw = await this.request("/lol-chat/v1/blocked-players") as ILCUAPIBannedResponse[];
     return bannedRaw.map(({ id, name, summonerId }) => ({ id, name, summonerId }));
   }
+
+  public async setActiveConversation(summoner: ILCUAPISummonerCoreResponse): Promise<unknown> {
+
+    const requestData = {
+      id: `${summoner.puuid}@ru1.pvp.net`
+    };
+    return await this.request("/lol-chat/v1/conversations/active", {
+      body: requestData,
+      method: "PUT"
+    });
+  }
+
+  public async createChatWithSummoner(summoner: ILCUAPISummonerCoreResponse): Promise<unknown> {
+
+    return await this.request("/lol-chat/v1/conversations", {
+      method: "POST",
+      body: {
+        type: "chat",
+        id: `${summoner.puuid}@ru1.pvp.net`,
+        pid: `${summoner.puuid}@ru1.pvp.net`
+      }
+    });
+  }
   // #endregion /lol-chat/ calls
 
 
@@ -153,7 +176,7 @@ export class LCUAPI {
 
     logDebug(`[LCUAPI] (${retryIndex}/${LCUAPI.RETRY_COUNT}): "${opts.method} ${path}" ${response.status} "${(opts.body && JSON.stringify(opts.body)) ?? ""}"`);
 
-    if (response.status === 204) {
+    if (response.status === 204 || (response.status === 201 && response.size === 0)) {
       return undefined;
     }
 

@@ -132,7 +132,7 @@ button:disabled,
 button:disabled:hover {
   border: 1px solid var(--main-background-transparent);
   background-color: 1px solid var(--main-background-transparent-dark);
-  color: 1px solid var(--main-dark);
+  color: var(--main-dark);
 }
 .mini-block:disabled img,
 button:disabled img {

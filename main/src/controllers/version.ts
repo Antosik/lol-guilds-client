@@ -89,8 +89,9 @@ export class VersionController {
   private _handleVersionGet() {
     return Result.create(this._versionService.getVersion(), "success");
   }
-  private _handleVersionCheck() {
-    return Result.resolve(this._versionService.checkForUpdates());
+  private async _handleVersionCheck() {
+    await this._versionService.checkForUpdates();
+    return;
   }
   private _handleVersionInstall() {
     return Result.create(this._versionService.runUpdateInstall(), "warning");

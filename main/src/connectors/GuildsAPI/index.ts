@@ -40,6 +40,23 @@ export class GuildsAPI {
   // #endregion Club API
 
 
+  // #region Invites API
+  public async getInvitesList(club_id: number, options?: IGuildAPIPagedRequest): Promise<IGuildAPIInviteResponse[]> {
+    const opts: IGuildAPIPagedRequest & { club: number } = { page: 1, per_page: 50, club: club_id, ...options };
+    const query = stringifyQuery(opts);
+    const { results: invites = [] } = await this.request(`invites/requests?${query}`, { method: "GET", version: 2 }) as IGuildAPIPagedResponse<IGuildAPIInviteResponse>;
+    return invites;
+  }
+
+  public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<unknown> {
+    return await this.request(`invites/requests/${invite_id}`, {
+      method: "PATCH",
+      version: 2,
+      body: { status }
+    });
+  }
+  // #endregion
+
   // #region Season API
   public async getSeasons(): Promise<IGuildAPISeasonResponse[]> {
     const seasons = await this.request("contest/season", { method: "GET", version: 2 }) as IGuildAPISeasonResponse[];

@@ -34,6 +34,10 @@ export class GuildsController {
     this._handleStatsStage = this._handleStatsStage.bind(this);
     this._handlePathSeason = this._handlePathSeason.bind(this);
     this._handlePathStage = this._handlePathStage.bind(this);
+    this._handleGuildRole = this._handleGuildRole.bind(this);
+    this._handleInvitesList = this._handleInvitesList.bind(this);
+    this._handleAcceptInvite = this._handleAcceptInvite.bind(this);
+    this._handleDeclineInvite = this._handleDeclineInvite.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
 
@@ -44,6 +48,10 @@ export class GuildsController {
   // #region RPC Events Handling (Outer)
   private _handleRPCEvents(): this {
     this._rpc.setHandler("guilds:club", this._handleClubGet);
+    this._rpc.setHandler("guilds:role", this._handleGuildRole);
+    this._rpc.setHandler("guilds:invites:list", this._handleInvitesList);
+    this._rpc.setHandler("guilds:invites:accept", this._handleAcceptInvite);
+    this._rpc.setHandler("guilds:invites:decline", this._handleDeclineInvite);
     this._rpc.setHandler("guilds:games:season", this._handleGamesSeason);
     this._rpc.setHandler("guilds:games:stage", this._handleGamesStage);
     this._rpc.setHandler("guilds:members:season", this._handleMembersSeason);
@@ -106,6 +114,18 @@ export class GuildsController {
   }
   private _handlePathStage(season_id: number, stage_id: number) {
     return Result.resolve(this._guildsService.getGuildStagePath(season_id, stage_id));
+  }
+  private _handleGuildRole(club_id: number, nickname: string) {
+    return Result.resolve(this._guildsService.getGuildRole(club_id, nickname));
+  }
+  private _handleInvitesList(club_id: number, options?: IGuildAPIPagedRequest) {
+    return Result.resolve(this._guildsService.getInvitesList(club_id, options));
+  }
+  private _handleAcceptInvite(invite_id: number) {
+    return Result.resolve(this._guildsService.updateInvite(invite_id, 1));
+  }
+  private _handleDeclineInvite(invite_id: number) {
+    return Result.resolve(this._guildsService.updateInvite(invite_id, 2));
   }
   // #endregion RPC Events Handling (Outer)
 }

@@ -60,6 +60,8 @@
   const onSortChange = (e) => {
     sortKey = e.detail;
   };
+  const onMemberFriendRequest = async (e) =>
+    await rpc.invoke('lcu:friend-request', e.detail);
 </script>
 
 <div class="guild-info__members">
@@ -69,7 +71,8 @@
       {sortKey}
       on:invite-accept={onInviteAccept}
       on:invite-decline={onInviteDecline}
-      on:sort-change={onSortChange} />
+      on:sort-change={onSortChange}
+      on:friend-request={onMemberFriendRequest} />
 
     {#if !finished}
       <IntersectionObs on:intersect={() => currentPage++}>

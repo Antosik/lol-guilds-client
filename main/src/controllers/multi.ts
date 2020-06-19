@@ -26,6 +26,7 @@ export class MultiController {
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this._handleGetMembers = this._handleGetMembers.bind(this);
     this._handleSubscribeToMembersStatus = this._handleSubscribeToMembersStatus.bind(this);
+    this._handleInvitesList = this._handleInvitesList.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
 
@@ -37,6 +38,7 @@ export class MultiController {
   private _handleRPCEvents(): this {
     this._rpc.setHandler("guilds:members", this._handleGetMembers);
     this._rpc.setHandler("guilds:member-status:subscribe", this._handleSubscribeToMembersStatus);
+    this._rpc.setHandler("guilds:invites:list", this._handleInvitesList);
 
     return this;
   }
@@ -63,5 +65,8 @@ export class MultiController {
     }
   }
 
+  private _handleInvitesList(club_id: number, options: IGuildAPIPagedRequest) {
+    return Result.resolve(MultiService.getInvitesWithFriendStatus(club_id, options, this._guildsService, this._lcuService));
+  }
   // #endregion RPC Events Handling (Outer)
 }

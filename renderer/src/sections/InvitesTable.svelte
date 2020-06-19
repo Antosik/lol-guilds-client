@@ -12,6 +12,7 @@
       sortKey.includes(key) && sortKey[0] === '+' ? `-${key}` : `+${key}`;
     dispatch('sort-change', newSortKey);
   };
+  const sendFriendRequest = (nickname) => dispatch('friend-request', nickname);
 
   const ranks = [
     'Железо',
@@ -153,6 +154,18 @@
                   <img src="./images/icons/close.svg" alt="Отклонить заявку" />
                 </button>
               </li>
+              {#if !invite.isFriend}
+                <li>
+                  <button
+                    class="invite-action flex-center"
+                    type="button"
+                    on:click={() => sendFriendRequest(invite.displayName)}>
+                    <img
+                      src="./images/icons/user.svg"
+                      alt="Отправить заявку в друзья" />
+                  </button>
+                </li>
+              {/if}
             </ul>
           </td>
         </tr>

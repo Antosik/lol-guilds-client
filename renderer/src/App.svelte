@@ -38,6 +38,11 @@
   const onGuilds = async e => {
     const club = await rpc.invoke("guilds:club");
     guildStore.setGuildData(club);
+
+    if (club) {
+      const role = await rpc.invoke("guilds:role", club.id, $summonerStore.summoner.displayName);
+      guildStore.setRole(role);
+    }
   };
   const onOnlineChange = () => rpc.send(navigator.onLine ? "lcu:connect" : "lcu:disconnect");
 

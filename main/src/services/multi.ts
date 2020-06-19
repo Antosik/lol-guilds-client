@@ -40,4 +40,18 @@ export class MultiService {
         : member.status
     }));
   }
+
+  public static async getInvitesWithFriendStatus(club_id: number, options: IGuildAPIPagedRequest, guildsService: GuildsService, lcuService: LCUService): Promise<IInternalInvite[]> {
+
+    const [friendsList, invites] = await Promise.all([
+      lcuService.getFriendsList(),
+      guildsService.getInvitesList(club_id, options)
+    ]);
+    const friendNames = friendsList.map(friend => friend.name);
+
+    return invites.map(invite => ({
+      ...invite,
+      isFriend: friendNames.includes(invite.displayName)
+    }));
+  }
 }

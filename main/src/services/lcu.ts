@@ -122,4 +122,16 @@ export class LCUService {
 
     return { found, notfound };
   }
+
+  public async openFriendChat(nickname: string): Promise<unknown> {
+
+    const summoner = await this._lcuApi.getSummonerByName(nickname.trim());
+
+    if (typeof summoner === "string") {
+      return;
+    }
+
+    return this._lcuApi.createChatWithSummoner(summoner)
+      .then(() => this._lcuApi.setActiveConversation(summoner));
+  }
 }

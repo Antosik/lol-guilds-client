@@ -9,6 +9,7 @@
   const dispatch = createEventDispatcher();
   const inviteToParty = e => dispatch("member-invite", e.detail);
   const sendFriendRequest = e => dispatch("friend-request", e.detail);
+  const openChatWith = e => dispatch("open-chat", e.detail);
 
   function sortMembers(arr) {
     return arr.sort(
@@ -54,7 +55,8 @@
         {member}
         {allowInvite}
         on:member-invite={inviteToParty}
-        on:friend-request={sendFriendRequest} />
+        on:friend-request={sendFriendRequest}
+        on:open-chat={openChatWith} />
     {/if}
   {/each}
 </ul>

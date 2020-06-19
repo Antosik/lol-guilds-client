@@ -9,6 +9,7 @@
   const dispatch = createEventDispatcher();
   const sendFriendRequest = () => dispatch("friend-request", member.name);
   const inviteToParty = () => dispatch("member-invite", member.name);
+  const openChatWith = () => dispatch("open-chat", member.name);
 </script>
 
 <style>
@@ -34,7 +35,8 @@
     max-width: 75%;
     pointer-events: none;
   }
-  .guild-member__invite img {
+  .guild-member__invite img,
+  .guild-member__chat img {
     width: 12px;
     height: 12px;
   }
@@ -60,6 +62,15 @@
         type="button"
         on:click={sendFriendRequest}>
         <img src="./images/icons/user.svg" alt="Отправить заявку в друзья" />
+      </button>
+    {:else if member.status !== "banned"}
+      <button
+        class="guild-member__chat flex-center"
+        type="button"
+        on:click={openChatWith}>
+        <img
+          src="./images/icons/chat.svg"
+          alt="Отправить сообщение" />
       </button>
     {/if}
     {#if allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown')}

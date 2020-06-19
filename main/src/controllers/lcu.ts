@@ -24,6 +24,7 @@ export class LCUController {
     this._handleLCUDisconnect = this._handleLCUDisconnect.bind(this);
     this._handleSendLobbyInvite = this._handleSendLobbyInvite.bind(this);
     this._handleSendFriendRequest = this._handleSendFriendRequest.bind(this);
+    this._handleOpenChat = this._handleOpenChat.bind(this);
     this._onLCUConnect = this._onLCUConnect.bind(this);
     this._onLCUDisconnect = this._onLCUDisconnect.bind(this);
     this._onLCUGameflowChange = this._onLCUGameflowChange.bind(this);
@@ -83,6 +84,7 @@ export class LCUController {
     this._rpc.setHandler("lcu:lobby-invite", this._handleSendLobbyInvite);
     this._rpc.setHandler("lcu:lobby-invite-all", this._handleSendLobbyInvite);
     this._rpc.setHandler("lcu:friend-request", this._handleSendFriendRequest);
+    this._rpc.setHandler("lcu:open-chat", this._handleOpenChat);
 
     return this;
   }
@@ -127,6 +129,10 @@ export class LCUController {
     return Result.create()
       .setNotification("Приглашение в лобби успешно отправлено")
       .setStatus("success");
+  }
+
+  private async _handleOpenChat(nickname: string) {
+    return Result.create(await this._lcuService.openFriendChat(nickname), "success");
   }
   // #endregion RPC Events Handling (Outer)
 }

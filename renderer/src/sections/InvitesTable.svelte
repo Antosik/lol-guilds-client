@@ -2,10 +2,16 @@
   import { createEventDispatcher } from 'svelte';
 
   export let invites = [];
+  export let sortKey = '+id';
 
   const dispatch = createEventDispatcher();
   const acceptInvite = (id) => dispatch('invite-accept', id);
   const declineInvite = (id) => dispatch('invite-decline', id);
+  const changeSort = (key) => {
+    const newSortKey =
+      sortKey.includes(key) && sortKey[0] === '+' ? `-${key}` : `+${key}`;
+    dispatch('sort-change', newSortKey);
+  };
 
   const ranks = [
     'Железо',
@@ -35,6 +41,12 @@
   h4 {
     text-align: center;
     margin: 20px;
+  }
+  th.sort-asc:after {
+    content: ' (↑)';
+  }
+  th.sort-desc:after {
+    content: ' (↓)';
   }
   tr {
     position: relative;
@@ -78,11 +90,36 @@
   <table>
     <thead>
       <tr>
-        <th>#</th>
-        <th>Никнейм игрока</th>
-        <th>Уровень</th>
-        <th>Ранг</th>
-        <th>Очков за прошлый сезон</th>
+        <th
+          class:sort-asc={sortKey === '+id'}
+          class:sort-desc={sortKey === '-id'}
+          on:click={() => changeSort('id')}>
+          #
+        </th>
+        <th
+          class:sort-asc={sortKey === '+displayName'}
+          class:sort-desc={sortKey === '-displayName'}
+          on:click={() => changeSort('displayName')}>
+          Никнейм игрока
+        </th>
+        <th
+          class:sort-asc={sortKey === '+level'}
+          class:sort-desc={sortKey === '-level'}
+          on:click={() => changeSort('level')}>
+          Уровень
+        </th>
+        <th
+          class:sort-asc={sortKey === '+rank'}
+          class:sort-desc={sortKey === '-rank'}
+          on:click={() => changeSort('rank')}>
+          Ранг
+        </th>
+        <th
+          class:sort-asc={sortKey === '+points'}
+          class:sort-desc={sortKey === '-points'}
+          on:click={() => changeSort('points')}>
+          Очков за прошлый сезон
+        </th>
         <td />
       </tr>
     </thead>

@@ -12,7 +12,10 @@
   let initialInvitesLoading = true;
   let finished = false;
 
+  let sortKey = '+id';
+
   $: loadInvites(currentPage);
+  $: sortedInvites = sortInvites(invites, sortKey);
 
   function loadInvites(page) {
     return rpc
@@ -27,27 +30,46 @@
       });
   }
 
-  const onInviteUpdated = (id, newStatus)  => {
-    invites = invites.map(invite => 
-      invite.id === id
-      ? { ...invite, status: newStatus }
-      : invite);
+  const sortStrings = (a, b, desc) =>
+    desc ? b.localeCompare(a) : a.localeCompare(b);
+  const sortNumbers = (a, b, desc) => (desc ? b - a : a - b);
+  function sortInvites(invites = [], sortKey = '+id') {
+    const key = sortKey.slice(1);
+    const desc = sortKey[0] === '+';
+    return [...invites].sort((a, b) =>
+      typeof b[key] === 'string'
+        ? sortStrings(a[key], b[key], desc)
+        : sortNumbers(a[key], b[key], desc),
+    );
   }
 
-  const onInviteAccept = (e) => rpc.invoke('guilds:invites:accept', e.detail).then((data) => {
-    onInviteUpdated(e.detail, data.status);
-  });
-  const onInviteDecline = (e) => rpc.invoke('guilds:invites:decline', e.detail).then((data) => {
-    onInviteUpdated(e.detail, data.status);
-  });
+  const onInviteUpdated = (id, newStatus) => {
+    invites = invites.map((invite) =>
+      invite.id === id ? { ...invite, status: newStatus } : invite,
+    );
+  };
+
+  const onInviteAccept = (e) =>
+    rpc.invoke('guilds:invites:accept', e.detail).then((data) => {
+      onInviteUpdated(e.detail, data.status);
+    });
+  const onInviteDecline = (e) =>
+    rpc.invoke('guilds:invites:decline', e.detail).then((data) => {
+      onInviteUpdated(e.detail, data.status);
+    });
+  const onSortChange = (e) => {
+    sortKey = e.detail;
+  };
 </script>
 
 <div class="guild-info__members">
   {#if invites.length}
     <InvitesTable
-      {invites}
+      invites={sortedInvites}
+      {sortKey}
       on:invite-accept={onInviteAccept}
-      on:invite-decline={onInviteDecline} />
+      on:invite-decline={onInviteDecline}
+      on:sort-change={onSortChange} />
 
     {#if !finished}
       <IntersectionObs on:intersect={() => currentPage++}>

@@ -4,6 +4,7 @@ declare interface IInternalGuildMember {
   role: EGuildAPIMemberRoleResponse;
   status?: string;
   game?: string;
+  invitationId?: string;
 }
 
 declare interface IInternalGuildPathPoint {
@@ -40,4 +41,10 @@ declare interface IInternalInvite {
   rank: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
   level: number;
   isFriend: boolean;
+}
+
+declare interface IInternalReceivedInvitation {
+  fromSummonerName: string;
+  fromGuild: boolean;
+  invitationId: string;
 }

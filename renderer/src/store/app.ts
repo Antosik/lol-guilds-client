@@ -4,11 +4,12 @@ import { randomId } from "@guilds-shared/helpers/functions";
 
 export interface IAppStore {
   notifications: Array<{ id: string, text: string }>;
+  invitations: Array<{ id: string, text: string }>;
   currentPage: string;
 }
 
 function createAppStore() {
-  const getInitialStore = (): IAppStore => ({ notifications: [], currentPage: "/client/" });
+  const getInitialStore = (): IAppStore => ({ notifications: [], invitations: [], currentPage: "/client/" });
   const { subscribe, update } = writable<IAppStore>(getInitialStore());
 
   const removeNotification = (id: string) => {
@@ -26,6 +27,25 @@ function createAppStore() {
     });
   };
 
+  const addInvitation = (invitationId: string, text: string) => {
+    update(state => {
+      const invitation = {
+        id: invitationId,
+        text
+      };
+      return { ...state, invitations: [...state.invitations, invitation] };
+    });
+  };
+
+  const removeInvitation = (invitationId: string) => {
+    update(state =>
+      ({ ...state, invitations: state.invitations.filter(invitation => invitation.id !== invitationId) })
+    );
+  };
+
+  const clearInvitations = () => {
+    update(state => ({ ...state, invitations: [] }));
+  };
 
   const setCurrentPage = (url: string) => {
     window.localStorage.setItem("currentPage", url);
@@ -46,8 +66,14 @@ function createAppStore() {
 
   return {
     subscribe,
+
     addNotification,
     removeNotification,
+
+    addInvitation,
+    removeInvitation,
+    clearInvitations,
+
     setCurrentPage,
     setCurrentPageLoaded,
     cleanCurrentPage

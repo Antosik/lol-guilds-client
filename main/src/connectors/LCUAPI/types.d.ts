@@ -90,6 +90,30 @@ declare interface ILCUAPIInvitationRequest {
   toSummonerId: number;
   toSummonerName?: string;
 }
+
+declare interface ILCUAPILobbyElegibilityRestriction {
+  expiredTimestamp: number;
+  restrictionArgs: Record<string, string>;
+  restrictionCode: string;
+  summonerIds: number[];
+  summonerIdsString: string;
+}
+
+declare interface ILCUAPILobbyReceivedInvitationsResponse {
+  canAcceptInvitation: boolean;
+  fromSummonerId: number;
+  fromSummonerName: string;
+  gameConfig: {
+    gameMode: string;
+    inviteGameType: string;
+    mapId: number;
+    queueId: number;
+  };
+  invitationId: string;
+  restrictions: ILCUAPILobbyElegibilityRestriction[];
+  state: ELCUAPIInvitationState;
+  timestamp: string;
+}
 // #region Invitation Requests
 
 

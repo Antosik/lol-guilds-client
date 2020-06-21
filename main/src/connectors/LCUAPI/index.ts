@@ -150,16 +150,36 @@ export class LCUAPI {
   }
 
   public async sendLobbyInvitation(summoners: ILCUAPISummonerCoreResponse[]): Promise<boolean> {
+
     const invitations = summoners.map((summoner) => ({
       state: "Requested",
       toSummonerId: summoner.summonerId
     }) as { state: ELCUAPIInvitationState, toSummonerId: number });
+
     return await this.request("/lol-lobby/v2/lobby/invitations", {
       body: invitations,
       method: "POST"
     })
       .then(() => true)
       .catch(() => false);
+  }
+
+  public async getReceivedInvitations(): Promise<ILCUAPILobbyReceivedInvitationsResponse[]> {
+    return await this.request("/lol-lobby/v2/received-invitations") as ILCUAPILobbyReceivedInvitationsResponse[];
+  }
+
+  public async acceptReceivedInvitation(invitation_id: string): Promise<void> {
+    await this.request(`/lol-lobby/v2/received-invitations/${invitation_id}/accept`, {
+      method: "POST"
+    });
+    return;
+  }
+
+  public async declineReceivedInvitation(invitation_id: string): Promise<void> {
+    await this.request(`/lol-lobby/v2/received-invitations/${invitation_id}/decline`, {
+      method: "POST"
+    });
+    return;
   }
   // #endregion /lol-lobby/ calls
 

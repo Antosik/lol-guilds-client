@@ -24,6 +24,7 @@ export class MultiController {
 
     // Event handlers binding
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    this._onLCULobbyReceivedInvitation = this._onLCULobbyReceivedInvitation.bind(this);
     this._handleGetMembers = this._handleGetMembers.bind(this);
     this._handleSubscribeToMembersStatus = this._handleSubscribeToMembersStatus.bind(this);
     this._handleInvitesList = this._handleInvitesList.bind(this);
@@ -31,8 +32,43 @@ export class MultiController {
   }
 
   public handleEvents(): this {
-    return this._handleRPCEvents();
+    return this
+      ._handleLCUApiEvents()
+      ._handleRPCEvents();
   }
+
+
+  // #region LCU Events Handling (Inner)
+  private _handleLCUApiEvents(): this {
+    this._lcuService.addListener("lcu:lol-lobby.v2.received-invitations", this._onLCULobbyReceivedInvitation);
+
+    return this;
+  }
+
+  private async _onLCULobbyReceivedInvitation(invites: ILCUAPILobbyReceivedInvitationsResponse[]) {
+
+    if (invites.length === 0) {
+      this._rpc.send("lcu:invitations", []);
+      return;
+    }
+
+    const club = await this._guildsService.getCurrentClub();
+    const members = await this._guildsService.getGuildMembers(club.id);
+    const membersName = members.map(member => member.summoner.summoner_name);
+
+    const invitesFromMembers = invites
+      .filter(invite =>
+        membersName.includes(invite.fromSummonerName)
+        && invite.canAcceptInvitation
+        && invite.gameConfig.gameMode !== "TFT"
+        && invite.state === "Pending"
+      )
+      .map<IInternalReceivedInvitation>(invite => ({ fromSummonerName: invite.fromSummonerName, invitationId: invite.invitationId, fromGuild: true }));
+
+    this._rpc.send("lcu:invitations", invitesFromMembers);
+  }
+  // #endregion RPC Events Handling (Outer)
+
 
   // #region RPC Events Handling (Outer)
   private _handleRPCEvents(): this {

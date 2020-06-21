@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import type { UpdateInfo } from "electron-updater";
 import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { VersionService } from "@guilds-main/services/version";
 
@@ -58,8 +59,15 @@ export class VersionController {
     this._rpc.send("version:update:process");
   }
 
-  private _onVersionUpdaterUpdateAvailable() {
-    this._rpc.send("version:update:available");
+  private _onVersionUpdaterUpdateAvailable(info: UpdateInfo) {
+
+    if ("PORTABLE_EXECUTABLE_APP_FILENAME" in process.env) {
+
+      this._rpc.send("version:update:available", info.version);
+    } else {
+
+      this._rpc.send("version:update:available", info.version);
+    }
   }
 
   private _onVersionUpdaterUpdateNotAvailable() {
@@ -71,8 +79,15 @@ export class VersionController {
     this._rpc.send("version:update:downloading", percent.toFixed(2));
   }
 
-  private _onVersionUpdaterUpdateDownloaded() {
-    this._rpc.send("version:update:ready");
+  private _onVersionUpdaterUpdateDownloaded(info: UpdateInfo) {
+
+    if ("PORTABLE_EXECUTABLE_APP_FILENAME" in process.env) {
+
+      this._rpc.send("version:update:portable", info.version);
+    } else {
+
+      this._rpc.send("version:update:ready");
+    }
   }
   // #endregion VersionUpdater Events Handling (Inner)
 
@@ -89,8 +104,9 @@ export class VersionController {
   private _handleVersionGet() {
     return Result.create(this._versionService.getVersion(), "success");
   }
-  private _handleVersionCheck() {
-    return Result.resolve(this._versionService.checkForUpdates());
+  private async _handleVersionCheck() {
+    await this._versionService.checkForUpdates();
+    return;
   }
   private _handleVersionInstall() {
     return Result.create(this._versionService.runUpdateInstall(), "warning");

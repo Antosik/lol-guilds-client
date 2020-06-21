@@ -122,4 +122,37 @@ export class LCUService {
 
     return { found, notfound };
   }
+
+  public async openFriendChat(nickname: string): Promise<unknown> {
+
+    const summoner = await this._lcuApi.getSummonerByName(nickname.trim());
+
+    if (typeof summoner === "string") {
+      return;
+    }
+
+    return this._lcuApi.createChatWithSummoner(summoner)
+      .then(() => this._lcuApi.setActiveConversation(summoner));
+  }
+
+  public async getReceivedInvitations(): Promise<IInternalReceivedInvitation[]> {
+
+    const invites = await this._lcuApi.getReceivedInvitations();
+
+    return invites
+      .filter(invite =>
+        invite.canAcceptInvitation
+        && invite.gameConfig.gameMode !== "TFT"
+        && invite.state === "Pending"
+      )
+      .map<IInternalReceivedInvitation>(invite => ({ fromSummonerName: invite.fromSummonerName, invitationId: invite.invitationId, fromGuild: false }));
+  }
+
+  public async acceptReceivedInvitation(invitation_id: string): Promise<void> {
+    return await this._lcuApi.acceptReceivedInvitation(invitation_id);
+  }
+
+  public async declineReceivedInvitation(invitation_id: string): Promise<void> {
+    return await this._lcuApi.declineReceivedInvitation(invitation_id);
+  }
 }

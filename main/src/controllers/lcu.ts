@@ -24,6 +24,9 @@ export class LCUController {
     this._handleLCUDisconnect = this._handleLCUDisconnect.bind(this);
     this._handleSendLobbyInvite = this._handleSendLobbyInvite.bind(this);
     this._handleSendFriendRequest = this._handleSendFriendRequest.bind(this);
+    this._handleOpenChat = this._handleOpenChat.bind(this);
+    this._handleAcceptReceivedInvitation = this._handleAcceptReceivedInvitation.bind(this);
+    this._handleDeclineReceivedInvitation = this._handleDeclineReceivedInvitation.bind(this);
     this._onLCUConnect = this._onLCUConnect.bind(this);
     this._onLCUDisconnect = this._onLCUDisconnect.bind(this);
     this._onLCUGameflowChange = this._onLCUGameflowChange.bind(this);
@@ -51,13 +54,15 @@ export class LCUController {
   private async _onLCUConnect() {
     this._rpc.send("lcu:connected");
 
-    const [summoner, gameflow] = await Promise.all([
+    const [summoner, gameflow, invitations] = await Promise.all([
       this._lcuService.getCurrentSummoner(),
       this._lcuService.getStatus(),
+      this._lcuService.getReceivedInvitations()
     ]);
 
     this._rpc.send("lcu:summoner", summoner);
     this._rpc.send("lcu:gameflow-phase", Result.create(gameflow, "success"));
+    this._rpc.send("lcu:invitations", invitations);
   }
 
   private _onLCUDisconnect() {
@@ -83,6 +88,9 @@ export class LCUController {
     this._rpc.setHandler("lcu:lobby-invite", this._handleSendLobbyInvite);
     this._rpc.setHandler("lcu:lobby-invite-all", this._handleSendLobbyInvite);
     this._rpc.setHandler("lcu:friend-request", this._handleSendFriendRequest);
+    this._rpc.setHandler("lcu:open-chat", this._handleOpenChat);
+    this._rpc.setHandler("lcu:invitation:accept", this._handleAcceptReceivedInvitation);
+    this._rpc.setHandler("lcu:invitation:decline", this._handleDeclineReceivedInvitation);
 
     return this;
   }
@@ -127,6 +135,18 @@ export class LCUController {
     return Result.create()
       .setNotification("Приглашение в лобби успешно отправлено")
       .setStatus("success");
+  }
+
+  private async _handleOpenChat(nickname: string) {
+    return Result.create(await this._lcuService.openFriendChat(nickname), "success");
+  }
+
+  private async _handleAcceptReceivedInvitation(invitation_id: string) {
+    return Result.create(await this._lcuService.acceptReceivedInvitation(invitation_id), "success");
+  }
+
+  private async _handleDeclineReceivedInvitation(invitation_id: string) {
+    return Result.create(await this._lcuService.declineReceivedInvitation(invitation_id), "success");
   }
   // #endregion RPC Events Handling (Outer)
 }

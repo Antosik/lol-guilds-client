@@ -48,6 +48,27 @@ declare interface IGuildAPIClubStageRatingResponse extends IGuildAPIClubRatingRe
 // #endregion Club Responses
 
 
+// #region Invite Responses
+declare interface IGuildAPIInviteSenderResponse {
+  id: number;
+  lol_account_id: number;
+  summoner_name: string;
+  avatar: string;
+  current_club: number;
+  rank: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+  level: number;
+  honor: boolean;
+}
+declare interface IGuildAPIInviteResponse {
+  id: number;
+  points: number;
+  sender: IGuildAPIInviteSenderResponse;
+  status: 0 | 1 | 2 | 3 | 4;
+  club: number;
+}
+// #endregion Invite Responses
+
+
 // #region Games Responses
 declare interface IGuildAPIGameQueueResponse {
   queue_id: number;

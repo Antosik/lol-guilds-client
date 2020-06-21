@@ -5,7 +5,7 @@
 
   const seasonActivePromise = rpc
     .invoke("guilds:season:live")
-    .then(liveSeason => liveSeason !== undefined);
+    .then((liveSeason) => liveSeason !== undefined);
 </script>
 
 <style>
@@ -28,7 +28,7 @@
         href="/client/guild/"
         class="flex-center use-active"
         use:link
-        use:active>
+        use:active={'/client/guild/*'}>
         Моя гильдия
       </a>
     </li>

@@ -3,8 +3,9 @@ import type { GuildsAPI } from "@guilds-main/connectors/GuildsAPI";
 import { calculateRelativeProgress } from "@guilds-shared/helpers/points";
 
 
-const guildRatingToPoint = (club: IGuildAPIClubRatingResponse): IInternalGuildPathPoint => ({ rank: club.rank, points: club.points });
+const guildRatingToPoint = (club?: IGuildAPIClubRatingResponse): IInternalGuildPathPoint => ({ rank: club?.rank, points: club?.points ?? 0, absolute: false });
 const sortByPoints = (first: IInternalGuildPathPoint, second: IInternalGuildPathPoint): number => first.points - second.points;
+const filterEmptyPoints = (point: IInternalGuildPathPoint) => point.rank !== undefined || point.absolute;
 
 function constructSegment(guildPoint: IInternalGuildPathPoint, start: IInternalGuildPathPoint, end: IInternalGuildPathPoint): IInternalGuildPathSegment {
   const progress = calculateRelativeProgress(guildPoint.points, start.points, end.points);
@@ -44,7 +45,7 @@ function constructSegments(guildPoint: IInternalGuildPathPoint, points: IInterna
 
 export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number): Promise<IInternalGuildPath> {
   let absolutePoints: IInternalGuildPathPoint[] = [
-    { points: 0 }, { description: "Старт", points: 1000 }
+    { points: 0, absolute: true }, { description: "Старт", points: 1000, absolute: true }
   ];
 
   const season_data = await guildsApi.getSeasonRatingForMyClub(season_id);
@@ -61,14 +62,14 @@ export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number
     }
   }
 
-  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward };
+  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward, absolute: false };
 
   const noticiablePlaces = [500, 250, 100, 50];
   const clubOnNoticiablePlaces = await Promise.all(noticiablePlaces.map(place => guildsApi.getClubOnSeasonTopN(season_id, place)));
   const clubsInTop10 = await guildsApi.getTopClubsForSeasonWithId(season_id, { page: 1, per_page: 10 });
 
-  absolutePoints = absolutePoints.concat(clubOnNoticiablePlaces.filter(Boolean).map<IInternalGuildPathPoint>(guildRatingToPoint)).sort(sortByPoints);
-  const topPoints = clubsInTop10.map<IInternalGuildPathPoint>(guildRatingToPoint).sort(sortByPoints);
+  absolutePoints = absolutePoints.concat(clubOnNoticiablePlaces.filter(Boolean).map<IInternalGuildPathPoint>(guildRatingToPoint)).filter(filterEmptyPoints).sort(sortByPoints);
+  const topPoints = clubsInTop10.map<IInternalGuildPathPoint>(guildRatingToPoint).filter(filterEmptyPoints).sort(sortByPoints);
 
   return {
     current_position: currentPosition,
@@ -78,11 +79,11 @@ export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number
 
 export async function getGuildStagePath(guildsApi: GuildsAPI, season_id: number, stage_id: number): Promise<IInternalGuildPath> {
   let absolutePoints: IInternalGuildPathPoint[] = [
-    { points: 0 }, { description: "Старт", points: 1000 }
+    { points: 0, absolute: true }, { description: "Старт", points: 1000, absolute: true }
   ];
 
   const { games, points, rank, rank_reward } = await guildsApi.getStageRatingForMyClub(stage_id, season_id);
-  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward };
+  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward, absolute: false };
 
   if (points < 1000) {
     return {
@@ -96,8 +97,8 @@ export async function getGuildStagePath(guildsApi: GuildsAPI, season_id: number,
     guildsApi.getTopClubsForStageWithId(stage_id, season_id, { page: 1, per_page: 5 })
   ]);
 
-  absolutePoints = [...absolutePoints, guildRatingToPoint(clubOnTop15)].sort(sortByPoints);
-  const topPoints = clubsInTop5.map<IInternalGuildPathPoint>(guildRatingToPoint).sort(sortByPoints);
+  absolutePoints = [...absolutePoints, guildRatingToPoint(clubOnTop15)].filter(filterEmptyPoints).sort(sortByPoints);
+  const topPoints = clubsInTop5.map<IInternalGuildPathPoint>(guildRatingToPoint).filter(filterEmptyPoints).sort(sortByPoints);
 
   return {
     current_position: currentPosition,

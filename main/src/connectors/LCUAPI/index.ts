@@ -113,6 +113,29 @@ export class LCUAPI {
     const bannedRaw = await this.request("/lol-chat/v1/blocked-players") as ILCUAPIBannedResponse[];
     return bannedRaw.map(({ id, name, summonerId }) => ({ id, name, summonerId }));
   }
+
+  public async setActiveConversation(summoner: ILCUAPISummonerCoreResponse): Promise<unknown> {
+
+    const requestData = {
+      id: `${summoner.puuid}@ru1.pvp.net`
+    };
+    return await this.request("/lol-chat/v1/conversations/active", {
+      body: requestData,
+      method: "PUT"
+    });
+  }
+
+  public async createChatWithSummoner(summoner: ILCUAPISummonerCoreResponse): Promise<unknown> {
+
+    return await this.request("/lol-chat/v1/conversations", {
+      method: "POST",
+      body: {
+        type: "chat",
+        id: `${summoner.puuid}@ru1.pvp.net`,
+        pid: `${summoner.puuid}@ru1.pvp.net`
+      }
+    });
+  }
   // #endregion /lol-chat/ calls
 
 
@@ -127,16 +150,36 @@ export class LCUAPI {
   }
 
   public async sendLobbyInvitation(summoners: ILCUAPISummonerCoreResponse[]): Promise<boolean> {
+
     const invitations = summoners.map((summoner) => ({
       state: "Requested",
       toSummonerId: summoner.summonerId
     }) as { state: ELCUAPIInvitationState, toSummonerId: number });
+
     return await this.request("/lol-lobby/v2/lobby/invitations", {
       body: invitations,
       method: "POST"
     })
       .then(() => true)
       .catch(() => false);
+  }
+
+  public async getReceivedInvitations(): Promise<ILCUAPILobbyReceivedInvitationsResponse[]> {
+    return await this.request("/lol-lobby/v2/received-invitations") as ILCUAPILobbyReceivedInvitationsResponse[];
+  }
+
+  public async acceptReceivedInvitation(invitation_id: string): Promise<void> {
+    await this.request(`/lol-lobby/v2/received-invitations/${invitation_id}/accept`, {
+      method: "POST"
+    });
+    return;
+  }
+
+  public async declineReceivedInvitation(invitation_id: string): Promise<void> {
+    await this.request(`/lol-lobby/v2/received-invitations/${invitation_id}/decline`, {
+      method: "POST"
+    });
+    return;
   }
   // #endregion /lol-lobby/ calls
 
@@ -153,7 +196,7 @@ export class LCUAPI {
 
     logDebug(`[LCUAPI] (${retryIndex}/${LCUAPI.RETRY_COUNT}): "${opts.method} ${path}" ${response.status} "${(opts.body && JSON.stringify(opts.body)) ?? ""}"`);
 
-    if (response.status === 204) {
+    if (response.status === 204 || (response.status === 201 && response.size === 0)) {
       return undefined;
     }
 

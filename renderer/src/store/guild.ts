@@ -5,10 +5,11 @@ import { writable } from "svelte/store";
 export interface IGuildStore {
   guild?: IKeyValue | null;
   members: IKeyValue[];
+  role: number;
 }
 
 function createGuildStore() {
-  const getInitialStore = (): IGuildStore => ({ guild: undefined, members: [] });
+  const getInitialStore = (): IGuildStore => ({ guild: undefined, members: [], role: 0 });
   const { subscribe, update } = writable<IGuildStore>(getInitialStore());
 
   const setGuildData = (guild: IKeyValue): void => update(store => {
@@ -18,6 +19,8 @@ function createGuildStore() {
       return { ...store, guild };
     }
   });
+
+  const setRole = (role: number): void => update(store => ({ ...store, role }));
 
   const setMembers = (members: IKeyValue[]): void => update(store => ({ ...store, members }));
   const setMemberStatus = (member: IKeyValue): void => update(store => {
@@ -31,6 +34,7 @@ function createGuildStore() {
     setGuildData,
     setMembers,
     setMemberStatus,
+    setRole,
     reset
   };
 }

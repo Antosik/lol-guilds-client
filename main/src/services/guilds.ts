@@ -124,4 +124,30 @@ export class GuildsService {
   public async getGuildStagePath(season_id: number, stage_id: number): Promise<IInternalGuildPath> {
     return getGuildStagePath(this._guildsApi, season_id, stage_id);
   }
+
+  public async getGuildRole(club_id: number, summonerName: string): Promise<EGuildAPIMemberRoleResponse | undefined> {
+    const name = summonerName.toLowerCase();
+    const members = await this.getGuildMembers(club_id);
+    return members.find(member => member.summoner.summoner_name.toLowerCase() === name)?.role;
+  }
+
+  public async getInvitesList(club_id: number, options?: IGuildAPIPagedRequest): Promise<IInternalInvite[]> {
+
+    if (club_id === undefined) { return []; }
+
+    const invites = await this._guildsApi.getInvitesList(club_id, options);
+
+    return invites.map<IInternalInvite>(invite => ({
+      id: invite.id,
+      points: invite.points,
+      accountId: invite.sender.lol_account_id,
+      displayName: invite.sender.summoner_name,
+      level: invite.sender.level,
+      rank: invite.sender.rank,
+    }));
+  }
+
+  public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<unknown> {
+    return await this._guildsApi.updateInvite(invite_id, status);
+  }
 }

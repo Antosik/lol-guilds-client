@@ -73,7 +73,9 @@
           alt="Отправить сообщение" />
       </button>
     {/if}
-    {#if allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown')}
+    {#if allowInvite 
+      && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown')
+      && member.game === 'League of Legends' }
       <button
         class="guild-member__invite flex-center"
         type="button"

@@ -1,4 +1,6 @@
 <script lang="typescript">
+  import { isExists } from '@guilds-shared/helpers/typeguards';
+
   export let guild: IGuildAPIClubResponse | null | undefined;
 </script>
 
@@ -37,7 +39,7 @@
   }
 </style>
 
-{#if guild}
+{#if isExists(guild)}
   <div class="guild-info__top flex-center">
     <div class="guild-info__top__item">Глава: {guild.owner.summoner_name}</div>
 

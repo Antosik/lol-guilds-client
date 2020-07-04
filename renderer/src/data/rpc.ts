@@ -7,6 +7,7 @@ import { EventEmitter } from "events";
 
 import { appStore } from "@guilds-web/store/app";
 import { flowId } from "@guilds-shared/helpers/rpc";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class ClientRPC extends EventEmitter {
@@ -30,13 +31,13 @@ export class ClientRPC extends EventEmitter {
   public async invoke<T = unknown>(event: RPCHandlerEventType, ...data: unknown[]): Promise<T | undefined> {
     const response = await ipcRenderer.invoke(this._id, { event, data }) as Result<T>;
 
-    if (response?.notification !== undefined) {
+    if (isExists(response?.notification)) {
       appStore.addNotification(response.notification);
     }
 
     if (response?.status === "error") {
       appStore.addNotification(
-        response.error !== undefined
+        isExists(response?.error)
           ? response.error.toString()
           : "Внутренняя ошибка приложения"
       );

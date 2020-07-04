@@ -1,7 +1,9 @@
 <script lang="typescript">
   import { location } from 'svelte-spa-router';
-  import SummonerStatus from '../components/SummonerStatus.svelte';
+  import { isExists, isNotBlank } from '@guilds-shared/helpers/typeguards';
   import { appStore } from '../store/app';
+
+  import SummonerStatus from '../components/SummonerStatus.svelte';
 
   export let summoner: ILCUAPISummonerResponse | undefined = undefined;
   export let guild: IGuildAPIClubResponse | undefined = undefined;
@@ -65,12 +67,12 @@
 
 <header class="summoner-info" class:light={style === 'light'}>
   <h1>
-    {#if summoner}{summoner.displayName}{:else}???{/if}
-    {#if guild}
+    {#if isExists(summoner)}{summoner.displayName}{:else}???{/if}
+    {#if isExists(guild)}
       <span>[ {guild.club_name} ]</span>
     {/if}
   </h1>
-  {#if status}
+  {#if isNotBlank(status)}
     <div class="summoner-info__status">
       <SummonerStatus statusCode={status} showText={style !== 'light'} />
     </div>

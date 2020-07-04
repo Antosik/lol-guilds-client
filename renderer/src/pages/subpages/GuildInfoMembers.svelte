@@ -6,7 +6,7 @@
   import MemberList from '@guilds-web/blocks/MemberList.svelte';
 
   const membersLoadingPromise = rpc
-    .invoke<IInternalGuildMember[]>('guilds:members', $guildStore.guild!.id)
+    .invoke<IInternalGuildMember[]>('guilds:members', $guildStore.guild?.id)
     .then((members) => guildStore.setMembers(members));
 </script>
 

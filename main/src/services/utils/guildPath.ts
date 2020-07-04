@@ -1,11 +1,12 @@
 import type { GuildsAPI } from "@guilds-main/connectors/GuildsAPI";
 
 import { calculateRelativeProgress } from "@guilds-shared/helpers/points";
+import { isExists, isNotEmpty } from "@guilds-shared/helpers/typeguards";
 
 
 const guildRatingToPoint = (club?: IGuildAPIClubRatingResponse): IInternalGuildPathPoint => ({ rank: club?.rank, points: club?.points ?? 0, absolute: false });
 const sortByPoints = (first: IInternalGuildPathPoint, second: IInternalGuildPathPoint): number => first.points - second.points;
-const filterEmptyPoints = (point: IInternalGuildPathPoint) => point.rank !== undefined || point.absolute;
+const filterEmptyPoints = (point: IInternalGuildPathPoint) => isExists(point.rank) || point.absolute;
 
 function constructSegment(guildPoint: IInternalGuildPathPoint, start: IInternalGuildPathPoint, end: IInternalGuildPathPoint): IInternalGuildPathSegment {
   const progress = calculateRelativeProgress(guildPoint.points, start.points, end.points);
@@ -30,7 +31,7 @@ function constructSegments(guildPoint: IInternalGuildPathPoint, points: IInterna
     segments.push(constructSegment(guildPoint, start, end));
   }
 
-  if (topPoints.length) {
+  if (isNotEmpty(topPoints)) {
     segments.push(constructSegment(guildPoint, points[points.length - 1], topPoints[0]));
 
     const topSegment = constructSegment(guildPoint, topPoints[0], topPoints[topPoints.length - 1]);
@@ -56,13 +57,13 @@ export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number
     const season_info = guildsApi.getSeasonById(season_id);
     const active_stage = (await season_info).stages.find(stage => stage.is_open && !stage.is_closed);
 
-    if (active_stage !== undefined) {
+    if (isExists(active_stage)) {
       const stage_data = await guildsApi.getStageRatingForMyClub(active_stage.id, season_id);
       points = stage_data.points;
     }
   }
 
-  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward, absolute: false };
+  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward: rank_reward?.reward_value ?? 0, absolute: false };
 
   const noticiablePlaces = [500, 250, 100, 50];
   const clubOnNoticiablePlaces = await Promise.all(noticiablePlaces.map(place => guildsApi.getClubOnSeasonTopN(season_id, place)));
@@ -83,7 +84,7 @@ export async function getGuildStagePath(guildsApi: GuildsAPI, season_id: number,
   ];
 
   const { games, points, rank, rank_reward } = await guildsApi.getStageRatingForMyClub(stage_id, season_id);
-  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward, absolute: false };
+  const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward: rank_reward?.reward_value ?? 0, absolute: false };
 
   if (points < 1000) {
     return {

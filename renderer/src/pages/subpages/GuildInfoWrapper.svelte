@@ -1,6 +1,6 @@
 <script lang="typescript">
   import Router from 'svelte-spa-router';
-
+  import { isExists } from '@guilds-shared/helpers/typeguards';
   import { appStore } from '@guilds-web/store/app';
   import { guildStore } from '@guilds-web/store/guild';
   import {
@@ -13,7 +13,7 @@
   import GuildInfoNavigation from '@guilds-web/sections/GuildInfoNavigation.svelte';
 
   let guild_name: string;
-  $: guild_name = $guildStore.guild?.club_name ?? "???";
+  $: guild_name = $guildStore.guild?.club_name ?? '???';
 </script>
 
 <style>
@@ -23,7 +23,7 @@
   }
 </style>
 
-{#if $guildStore.guild}
+{#if isExists($guildStore.guild)}
   <div class="page guild-info">
     <h2>Гильдия "{guild_name}"</h2>
 

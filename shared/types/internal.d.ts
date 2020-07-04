@@ -25,7 +25,7 @@ declare interface IInternalGuildPathSegment {
 }
 
 declare interface IInternalGuildCurrentPosition extends IInternalGuildPathPoint {
-  rank_reward: string;
+  rank_reward: number;
   games: number;
 }
 

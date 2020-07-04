@@ -7,6 +7,7 @@ import { EventEmitter } from "events";
 import { logDebug } from "@guilds-main/utils/log";
 import { Result } from "@guilds-shared/helpers/result";
 import { flowId } from "@guilds-shared/helpers/rpc";
+import { isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
 export type IRPCHandlerFunc = (...args: any[]) => Result | Promise<Result> | void | Promise<void>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -65,7 +66,7 @@ export class MainRPC extends EventEmitter {
   private handleInvoke(_: IpcMainInvokeEvent, { event, data }: { event: string, data: unknown[] }): Result | Promise<Result> {
     const handler = this._handlers.get(event);
 
-    if (handler === undefined) {
+    if (isNotExists(handler)) {
       logDebug(`Internal: unknown event - ${event}`);
       return Result.create()
         .setStatus("error")

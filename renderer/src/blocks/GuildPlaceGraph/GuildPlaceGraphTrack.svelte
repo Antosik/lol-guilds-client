@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { isNotEmpty } from '@guilds-shared/helpers/typeguards';
   import { calculatePosition, calculateProgress } from './helpers';
 
   export let currentPoint: IInternalGuildPathPoint;
@@ -65,7 +66,7 @@
         y2="75px" />
     {/if}
 
-    {#if points.length}
+    {#if isNotEmpty(points)}
       {#each points as point, i (point.rank)}
         <line
           x1="{calculatePosition(point, i, { isTop, points, start, end })}%"

@@ -1,7 +1,7 @@
 <script lang="typescript">
   import { onMount, onDestroy } from 'svelte';
   import Router, { replace, location } from 'svelte-spa-router';
-
+  import { isNotExists, isExists } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '../data/rpc';
   import { appStore } from '../store/app';
   import { summonerStore } from '../store/summoner';
@@ -15,22 +15,24 @@
 
   let guild: IGuildAPIClubResponse | undefined | null;
   $: guild = $guildStore.guild;
-  $: console.log(guild);
 
   let scrollY: number = 0;
-  const scrollToTop = () =>
-    $summonerStore.summoner &&
-    document
-      .querySelector('.main-application')!
-      .scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const scrollToTop = () => {
+    if (isExists($summonerStore.summoner)) {
+      document
+        .querySelector('.main-application')!
+        .scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const LCUReconnect = () => rpc.invoke('lcu:connect');
-  const onAppScroll = (e: Event) =>
-    (scrollY = (e.target as HTMLDivElement).scrollTop);
+  const onAppScroll = (e: Event) => {
+    scrollY = (e.target as HTMLDivElement).scrollTop;
+  };
 
   onMount(() => {
     document.querySelector('#app')!.addEventListener('scroll', onAppScroll);
-    if (!$summonerStore.summoner) {
+    if (isNotExists($summonerStore.summoner)) {
       replace('/summoner-loading');
     }
   });
@@ -50,15 +52,15 @@
   }
 </style>
 
-{#if $summonerStore.summoner}
+{#if isExists($summonerStore.summoner)}
   <div class="main-application" on:scroll={onAppScroll}>
     <SummonerInfo
       summoner={$summonerStore.summoner}
-      guild={guild}
+      {guild}
       status={$summonerStore.status}
       style={$location === '/client/' ? 'normal' : 'light'}
       on:click-reconnect={LCUReconnect} />
-    {#if guild}
+    {#if isExists(guild)}
       <Navigation />
     {/if}
     <main class="subpages">

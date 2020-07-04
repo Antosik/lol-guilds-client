@@ -1,6 +1,6 @@
 <script lang="typescript">
   import { onDestroy } from 'svelte';
-
+  import { isExists } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '@guilds-web/data/rpc';
   import { guildStore } from '@guilds-web/store/guild';
   import { summonerStore } from '@guilds-web/store/summoner';
@@ -93,7 +93,7 @@
   }
 </style>
 
-{#if $guildStore.guild}
+{#if isExists($guildStore.guild)}
   <div class="guild-members">
     <h2>Члены гильдии</h2>
 

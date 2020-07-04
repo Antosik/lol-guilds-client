@@ -3,6 +3,7 @@ import type { BrowserWindow } from "electron";
 
 import Store from "electron-store";
 import { logError } from "@guilds-main/utils/log";
+import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
 interface IWindowState {
@@ -47,7 +48,7 @@ export class WindowStateSaver {
 
   private updateState(): void {
     this._stateUpdateTimer = null;
-    if (this._window === null) return;
+    if (isNotExists(this._window)) return;
 
     try {
       const bounds = this._window.getBounds();
@@ -71,7 +72,8 @@ export class WindowStateSaver {
   }
 
   private onWindowPositionChange(): void {
-    if (this._stateUpdateTimer !== null) clearTimeout(this._stateUpdateTimer);
+    if (isExists(this._stateUpdateTimer)) clearTimeout(this._stateUpdateTimer);
+
     this._stateUpdateTimer = setTimeout(this.updateState, WindowStateSaver.STATE_UPDATE_TIMEOUT);
   }
 
@@ -96,7 +98,7 @@ export class WindowStateSaver {
   }
 
   public unmanage(): void {
-    if (this._window !== null) {
+    if (isExists(this._window)) {
       this._window.removeListener("resize", this.onWindowPositionChange);
       this._window.removeListener("move", this.onWindowPositionChange);
       this._window.removeListener("close", this.onWindowPositionChange);

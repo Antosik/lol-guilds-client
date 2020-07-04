@@ -1,12 +1,16 @@
 <script lang="typescript">
+  import {
+    isEmpty,
+    isExists,
+    isNotEmpty,
+  } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '@guilds-web/data/rpc';
   import { guildStore } from '@guilds-web/store/guild';
+  import { sortStrings, sortNumbers } from '@guilds-web/utils/misc';
 
   import IntersectionObs from '@guilds-web/components/IntersectionObs.svelte';
   import Loading from '@guilds-web/blocks/Loading.svelte';
   import InvitesTable from '@guilds-web/sections/InvitesTable.svelte';
-
-  import { sortStrings, sortNumbers } from '@guilds-web/utils/misc';
 
   let invites: IInternalInvite[] = [];
   let currentPage: number = 1;
@@ -20,13 +24,13 @@
 
   async function loadInvites(page: number) {
     return rpc
-      .invoke<IInternalInvite[]>('guilds:invites:list', $guildStore.guild!.id, {
+      .invoke<IInternalInvite[]>('guilds:invites:list', $guildStore.guild?.id, {
         page,
       })
       .then((list: IInternalInvite[] | undefined) => {
         initialInvitesLoading = false;
 
-        if (list === undefined || list.length === 0) {
+        if (isEmpty(list)) {
           finished = true;
           return;
         }
@@ -55,9 +59,9 @@
   const onInviteAccept = async (e: Event) => {
     const inviteId = (e as CustomEvent<number>).detail;
     await rpc
-      .invoke<{ status: 1 | 2 }>('guilds:invites:accept', inviteId)
-      .then((data: { status: 1 | 2 } | undefined) => {
-        if (data?.status) {
+      .invoke<IGuildAPIInviteUpdateResponse>('guilds:invites:accept', inviteId)
+      .then((data: IGuildAPIInviteUpdateResponse | undefined) => {
+        if (isExists(data) && isExists(data?.status)) {
           onInviteUpdated(inviteId, data.status);
         }
       });
@@ -65,9 +69,9 @@
   const onInviteDecline = async (e: Event) => {
     const inviteId = (e as CustomEvent<number>).detail;
     await rpc
-      .invoke<{ status: 1 | 2 }>('guilds:invites:decline', inviteId)
-      .then((data: { status: 1 | 2 } | undefined) => {
-        if (data?.status) {
+      .invoke<IGuildAPIInviteUpdateResponse>('guilds:invites:decline', inviteId)
+      .then((data: IGuildAPIInviteUpdateResponse | undefined) => {
+        if (isExists(data) && isExists(data?.status)) {
           onInviteUpdated(inviteId, data.status);
         }
       });
@@ -82,7 +86,7 @@
 </script>
 
 <div class="guild-info__members">
-  {#if invites.length}
+  {#if isNotEmpty(invites)}
     <InvitesTable
       invites={sortedInvites}
       {sortKey}

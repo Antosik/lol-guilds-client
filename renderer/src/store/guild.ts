@@ -1,5 +1,7 @@
 import { writable } from "svelte/store";
 
+import { isNotExists } from "@guilds-shared/helpers/typeguards";
+
 
 function createGuildStore() {
   const getInitialStore = (): IGuildStore => ({ guild: undefined, members: [], role: 0 });
@@ -9,7 +11,7 @@ function createGuildStore() {
 
 
   const setGuildData = (guild?: IGuildAPIClubResponse): void => update(store => {
-    if (guild === undefined || guild === null || store?.guild?.id !== guild.id) {
+    if (isNotExists(guild) || store?.guild?.id !== guild.id) {
       return { ...getInitialStore(), guild };
     } else {
       return { ...store, guild };

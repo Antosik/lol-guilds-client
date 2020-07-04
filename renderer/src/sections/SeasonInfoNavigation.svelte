@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { link } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
+  import { isExists } from '@guilds-shared/helpers/typeguards';
   import { formatDate, formatDateDistanceTo } from '../utils/format';
 
   export let season: IGuildAPISeasonResponse;
@@ -9,7 +10,11 @@
 
   let now = new Date();
 
-  const formatDateDistance = (time: Date, start: Date | string, end: Date | string) => {
+  const formatDateDistance = (
+    time: Date,
+    start: Date | string,
+    end: Date | string,
+  ) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
@@ -77,7 +82,7 @@
     <h2 class="season-selector__heading">Сезон: {season.title}</h2>
 
     <div class="season-selector__schedule">
-      {#if stage}
+      {#if isExists(stage)}
         <h3>Этап {stage.number}</h3>
         <p>{formatDate(stage.start_date)} - {formatDate(stage.end_date)}</p>
         <p>{formatDateDistance(now, stage.start_date, stage.end_date)}</p>
@@ -89,7 +94,7 @@
   </div>
 
   <ul class="season-selector__stages-list">
-    {#if stage}
+    {#if isExists(stage)}
       <li class="season-selector__stages-list-item">
         <a href={`/client/current-season/`} use:link>К сезону</a>
       </li>

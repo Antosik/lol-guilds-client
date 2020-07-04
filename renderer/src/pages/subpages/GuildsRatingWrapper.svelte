@@ -1,7 +1,7 @@
 <script lang="typescript">
   import { onMount } from 'svelte';
   import Router, { push } from 'svelte-spa-router';
-
+  import { isExists } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '@guilds-web/data/rpc';
   import { appStore } from '@guilds-web/store/app';
   import {
@@ -14,20 +14,15 @@
 
   export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
-  let season_id: number;
-  $: season_id = Number(params.season_id);
-  let stage_id: number;
-  $: stage_id = Number(params.stage_id);
+  let season_id: number | undefined;
+  $: season_id = isExists(params.season_id) ? Number(params.season_id) : undefined;
+  let stage_id: number | undefined;
+  $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
 
   let seasons: IGuildAPISeasonResponse[] = [];
   const seasonsLoadingPromise = rpc.invoke<IGuildAPISeasonResponse[]>(
     'guilds:seasons',
   );
-
-  let season_info: IGuildAPISeasonResponse | undefined;
-  $: season_info = season_id
-    ? seasons.find((season) => season.id === season_id)
-    : undefined;
 
   onMount(async () => {
     seasons = (await seasonsLoadingPromise) ?? [];
@@ -42,7 +37,7 @@
   {#await seasonsLoadingPromise}
     <Loading>Загружаем список сезонов...</Loading>
   {:then seasons}
-    {#if season_id && season_info}
+    {#if isExists(season_id)}
       <RatingNavigation
         {seasons}
         selectedSeason={season_id}

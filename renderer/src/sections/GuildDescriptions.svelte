@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { isNotBlank } from '@guilds-shared/helpers/typeguards';
   import { markdown } from '../utils/markdown';
 
   export let guild: IGuildAPIClubResponse | null | undefined;
@@ -36,28 +37,26 @@
   }
 </style>
 
-{#if guild}
-  {#if short_description || long_description}
-    <div class="guild-info__descriptions">
+{#if isNotBlank(short_description) || isNotBlank(long_description)}
+  <div class="guild-info__descriptions">
 
-      {#if short_description}
-        <div class="guild-info__short_description">
-          <h3>Краткое описание</h3>
-          <div class="guild-info__description md-description">
-            {@html markdown.render(short_description)}
-          </div>
+    {#if isNotBlank(short_description)}
+      <div class="guild-info__short_description">
+        <h3>Краткое описание</h3>
+        <div class="guild-info__description md-description">
+          {@html markdown.render(short_description)}
         </div>
-      {/if}
+      </div>
+    {/if}
 
-      {#if long_description}
-        <div class="guild-info__long_description">
-          <h3>Описание</h3>
-          <div class="guild-info__description md-description">
-            {@html markdown.render(long_description)}
-          </div>
+    {#if isNotBlank(long_description)}
+      <div class="guild-info__long_description">
+        <h3>Описание</h3>
+        <div class="guild-info__description md-description">
+          {@html markdown.render(long_description)}
         </div>
-      {/if}
+      </div>
+    {/if}
 
-    </div>
-  {/if}
+  </div>
 {/if}

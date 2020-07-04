@@ -1,6 +1,8 @@
 <script lang="typescript">
-  import GuildPlaceGraphPoint from './GuildPlaceGraphPoint.svelte';
+  import { isNotEmpty } from '@guilds-shared/helpers/typeguards';
   import { calculatePosition, calculateProgress } from './helpers';
+
+  import GuildPlaceGraphPoint from './GuildPlaceGraphPoint.svelte';
 
   export let currentPoint: IInternalGuildPathPoint;
 
@@ -30,7 +32,7 @@
     position={currentProgress} />
 {/if}
 
-{#if points.length}
+{#if isNotEmpty(points)}
   {#each points as point, i (point.rank)}
     <GuildPlaceGraphPoint
       {...point}

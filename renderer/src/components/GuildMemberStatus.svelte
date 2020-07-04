@@ -3,6 +3,7 @@
     guildMemberStatusLocale,
     gameflowGameMap,
   } from '@guilds-shared/helpers/gameflow';
+
   import Tooltip from '../components/Tooltip.svelte';
 
   export let statusCode: string = 'unknown';

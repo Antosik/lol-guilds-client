@@ -1,4 +1,6 @@
 <script lang="typescript">
+  import { isExists } from '@guilds-shared/helpers/typeguards';
+
   import GuildPlaceGraphAxis from './GuildPlaceGraphAxis.svelte';
   import GuildPlaceGraphTrack from './GuildPlaceGraphTrack.svelte';
 
@@ -6,7 +8,7 @@
   export let segments: IInternalGuildPathSegment[] = [];
 
   const currentSegment = segments.find((segment) => segment.isCurrent);
-  let selectedSegmentIndex = currentSegment
+  let selectedSegmentIndex = isExists(currentSegment)
     ? segments.indexOf(currentSegment)
     : 0;
 

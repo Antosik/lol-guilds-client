@@ -1,6 +1,7 @@
 <script lang="typescript">
   import { link, push } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
+  import { isExists } from '@guilds-shared/helpers/typeguards';
   import { formatDate } from '../utils/format';
 
   export let seasons: IGuildAPISeasonResponse[] = [];
@@ -14,8 +15,10 @@
 
   let stage_info: IGuildAPIStageResponse | undefined;
   $: stage_info =
-    selectedStage && season_info
-      ? season_info.stages.find((stage: IGuildAPIStageResponse) => stage.id === selectedStage)
+    isExists(selectedStage) && isExists(season_info)
+      ? season_info.stages.find(
+          (stage: IGuildAPIStageResponse) => stage.id === selectedStage,
+        )
       : undefined;
 
   const onSeasonChange = (e: Event) =>
@@ -79,12 +82,12 @@
     </select>
 
     <div class="season-selector__schedule">
-      {#if stage_info}
+      {#if isExists(stage_info)}
         <h3>Этап {stage_info.number}</h3>
         <p>
           {formatDate(stage_info.start_date)} - {formatDate(stage_info.end_date)}
         </p>
-      {:else if season_info}
+      {:else if isExists(season_info)}
         <p>
           {formatDate(season_info.start_date)} - {formatDate(season_info.end_date)}
         </p>
@@ -93,7 +96,7 @@
   </div>
 
   <ul class="season-selector__stages-list">
-    {#if selectedStage}
+    {#if isExists(selectedStage)}
       <li class="season-selector__stages-list-item">
         <a href={`/client/rating/season/${selectedSeason}`} use:link>
           К сезону
@@ -101,7 +104,7 @@
       </li>
     {/if}
 
-    {#if season_info}
+    {#if isExists(season_info)}
       {#each season_info.stages as stage (stage.id)}
         <li class="season-selector__stages-list-item">
           {#if stage.is_open}

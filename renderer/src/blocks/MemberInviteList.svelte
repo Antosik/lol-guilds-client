@@ -1,6 +1,8 @@
 <script lang="typescript">
   import { createEventDispatcher } from 'svelte';
+  import { isExists } from '@guilds-shared/helpers/typeguards';
   import { guildMemberStatusSortOrder } from '@guilds-shared/helpers/gameflow';
+
   import MemberInviteListItem from './MemberInviteListItem.svelte';
 
   export let allowInvite: boolean = true;
@@ -57,7 +59,7 @@
 
 <ul>
   {#each sortMembers(members) as member (member.name)}
-    {#if member}
+    {#if isExists(member)}
       <MemberInviteListItem
         {member}
         {allowInvite}

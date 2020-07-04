@@ -4,6 +4,7 @@ import type { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import type { LCUService } from "@guilds-main/services/lcu";
 
 import { Result } from "@guilds-shared/helpers/result";
+import { isNotBlank, isNotEmpty } from "@guilds-shared/helpers/typeguards";
 
 
 export class LCUController {
@@ -110,7 +111,7 @@ export class LCUController {
       return Result.create()
         .setError(new Error("Не удалось отправить запрос"));
 
-    } else if (requestStatus.notfound && requestStatus.notfound.length) {
+    } else if (isNotBlank(requestStatus.notfound)) {
       const notfound = Array.isArray(requestStatus.notfound) ? requestStatus.notfound.join(", ") : requestStatus.notfound;
       return Result.create()
         .setNotification(`Не удалось найти призывателей: ${notfound}`)
@@ -124,9 +125,10 @@ export class LCUController {
 
   private async _handleSendLobbyInvite(nicknames: string | string[]) {
     if (!Array.isArray(nicknames)) { nicknames = [nicknames]; }
+
     const { notfound } = await this._lcuService.sendLobbyInviteByNickname(nicknames);
 
-    if (notfound.length) {
+    if (isNotEmpty(notfound)) {
       return Result.create()
         .setNotification(`Не удалось найти призывателей: ${notfound.join(", ")}`)
         .setStatus("warning");

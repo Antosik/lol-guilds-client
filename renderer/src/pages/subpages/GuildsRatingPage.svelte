@@ -1,6 +1,10 @@
 <script lang="typescript">
   import { location } from 'svelte-spa-router';
-
+  import {
+    isEmpty,
+    isExists,
+    isNotEmpty,
+  } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '@guilds-web/data/rpc';
   import { guildStore } from '@guilds-web/store/guild';
 
@@ -26,10 +30,14 @@
   const SEASON_CLUBS_COUNT = 500;
   const STAGE_CLUBS_COUNT = 25;
 
-  let season_id: number;
-  $: season_id = Number(params.season_id);
-  let stage_id: number;
-  $: stage_id = Number(params.stage_id);
+  let season_id: number | undefined;
+  $: season_id = isExists(params.season_id)
+    ? Number(params.season_id)
+    : undefined;
+  let stage_id: number | undefined;
+  $: stage_id = isExists(params.season_id)
+    ? Number(params.stage_id)
+    : undefined;
 
   $: afterNavigation($location);
   $: loadRating($location, currentPage);
@@ -69,7 +77,7 @@
           .then((list) => {
             initialRatingLoading = false;
 
-            if (list === undefined || list.length === 0) {
+            if (isEmpty(list)) {
               finished = true;
               return;
             }
@@ -88,7 +96,7 @@
           .then((list) => {
             initialRatingLoading = false;
 
-            if (list === undefined || list.length === 0) {
+            if (isEmpty(list)) {
               finished = true;
               return;
             }
@@ -103,7 +111,7 @@
     <h3>Гильдия</h3>
     <Loading>Загружаем информацию о гильдии...</Loading>
   {:then guild}
-    {#if guild}
+    {#if isExists(guild)}
       <GuildStats {guild} />
     {:else}
       <h3>Гильдия - ???</h3>
@@ -114,7 +122,7 @@
 
 <div class="guilds-rating">
   <h3>Рейтинг гильдий</h3>
-  {#if guilds.length}
+  {#if isNotEmpty(guilds)}
     <GuildsRatingTable {guilds} myGuildId={guild.id} />
 
     {#if !finished && ((!stage_id && guilds.length < SEASON_CLUBS_COUNT) || (stage_id && guilds.length < STAGE_CLUBS_COUNT))}

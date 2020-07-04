@@ -1,9 +1,13 @@
 <script lang="typescript">
-  import { Result } from '@guilds-shared/helpers/result';
-
   import { onMount, onDestroy } from 'svelte';
   import Router, { replace } from 'svelte-spa-router';
 
+  import { Result } from '@guilds-shared/helpers/result';
+  import {
+    isNotExists,
+    isExists,
+    isEmpty,
+  } from '@guilds-shared/helpers/typeguards';
   import { rpc } from './data/rpc';
   import { appStore } from './store/app';
   import { summonerStore } from './store/summoner';
@@ -20,7 +24,7 @@
   ) => {
     if (!auth) {
       replace('/not-launched/');
-    } else if (auth && !summoner) {
+    } else if (auth && isNotExists(summoner)) {
       replace('/summoner-loading/');
     } else {
       replace($appStore.currentPage);
@@ -49,7 +53,7 @@
     guildStore.setGuildData(club);
 
     const summoner = $summonerStore.summoner;
-    if (club && summoner) {
+    if (isExists(club) && isExists(summoner)) {
       const role = await rpc.invoke<number>(
         'guilds:role',
         club.id,
@@ -71,18 +75,18 @@
     await rpc.invoke('lcu:invitation:decline', invitationid);
   };
   const onReceivedInvitation = (e: Result<IInternalReceivedInvitation[]>) => {
-    if (e.data === undefined || e.data.length === 0) {
+    if (isEmpty(e.data)) {
       appStore.clearInvitations();
       return;
     }
 
     e.data
-      .filter(
-        (invite) =>
-          $appStore.invitations.find(
-            (invitation) => invitation.id === invite.invitationId,
-          ) === undefined,
-      )
+      .filter((invite) => {
+        const inviteFound = $appStore.invitations.find(
+          (invitation) => invitation.id === invite.invitationId,
+        );
+        return isNotExists(inviteFound);
+      })
       .forEach((invite) => {
         appStore.addInvitation(
           invite.invitationId,

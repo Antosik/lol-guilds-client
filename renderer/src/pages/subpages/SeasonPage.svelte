@@ -1,7 +1,7 @@
 <script lang="typescript">
   import { onMount } from 'svelte';
   import { location } from 'svelte-spa-router';
-
+  import { isExists, isEmpty, isNotEmpty } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '@guilds-web/data/rpc';
   import { summonerStore } from '@guilds-web/store/summoner';
   import { guildStore } from '@guilds-web/store/guild';
@@ -17,7 +17,7 @@
   const seasonLoadingPromise = rpc
     .invoke<IGuildAPISeasonResponse>('guilds:season:live')
     .then((liveSeason) =>
-      liveSeason !== undefined
+      isExists(liveSeason)
         ? liveSeason
         : rpc.invoke<IGuildAPISeasonResponse>('guilds:season:prev'),
     );
@@ -27,12 +27,11 @@
   let initialGamesLoading = true;
 
   let season_id: number | undefined;
-  $: season_id = season ? Number(season.id) : undefined;
+  $: season_id = isExists(season) ? Number(season.id) : undefined;
   let stage_id: number | undefined;
-  $: stage_id = params.stage_id ? Number(params.stage_id) : undefined;
+  $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
 
-  let guildRatingLoadingPromise:
-    | Promise<IInternalGuildPath | undefined>
+  let guildRatingLoadingPromise: Promise<IInternalGuildPath | undefined>;
   $: guildRatingLoadingPromise = !season_id
     ? Promise.resolve(undefined)
     : !stage_id
@@ -48,7 +47,7 @@
   $: topMembersLoadingPromise = loadMembers(season_id, stage_id);
 
   let summoner_name: string;
-  $: summoner_name = $summonerStore.summoner?.displayName ?? "???";
+  $: summoner_name = $summonerStore.summoner?.displayName ?? '???';
 
   $: afterNavigation($location);
   $: loadGames($location, lastGamesPage);
@@ -61,13 +60,17 @@
   async function loadGames(_: string, page: number) {
     return !stage_id
       ? rpc
-          .invoke<IGuildAPIGameClubResponse[]>('guilds:games:season', season_id, {
-            page,
-          })
+          .invoke<IGuildAPIGameClubResponse[]>(
+            'guilds:games:season',
+            season_id,
+            {
+              page,
+            },
+          )
           .then((list) => {
             initialGamesLoading = false;
 
-            if (list === undefined || list.length === 0) {
+            if (isEmpty(list)) {
               return;
             }
 
@@ -85,7 +88,7 @@
           .then((list) => {
             initialGamesLoading = false;
 
-            if (list === undefined || list.length === 0) {
+            if (isEmpty(list)) {
               return;
             }
 
@@ -112,7 +115,7 @@
             season_id,
           )
           .then((members) => {
-            if (members === undefined) return [];
+            if (isEmpty(members)) return [];
 
             return members.map((member) => ({
               summoner: member.summoner,
@@ -127,7 +130,7 @@
             stage_id,
           )
           .then((members) => {
-            if (members === undefined) return [];
+            if (isEmpty(members)) return [];
 
             return members.map((member) => ({
               summoner: member.summoner,
@@ -182,13 +185,13 @@
 {#await seasonLoadingPromise}
   <Loading>Получаем данные...</Loading>
 {:then season}
-  {#if season}
+  {#if isExists(season)}
     <div class="guild-rating">
       <h3>Текущая позиция в рейтинге</h3>
       {#await guildRatingLoadingPromise}
         <Loading>Загружаем информацию...</Loading>
       {:then guild}
-        {#if guild}
+        {#if isExists(guild)}
           <div class="guild-rating__rank">
             {#if guild.current_position.rank === 0}
               <p>Не участвуем ({guild.current_position.points}pt)</p>
@@ -215,7 +218,7 @@
       {#await topMembersLoadingPromise}
         <Loading>Загружаем список...</Loading>
       {:then topMembers}
-        {#if topMembers.length}
+        {#if isNotEmpty(topMembers)}
           <p>
             Личный рейтинг - {findSummonerRating(summoner_name, topMembers)}
           </p>
@@ -237,7 +240,7 @@
 
     <div class="last-games horizontal-scroll">
       <h3>Мои последние игры с гильдией</h3>
-      {#if lastGames.length}
+      {#if isNotEmpty(lastGames)}
         <ul class="horizontal-scroll__scrollable">
           {#each lastGames as game, i (game.id)}
             <li>

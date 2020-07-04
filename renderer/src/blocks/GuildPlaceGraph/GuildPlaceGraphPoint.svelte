@@ -1,4 +1,6 @@
 <script lang="typescript">
+  import { isNotBlank, isExists } from '@guilds-shared/helpers/typeguards';
+
   export let description: string = '';
   export let rank: number;
   export let points: number;
@@ -57,12 +59,12 @@
   class:guild-graph__point--end={isEnd}
   class:guild-graph__point--current={isCurrent}
   style={positionStyle}>
-  {#if description}
+  {#if isNotBlank(description)}
     {description}
   {:else if rank}
     <div class="guild-graph__point__rank">{rank}</div>
   {/if}
-  {#if points !== undefined}
+  {#if isExists(points)}
     <div class="guild-graph__point__points">{points}pt</div>
   {/if}
 </div>

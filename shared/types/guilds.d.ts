@@ -83,6 +83,10 @@ declare interface IGuildAPIInviteResponse {
   status: 0 | 1 | 2 | 3 | 4;
   club: number;
 }
+
+declare interface IGuildAPIInviteUpdateResponse {
+  status: 1 | 2;
+}
 // #endregion Invite Responses
 
 

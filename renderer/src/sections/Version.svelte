@@ -1,47 +1,47 @@
 <script lang="typescript">
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
+  import { rpc } from '../data/rpc';
+  import { ISSUES_URL, RELEASES_URL } from '@guilds-shared/env';
 
-  import { rpc } from "../data/rpc";
-  import LoadingSpinner from "../components/LoadingSpinner.svelte";
-  import { ISSUES_URL, RELEASES_URL } from "@guilds-shared/env";
+  import LoadingSpinner from '../components/LoadingSpinner.svelte';
 
   let updateCheckState: string;
   let downloadProgress: number = 0;
   let nextVersion: any;
 
-  const versionPromise = rpc.invoke("version:get");
+  const versionPromise = rpc.invoke('version:get');
 
   const checkForUpdate = async (e: Event) => {
     e.stopPropagation();
     e.preventDefault();
-    await rpc.invoke("version:check");
+    await rpc.invoke('version:check');
   };
 
   const installUpdate = async (e: Event) => {
     e.stopPropagation();
     e.preventDefault();
-    await rpc.invoke("version:install");
+    await rpc.invoke('version:install');
   };
 
   onMount(async () => {
     [
-      "process",
-      "downloading",
-      "available",
-      "not-available",
-      "ready",
-      "error",
-      "portable",
+      'process',
+      'downloading',
+      'available',
+      'not-available',
+      'ready',
+      'error',
+      'portable',
     ].forEach((state) =>
       rpc.on(`version:update:${state}`, (e) => {
         updateCheckState = state;
-        downloadProgress = state === "downloading" ? e : 0;
+        downloadProgress = state === 'downloading' ? e : 0;
         nextVersion =
-          state === "available" || state === "portable" ? e : undefined;
-      })
+          state === 'available' || state === 'portable' ? e : undefined;
+      }),
     );
 
-    await rpc.invoke("version:check");
+    await rpc.invoke('version:check');
   });
 </script>
 

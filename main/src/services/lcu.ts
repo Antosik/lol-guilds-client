@@ -3,6 +3,7 @@ import type { LCUAPISocket } from "@guilds-main/connectors/LCUAPI/socket";
 
 import { authStore } from "@guilds-main/store/auth";
 import { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
+import { isBlank, isNotBlank, isExists, isNotExists, isEmpty } from "@guilds-shared/helpers/typeguards";
 
 
 export class LCUService {
@@ -56,6 +57,8 @@ export class LCUService {
   }
 
   public async sendFriendRequestByNickname(nickname: string): Promise<{ status: boolean, notfound?: string }> {
+    if (isBlank(nickname)) { throw new Error("Incorrect nickname"); }
+
     try {
       const summoner = await this._lcuApi.getSummonerByName(nickname);
       if (typeof summoner === "string") {
@@ -64,7 +67,7 @@ export class LCUService {
 
       const sendedRequests = await this._lcuApi.getSendedFriendRequests();
       const alreadySended = sendedRequests.find(request => request.summonerId === summoner.summonerId);
-      if (alreadySended) {
+      if (isExists(alreadySended)) {
         return { status: true };
       }
 
@@ -90,10 +93,11 @@ export class LCUService {
   }
 
   private async _searchForSummoners(nicknames: string[]): Promise<{ found: ILCUAPISummonerCoreResponse[], notfound: string[] }> {
+    if (isEmpty(nicknames)) { return { found: [], notfound: [] }; }
 
     const summoners = await Promise.all(
       nicknames
-        .filter(nickname => nickname.trim() !== "")
+        .filter(isNotBlank)
         .map((nickname) => this._lcuApi.getSummonerByName(nickname.trim()))
     );
 
@@ -111,6 +115,8 @@ export class LCUService {
   }
 
   public async sendLobbyInviteByNickname(nicknames: string[]): Promise<{ found: ILCUAPISummonerCoreResponse[], notfound: string[] }> {
+    if (isEmpty(nicknames)) { return { found: [], notfound: [] }; }
+
     await this._createLobbyWithGameflowChecks();
 
     const { found, notfound } = await this._searchForSummoners(nicknames);
@@ -124,6 +130,7 @@ export class LCUService {
   }
 
   public async openFriendChat(nickname: string): Promise<unknown> {
+    if (isBlank(nickname)) { throw new Error("Incorrect nickname"); }
 
     const summoner = await this._lcuApi.getSummonerByName(nickname.trim());
 
@@ -149,10 +156,14 @@ export class LCUService {
   }
 
   public async acceptReceivedInvitation(invitation_id: string): Promise<void> {
+    if (isNotExists(invitation_id)) { throw new Error("Incorrect invitation"); }
+
     return await this._lcuApi.acceptReceivedInvitation(invitation_id);
   }
 
   public async declineReceivedInvitation(invitation_id: string): Promise<void> {
+    if (isNotExists(invitation_id)) { throw new Error("Incorrect invitation"); }
+
     return await this._lcuApi.declineReceivedInvitation(invitation_id);
   }
 }

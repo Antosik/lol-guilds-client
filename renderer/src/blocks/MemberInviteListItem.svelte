@@ -1,5 +1,7 @@
 <script lang="typescript">
   import { createEventDispatcher } from 'svelte';
+  import { isExists } from '@guilds-shared/helpers/typeguards';
+
   import GuildMemberStatus from '../components/GuildMemberStatus.svelte';
   import Tooltip from '../components/Tooltip.svelte';
 
@@ -8,17 +10,17 @@
 
   const dispatch = createEventDispatcher();
   const sendFriendRequest = () => {
-    if (member) {
+    if (isExists(member)) {
       dispatch('friend-request', member.name);
     }
   };
   const inviteToParty = () => {
-    if (member) {
+    if (isExists(member)) {
       dispatch('member-invite', member.name);
     }
   };
   const openChatWith = () => {
-    if (member) {
+    if (isExists(member)) {
       dispatch('open-chat', member.name);
     }
   };
@@ -57,26 +59,26 @@
   }
 </style>
 
-{#if member}
+{#if isExists(member)}
   <li class="guild-member">
     <div class="guild-member__info">
       <div>{member.name}</div>
       <GuildMemberStatus statusCode={member.status} gameName={member.game} />
-      {#if member && member.note}
+      {#if isExists(member) && member.note}
         <span class="note__tooltip">
           <Tooltip text={member.note} label="Заметка" icon="note" />
         </span>
       {/if}
     </div>
     <div class="guild-member__buttons">
-      {#if member && member.status === 'unknown'}
+      {#if isExists(member) && member.status === 'unknown'}
         <button
           class="guild-member__friend flex-center"
           type="button"
           on:click={sendFriendRequest}>
           <img src="./images/icons/user.svg" alt="Отправить заявку в друзья" />
         </button>
-      {:else if member && member.status !== 'banned'}
+      {:else if isExists(member) && member.status !== 'banned'}
         <button
           class="guild-member__chat flex-center"
           type="button"
@@ -84,7 +86,7 @@
           <img src="./images/icons/chat.svg" alt="Отправить сообщение" />
         </button>
       {/if}
-      {#if allowInvite && member && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown') && member.game === 'League of Legends'}
+      {#if isExists(member) && allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown') && member.game === 'League of Legends'}
         <button
           class="guild-member__invite flex-center"
           type="button"

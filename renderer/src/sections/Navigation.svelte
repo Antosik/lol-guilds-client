@@ -1,11 +1,12 @@
 <script lang="typescript">
   import { link } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
+  import { isExists } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '../data/rpc';
 
   const seasonActivePromise = rpc
     .invoke('guilds:season:live')
-    .then((liveSeason) => liveSeason !== undefined);
+    .then((liveSeason) => isExists(liveSeason));
 </script>
 
 <style>

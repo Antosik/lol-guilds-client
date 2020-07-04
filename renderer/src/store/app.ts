@@ -1,6 +1,7 @@
 import { writable } from "svelte/store";
 
 import { randomId } from "@guilds-shared/helpers/functions";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
 function createAppStore() {
@@ -62,7 +63,7 @@ function createAppStore() {
   };
 
   const savedCurrentPage = window.localStorage.getItem("currentPage");
-  if (savedCurrentPage !== null) {
+  if (isExists(savedCurrentPage)) {
     setCurrentPage(savedCurrentPage);
   }
 

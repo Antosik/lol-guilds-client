@@ -31,6 +31,7 @@ const config: Configuration = ({
     main: joinPath(__dirname, "src/index.ts"),
     preload: joinPath(__dirname, "src/preload.ts")
   },
+
   output: {
     path: joinPath(__dirname, "..", "target/renderer"),
     filename: "[name].js"
@@ -82,12 +83,14 @@ const config: Configuration = ({
 
     new IgnorePlugin(/.*\.js.map$/i),
 
-    new CopyWebpackPlugin([
-      {
-        from: joinPath(__dirname, "static"),
-        to: joinPath(__dirname, "..", "target"),
-      }
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: joinPath(__dirname, "static"),
+          to: joinPath(__dirname, "..", "target"),
+        }
+      ]
+    }),
 
     new MiniCssExtractPlugin({
       filename: "../css/[name].css"

@@ -1,29 +1,29 @@
-<script>
+<script lang="typescript">
   import { onMount } from "svelte";
-  import Router, { replace } from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
   import LoadingSpinner from "../components/LoadingSpinner.svelte";
   import { ISSUES_URL, RELEASES_URL } from "@guilds-shared/env";
 
+  let updateCheckState: string;
+  let downloadProgress: number = 0;
+  let nextVersion: any;
+
   const versionPromise = rpc.invoke("version:get");
-  let updateCheckState;
-  let downloadProgress = 0;
-  let nextVersion;
 
-  const checkForUpdate = (e) => {
+  const checkForUpdate = async (e: Event) => {
     e.stopPropagation();
     e.preventDefault();
-    rpc.invoke("version:check");
+    await rpc.invoke("version:check");
   };
 
-  const installUpdate = (e) => {
+  const installUpdate = async (e: Event) => {
     e.stopPropagation();
     e.preventDefault();
-    rpc.invoke("version:install");
+    await rpc.invoke("version:install");
   };
 
-  onMount(() => {
+  onMount(async () => {
     [
       "process",
       "downloading",
@@ -41,7 +41,7 @@
       })
     );
 
-    rpc.invoke("version:check");
+    await rpc.invoke("version:check");
   });
 </script>
 

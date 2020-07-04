@@ -10,6 +10,7 @@ import GuildsRatingPage from "../pages/subpages/GuildsRatingPage.svelte";
 import SeasonPageWrapper from "../pages/subpages/SeasonPageWrapper.svelte";
 import SeasonPage from "../pages/subpages/SeasonPage.svelte";
 
+
 export const subprefix = "/client";
 export const subroutes = {
   "/": InviteMembers,
@@ -35,7 +36,6 @@ export const season_subroutes = {
   "/": SeasonPage,
   "/stage/:stage_id": SeasonPage,
 };
-
 
 export const guild_subprefix = subprefix + "/guild";
 export const guild_subroutes = {

@@ -1,15 +1,16 @@
-<script>
-  export let description;
-  export let rank;
-  export let points;
+<script lang="typescript">
+  export let description: string = '';
+  export let rank: number;
+  export let points: number;
 
-  export let isCurrent = false;
-  export let isStart = false;
-  export let isEnd = false;
+  export let isCurrent: boolean = false;
+  export let isStart: boolean = false;
+  export let isEnd: boolean = false;
 
-  export let position = -1;
+  export let position: number = -1;
 
-  $: positionStyle = position === -1 ? "" : `left: ${position}%`;
+  let positionStyle: string;
+  $: positionStyle = position === -1 ? '' : `left: ${position}%`;
 </script>
 
 <style>
@@ -29,11 +30,11 @@
     top: 0;
   }
   .guild-graph__point__rank:before {
-    content: "#";
+    content: '#';
   }
   @media all and (min-width: 576px) {
     .guild-graph__point__rank:before {
-      content: "Топ-";
+      content: 'Топ-';
     }
   }
   .guild-graph__point__points {

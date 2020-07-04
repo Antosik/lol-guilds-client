@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
   import { link } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
 

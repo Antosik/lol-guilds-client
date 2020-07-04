@@ -1,16 +1,17 @@
-<script>
+<script lang="typescript">
   import {
     guildMemberStatusLocale,
     gameflowGameMap,
-  } from "@guilds-shared/helpers/gameflow";
-  import Tooltip from "../components/Tooltip.svelte";
+  } from '@guilds-shared/helpers/gameflow';
+  import Tooltip from '../components/Tooltip.svelte';
 
-  export let statusCode = "unknown";
-  export let gameName = "League of Legends";
-  export let showText = true;
+  export let statusCode: string = 'unknown';
+  export let gameName: string = 'League of Legends';
+  export let showText: boolean = true;
 
+  let gameShortName: string;
   $: gameShortName = gameflowGameMap.has(gameName)
-    ? gameflowGameMap.get(gameName)
+    ? gameflowGameMap.get(gameName) ?? '???'
     : gameName;
 </script>
 
@@ -61,7 +62,9 @@
   {#if showText}
     <span class="status__text">
       {guildMemberStatusLocale.get(statusCode)}
-      {#if gameShortName && gameShortName !== 'League of Legends'}({gameShortName}){/if}
+      {#if gameShortName && gameShortName !== 'League of Legends'}
+        ({gameShortName})
+      {/if}
     </span>
   {/if}
 

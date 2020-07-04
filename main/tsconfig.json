@@ -7,5 +7,6 @@
 
   "include": [
     "./src/**/*",
+    "../shared/types/**/*"
   ]
 }

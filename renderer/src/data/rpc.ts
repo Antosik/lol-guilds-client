@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { IpcRendererEvent } from "electron";
-import type { Result } from "@guilds-main/utils/result";
-import type { RPCHandlerEventType } from "@guilds-shared/interfaces/IRPCHandler";
+import type { Result } from "@guilds-shared/helpers/result";
 
 import { ipcRenderer } from "electron";
 import { EventEmitter } from "events";
@@ -28,8 +27,8 @@ export class ClientRPC extends EventEmitter {
     ipcRenderer.send(this._id, { event, data });
   }
 
-  public async invoke(event: RPCHandlerEventType, ...data: unknown[]): Promise<unknown> {
-    const response = await ipcRenderer.invoke(this._id, { event, data }) as Result<unknown>;
+  public async invoke<T = unknown>(event: RPCHandlerEventType, ...data: unknown[]): Promise<T | undefined> {
+    const response = await ipcRenderer.invoke(this._id, { event, data }) as Result<T>;
 
     if (response?.notification !== undefined) {
       appStore.addNotification(response.notification);

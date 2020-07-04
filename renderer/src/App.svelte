@@ -1,6 +1,8 @@
-<script>
+<script lang="typescript">
+  import { Result } from '@guilds-shared/helpers/result';
+
   import { onMount, onDestroy } from 'svelte';
-  import Router, { replace, location } from 'svelte-spa-router';
+  import Router, { replace } from 'svelte-spa-router';
 
   import { rpc } from './data/rpc';
   import { appStore } from './store/app';
@@ -8,11 +10,14 @@
   import { guildStore } from './store/guild';
   import { routes } from './routes';
 
-  import Invitations from './sections/Invitations';
-  import Notifications from './sections/Notifications';
-  import Version from './sections/Version';
+  import Invitations from './sections/Invitations.svelte';
+  import Notifications from './sections/Notifications.svelte';
+  import Version from './sections/Version.svelte';
 
-  const handleRouting = (auth, summoner) => {
+  const handleRouting = (
+    auth: boolean,
+    summoner?: ILCUAPISummonerResponse | null,
+  ) => {
     if (!auth) {
       replace('/not-launched/');
     } else if (auth && !summoner) {
@@ -24,50 +29,59 @@
 
   $: handleRouting($summonerStore.auth, $summonerStore.summoner);
 
-  const onNotificationClose = (e) => appStore.removeNotification(e.detail);
-  const onSummoner = (e) => summonerStore.setSummoner(e);
-  const onGameflow = (e) => summonerStore.setStatus(e.data);
-  const onConnect = (e) => {
+  const onNotificationClose = (e: Event) => {
+    appStore.removeNotification((e as CustomEvent).detail);
+  };
+  const onSummoner = (e: Result<ILCUAPISummonerResponse>) => {
+    summonerStore.setSummoner(e.data);
+  };
+  const onGameflow = (e: Result<string>) => summonerStore.setStatus(e.data);
+  const onConnect = () => {
     guildStore.reset();
     summonerStore.setAuth(true);
   };
-  const onDisconnect = (e) => {
+  const onDisconnect = () => {
     guildStore.reset();
     summonerStore.setAuth(false);
   };
-  const onGuilds = async (e) => {
-    const club = await rpc.invoke('guilds:club');
+  const onGuilds = async () => {
+    const club = await rpc.invoke<IGuildAPIClubResponse>('guilds:club');
     guildStore.setGuildData(club);
 
-    if (club) {
-      const role = await rpc.invoke(
+    const summoner = $summonerStore.summoner;
+    if (club && summoner) {
+      const role = await rpc.invoke<number>(
         'guilds:role',
         club.id,
-        $summonerStore.summoner.displayName,
+        summoner.displayName,
       );
       guildStore.setRole(role);
     }
   };
   const onOnlineChange = () =>
     rpc.send(navigator.onLine ? 'lcu:connect' : 'lcu:disconnect');
-  const onInvitationAccept = async (e) => {
-    appStore.removeInvitation(e.detail);
-    await rpc.invoke('lcu:invitation:accept', e.detail);
+  const onInvitationAccept = async (e: Event) => {
+    const invitationid = (e as CustomEvent<string>).detail;
+    appStore.removeInvitation(invitationid);
+    await rpc.invoke('lcu:invitation:accept', invitationid);
   };
-  const onInvitationDecline = async (e) => {
-    appStore.removeInvitation(e.detail);
-    await rpc.invoke('lcu:invitation:decline', e.detail);
+  const onInvitationDecline = async (e: Event) => {
+    const invitationid = (e as CustomEvent<string>).detail;
+    appStore.removeInvitation(invitationid);
+    await rpc.invoke('lcu:invitation:decline', invitationid);
   };
-  const onReceivedInvitation = (invites) => {
-    if (invites.length === 0) {
+  const onReceivedInvitation = (e: Result<IInternalReceivedInvitation[]>) => {
+    if (e.data === undefined || e.data.length === 0) {
       appStore.clearInvitations();
+      return;
     }
 
-    invites
+    e.data
       .filter(
         (invite) =>
-          $appStore.invitations.find((invitation) => invitation.id === invitationId) ===
-          undefined,
+          $appStore.invitations.find(
+            (invitation) => invitation.id === invite.invitationId,
+          ) === undefined,
       )
       .forEach((invite) => {
         appStore.addInvitation(
@@ -103,8 +117,8 @@
     rpc.removeListener('lcu:invitations', onReceivedInvitation);
     rpc.removeListener('guilds:connected', onGuilds);
 
-    window.removeListener('online', onOnlineChange);
-    window.removeListener('offline', onOnlineChange);
+    window.removeEventListener('online', onOnlineChange);
+    window.removeEventListener('offline', onOnlineChange);
   });
 </script>
 

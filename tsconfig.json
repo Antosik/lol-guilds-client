@@ -5,13 +5,10 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-
     "allowJs": true,
     "checkJs": false,
-
     "pretty": true,
     "newLine": "lf",
-
     "alwaysStrict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -22,15 +19,24 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
-    
     "baseUrl": ".",
     "outDir": "./dist/",
-    
     "paths": {
-      "@guilds-main/*": ["main/src/*"],
-      "@guilds-web/*": ["renderer/src/*"],
-      "@guilds-shared/*": ["shared/*"],
+      "@guilds-main/*": [
+        "main/src/*"
+      ],
+      "@guilds-web/*": [
+        "renderer/src/*"
+      ],
+      "@guilds-shared/*": [
+        "shared/*"
+      ],
     }
   },
-  "exclude": ["node_modules", "**/*.test.ts", "dist", "target"]
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "dist",
+    "target"
+  ]
 }

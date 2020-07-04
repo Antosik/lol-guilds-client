@@ -2,7 +2,7 @@
 import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { GuildsService } from "@guilds-main/services/guilds";
 
-import { Result } from "@guilds-main/utils/result";
+import { Result } from "@guilds-shared/helpers/result";
 
 
 export class GuildsController {

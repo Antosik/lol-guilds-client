@@ -17,10 +17,10 @@ function handleWindowControls() {
   const onClose = () => win.close();
 
 
-  document.getElementById("hide-button").addEventListener("click", onHide);
-  document.getElementById("unmaximize-button").addEventListener("click", onUnmaximize);
-  document.getElementById("maximize-button").addEventListener("click", onMaximize);
-  document.getElementById("close-button").addEventListener("click", onClose);
+  document.getElementById("hide-button")!.addEventListener("click", onHide);
+  document.getElementById("unmaximize-button")!.addEventListener("click", onUnmaximize);
+  document.getElementById("maximize-button")!.addEventListener("click", onMaximize);
+  document.getElementById("close-button")!.addEventListener("click", onClose);
 
   // Toggle maximise/restore buttons when maximisation/unmaximisation occurs
   toggleMaximized();

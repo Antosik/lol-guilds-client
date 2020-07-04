@@ -5,7 +5,7 @@ import { ipcMain } from "electron";
 import { EventEmitter } from "events";
 
 import { logDebug } from "@guilds-main/utils/log";
-import { Result } from "@guilds-main/utils/result";
+import { Result } from "@guilds-shared/helpers/result";
 import { flowId } from "@guilds-shared/helpers/rpc";
 
 

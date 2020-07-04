@@ -1,24 +1,21 @@
-<script>
-  import { calculateRelativeProgress } from "@guilds-shared/helpers/points";
+<script lang="typescript">
+  import { calculatePosition, calculateProgress } from './helpers';
 
-  export let currentPoint;
-  export let start;
-  export let end;
-  export let progress = 0;
-  export let points = [];
-  export let isCurrent = false;
-  export let isTop = false;
+  export let currentPoint: IInternalGuildPathPoint;
+  export let start: IInternalGuildPathPoint;
+  export let end: IInternalGuildPathPoint;
+  export let progress: number = 0;
+  export let points: IInternalGuildPathPoint[] = [];
+  export let isCurrent: boolean = false;
+  export let isTop: boolean = false;
 
-  const calculatePosition = (point, i) =>
-    isTop
-      ? (100 / (points.length + 1)) * (i + 1)
-      : calculateRelativeProgress(point.points, start.points, end.points) * 100;
-  $: currentProgress = isCurrent
-    ? calculatePosition(
-        currentPoint,
-        isTop ? points.length - currentPoint.rank + 1 : 0
-      )
-    : progress * 100;
+  let currentProgress: number;
+  $: currentProgress = calculateProgress(isCurrent, progress, currentPoint, {
+    points,
+    isTop,
+    start,
+    end,
+  });
 </script>
 
 <style>
@@ -71,8 +68,8 @@
     {#if points.length}
       {#each points as point, i (point.rank)}
         <line
-          x1="{calculatePosition(point, i)}%"
-          x2="{calculatePosition(point, i)}%"
+          x1="{calculatePosition(point, i, { isTop, points, start, end })}%"
+          x2="{calculatePosition(point, i, { isTop, points, start, end })}%"
           y1="55px"
           y2="90px" />
       {/each}

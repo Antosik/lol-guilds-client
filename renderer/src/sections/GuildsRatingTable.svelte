@@ -1,8 +1,6 @@
-<script>
-  import { link } from "svelte-spa-router";
-
-  export let myGuildId = undefined;
-  export let guilds = [];
+<script lang="typescript">
+  export let myGuildId: number | undefined = undefined;
+  export let guilds: Array<IGuildAPIClubStageRatingResponse | IGuildAPIClubSeasonRatingResponse> = [];
 </script>
 
 <style>

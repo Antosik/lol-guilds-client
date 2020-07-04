@@ -1,10 +1,10 @@
-<script>
-  import { link } from "svelte-spa-router";
-  import active from "svelte-spa-router/active";
-  import { rpc } from "../data/rpc";
+<script lang="typescript">
+  import { link } from 'svelte-spa-router';
+  import active from 'svelte-spa-router/active';
+  import { rpc } from '../data/rpc';
 
   const seasonActivePromise = rpc
-    .invoke("guilds:season:live")
+    .invoke('guilds:season:live')
     .then((liveSeason) => liveSeason !== undefined);
 </script>
 

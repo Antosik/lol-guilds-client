@@ -1,12 +1,13 @@
-<script>
-  import { createEventDispatcher } from "svelte";
-  import { fade, slide } from "svelte/transition";
+<script lang="typescript">
+  import { createEventDispatcher } from 'svelte';
+  import { fade } from 'svelte/transition';
+  import { cubicInOut } from 'svelte/easing';
 
-  export let id = "";
-  export let text = "";
+  export let id: string = '';
+  export let text: string = '';
 
   const dispatch = createEventDispatcher();
-  const onClose = () => dispatch("close", id);
+  const onClose = () => dispatch('close', id);
 </script>
 
 <style>
@@ -37,7 +38,9 @@
   }
 </style>
 
-<li class="notification" transition:fade|local={{ duration: 200 }}>
+<li
+  class="notification"
+  transition:fade|local={{ duration: 200, delay: 0, easing: cubicInOut }}>
   <button
     type="button"
     on:click={onClose}

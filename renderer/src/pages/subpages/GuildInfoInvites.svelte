@@ -1,67 +1,84 @@
-<script>
+<script lang="typescript">
   import { rpc } from '@guilds-web/data/rpc';
   import { guildStore } from '@guilds-web/store/guild';
 
-  import IntersectionObs from '@guilds-web/components/IntersectionObs';
+  import IntersectionObs from '@guilds-web/components/IntersectionObs.svelte';
   import Loading from '@guilds-web/blocks/Loading.svelte';
   import InvitesTable from '@guilds-web/sections/InvitesTable.svelte';
 
-  let invites = [];
-  let currentPage = 1;
-  let invitesLoadingPromise;
-  let initialInvitesLoading = true;
-  let finished = false;
+  import { sortStrings, sortNumbers } from '@guilds-web/utils/misc';
 
-  let sortKey = '+id';
+  let invites: IInternalInvite[] = [];
+  let currentPage: number = 1;
+  let initialInvitesLoading: boolean = true;
+  let finished: boolean = false;
+  let sortKey: string = '+id';
 
-  $: loadInvites(currentPage);
+  let sortedInvites: IInternalInvite[];
   $: sortedInvites = sortInvites(invites, sortKey);
+  $: loadInvites(currentPage);
 
-  function loadInvites(page) {
+  async function loadInvites(page: number) {
     return rpc
-      .invoke('guilds:invites:list', $guildStore.guild.id, { page })
-      .then((list) => {
-        invites = [...invites, ...list];
+      .invoke<IInternalInvite[]>('guilds:invites:list', $guildStore.guild!.id, {
+        page,
+      })
+      .then((list: IInternalInvite[] | undefined) => {
         initialInvitesLoading = false;
 
-        if (list.length === 0) {
+        if (list === undefined || list.length === 0) {
           finished = true;
+          return;
         }
+
+        invites = [...invites, ...list];
       });
   }
 
-  const sortStrings = (a, b, desc) =>
-    desc ? b.localeCompare(a) : a.localeCompare(b);
-  const sortNumbers = (a, b, desc) => (desc ? b - a : a - b);
-  function sortInvites(invites = [], sortKey = '+id') {
+  function sortInvites(invites: IInternalInvite[] = [], sortKey = '+id') {
     const key = sortKey.slice(1);
     const desc = sortKey[0] === '+';
-    return [...invites].sort((a, b) =>
+
+    return [...invites].sort((a: IKeyValue, b: IKeyValue) =>
       typeof b[key] === 'string'
         ? sortStrings(a[key], b[key], desc)
         : sortNumbers(a[key], b[key], desc),
     );
   }
 
-  const onInviteUpdated = (id, newStatus) => {
+  // #region Event Handlers
+  const onInviteUpdated = (id: number, newStatus: 1 | 2) => {
     invites = invites.map((invite) =>
       invite.id === id ? { ...invite, status: newStatus } : invite,
     );
   };
-
-  const onInviteAccept = (e) =>
-    rpc.invoke('guilds:invites:accept', e.detail).then((data) => {
-      onInviteUpdated(e.detail, data.status);
-    });
-  const onInviteDecline = (e) =>
-    rpc.invoke('guilds:invites:decline', e.detail).then((data) => {
-      onInviteUpdated(e.detail, data.status);
-    });
-  const onSortChange = (e) => {
-    sortKey = e.detail;
+  const onInviteAccept = async (e: Event) => {
+    const inviteId = (e as CustomEvent<number>).detail;
+    await rpc
+      .invoke<{ status: 1 | 2 }>('guilds:invites:accept', inviteId)
+      .then((data: { status: 1 | 2 } | undefined) => {
+        if (data?.status) {
+          onInviteUpdated(inviteId, data.status);
+        }
+      });
   };
-  const onMemberFriendRequest = async (e) =>
-    await rpc.invoke('lcu:friend-request', e.detail);
+  const onInviteDecline = async (e: Event) => {
+    const inviteId = (e as CustomEvent<number>).detail;
+    await rpc
+      .invoke<{ status: 1 | 2 }>('guilds:invites:decline', inviteId)
+      .then((data: { status: 1 | 2 } | undefined) => {
+        if (data?.status) {
+          onInviteUpdated(inviteId, data.status);
+        }
+      });
+  };
+  const onSortChange = (e: Event) => {
+    sortKey = (e as CustomEvent<string>).detail;
+  };
+  const onMemberFriendRequest = async (e: Event) => {
+    await rpc.invoke('lcu:friend-request', (e as CustomEvent<string>).detail);
+  };
+  // #endregion Event Handlers
 </script>
 
 <div class="guild-info__members">

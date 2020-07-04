@@ -1,9 +1,10 @@
-<script>
+<script lang="typescript">
   import { createEventDispatcher } from 'svelte';
-  import { fade, slide } from 'svelte/transition';
+  import { fade } from 'svelte/transition';
+  import { cubicInOut } from 'svelte/easing';
 
-  export let id = '';
-  export let text = '';
+  export let id: string = '';
+  export let text: string = '';
 
   const dispatch = createEventDispatcher();
   const onAccept = () => dispatch('invite-accept', id);
@@ -44,7 +45,9 @@
   }
 </style>
 
-<li class="invitation" transition:fade|local={{ duration: 200 }}>
+<li
+  class="invitation"
+  transition:fade|local={{ duration: 200, delay: 0, easing: cubicInOut }}>
   <p class="invitation__text">{text}</p>
   <div class="invitation__buttons">
     <button

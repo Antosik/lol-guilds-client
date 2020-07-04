@@ -1,20 +1,9 @@
-<script>
-  import { formatDistanceToNow } from "date-fns";
-  import { ru } from "date-fns/locale";
-  import { points_for_game } from "@guilds-shared/helpers/points";
+<script lang="typescript">
+  import { formatDateDistanceToNow } from '../utils/format';
+  import { getPointsCount } from '../utils/misc';
 
-  export let index = 0;
-  export let data;
-
-  const formatDateDistance = date =>
-    formatDistanceToNow(new Date(date), { locale: ru, addSuffix: true });
-  const getPointsCount = (queue_type, premade_size) => {
-    const points = points_for_game.find(
-      item =>
-        item.premade_size === premade_size && item.queue_type === queue_type
-    );
-    return points === undefined ? "???" : points.user_points;
-  };
+  export let index: number = 0;
+  export let data: IGuildAPIGameClubResponse;
 </script>
 
 <style>
@@ -29,7 +18,11 @@
 
 <h4>{index}. {data.game.queue.title}</h4>
 <p class="time-ago">
-  <a href="https://matchhistory.ru.leagueoflegends.com/ru/#match-details/RU/{data.game.game_id}?tab=overview" target="_blank">{formatDateDistance(data.game.game_creation)}</a>
+  <a
+    href="https://matchhistory.ru.leagueoflegends.com/ru/#match-details/RU/{data.game.game_id}?tab=overview"
+    target="_blank">
+    {formatDateDistanceToNow(data.game.game_creation)}
+  </a>
 </p>
 <p class="game-result" class:game-result--win={data.is_winner}>
   {#if data.is_winner}

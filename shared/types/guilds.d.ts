@@ -26,10 +26,27 @@ declare interface IGuildAPIClubResponse extends IGuildAPIBaseClubResponseV2 {
   owner: IGuildAPISummonerResponse;
 }
 
+
+declare interface IGuildAPIClubRatingRewardResponse {
+  id: number;
+  description: string;
+  reward_type: number;
+  rules: number;
+}
+
+declare interface IGuildAPIClubRatingRankRewardResponse {
+  id: number;
+  reward: IGuildAPIClubRatingRewardResponse;
+  description: string;
+  min: number;
+  max: number;
+  reward_value: number;
+}
+
 declare interface IGuildAPIClubRatingResponse {
   id: number;
   club: IGuildAPIClubResponseV1;
-  rank_reward: string;
+  rank_reward: IGuildAPIClubRatingRankRewardResponse;
   points: number;
   games: number;
   rank: number;
@@ -91,7 +108,7 @@ declare interface IGuildAPIGameClubResponse {
   id: number;
   game: IGuildAPIGameResponse;
   is_winner: boolean;
-  premade_size: string;
+  premade_size: number;
   club: number;
 }
 // #endregion Games Responses

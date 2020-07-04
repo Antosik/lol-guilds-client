@@ -37,8 +37,7 @@ export class GuildsService {
     return await this._guildsApi.getLatestGames(options);
   }
 
-  // TODO: types
-  public async getGuildMembersSeasonRating(club_id?: number, season_id?: number): Promise<unknown> {
+  public async getGuildMembersSeasonRating(club_id?: number, season_id?: number): Promise<IInternalGuildMembersSeasonRatingWithSummoner[]> {
     if (club_id === undefined || season_id === undefined) { return []; }
 
     const members = await this._guildsApi.getMembersRatingForSeasonWithId(club_id, season_id);
@@ -58,9 +57,7 @@ export class GuildsService {
       ));
   }
 
-
-  // TODO: types
-  public async getGuildMembersStageRating(club_id?: number, season_id?: number, stage_id?: number): Promise<unknown> {
+  public async getGuildMembersStageRating(club_id?: number, season_id?: number, stage_id?: number): Promise<IInternalGuildMembersStageRatingWithSummoner[]> {
     if (club_id === undefined || season_id === undefined || stage_id === undefined) { return []; }
 
     const members = await this._guildsApi.getMembersRatingForStageWithSeasonId(club_id, season_id);
@@ -144,10 +141,11 @@ export class GuildsService {
       displayName: invite.sender.summoner_name,
       level: invite.sender.level,
       rank: invite.sender.rank,
+      status: invite.status
     }));
   }
 
-  public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<unknown> {
+  public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<IGuildAPIInviteResponse> {
     return await this._guildsApi.updateInvite(invite_id, status);
   }
 }

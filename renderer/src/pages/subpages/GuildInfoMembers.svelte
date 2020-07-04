@@ -1,12 +1,12 @@
-<script>
-  import { rpc } from "@guilds-web/data/rpc";
-  import { guildStore } from "@guilds-web/store/guild";
+<script lang="typescript">
+  import { rpc } from '@guilds-web/data/rpc';
+  import { guildStore } from '@guilds-web/store/guild';
 
-  import Loading from "@guilds-web/blocks/Loading.svelte";
-  import MemberList from "@guilds-web/blocks/MemberList.svelte";
+  import Loading from '@guilds-web/blocks/Loading.svelte';
+  import MemberList from '@guilds-web/blocks/MemberList.svelte';
 
   const membersLoadingPromise = rpc
-    .invoke("guilds:members", $guildStore.guild.id)
+    .invoke<IInternalGuildMember[]>('guilds:members', $guildStore.guild!.id)
     .then((members) => guildStore.setMembers(members));
 </script>
 

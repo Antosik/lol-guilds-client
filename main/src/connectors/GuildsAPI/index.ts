@@ -48,12 +48,12 @@ export class GuildsAPI {
     return invites;
   }
 
-  public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<unknown> {
+  public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<{ status: 1 | 2 }> {
     return await this.request(`invites/requests/${invite_id}`, {
       method: "PATCH",
       version: 2,
       body: { status }
-    });
+    }) as { status: 1 | 2 };
   }
   // #endregion
 

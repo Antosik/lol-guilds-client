@@ -1,12 +1,12 @@
-<script>
+<script lang="typescript">
   import { createEventDispatcher } from 'svelte';
 
-  import Notification from '../components/Notification';
+  import Notification from '../components/Notification.svelte';
 
-  export let notifications = [];
+  export let notifications: INotification[] = [];
 
   const dispatch = createEventDispatcher();
-  const onClose = (e) => dispatch('notification-close', e.detail);
+  const onClose = (e: Event) => dispatch('notification-close', (e as CustomEvent<string>).detail);
 </script>
 
 <style>

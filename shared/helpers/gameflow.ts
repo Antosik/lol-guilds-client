@@ -15,7 +15,7 @@ export const enum EGameflowStatus {
   TerminatedInError = "TerminatedInError"
 }
 
-export const gameflowLocale = new Map<EGameflowStatus, string>([
+export const gameflowLocale = new Map<EGameflowStatus | string, string>([
   [EGameflowStatus.None, "В главном меню"],
   [EGameflowStatus.Lobby, "В лобби"],
   [EGameflowStatus.Matchmaking, "В очереди"],
@@ -32,7 +32,7 @@ export const gameflowLocale = new Map<EGameflowStatus, string>([
   [EGameflowStatus.TerminatedInError, "???"]
 ]);
 
-export const gameflowNotBusyStatusCode: EGameflowStatus[] = [
+export const gameflowNotBusyStatusCode: Array<EGameflowStatus | string> = [
   EGameflowStatus.None,
   EGameflowStatus.Lobby,
   EGameflowStatus.EndOfGame
@@ -52,7 +52,7 @@ export const enum EGuildMemberStatus {
   Banned = "banned"
 }
 
-export const guildMemberStatusLocale = new Map<EGuildMemberStatus, string>([
+export const guildMemberStatusLocale = new Map<EGuildMemberStatus | string, string>([
   [EGuildMemberStatus.Online, "Онлайн"],
   [EGuildMemberStatus.Away, "Отошел"],
   [EGuildMemberStatus.InGame, "В игре"],
@@ -62,7 +62,7 @@ export const guildMemberStatusLocale = new Map<EGuildMemberStatus, string>([
   [EGuildMemberStatus.Banned, "Заблокирован"]
 ]);
 
-export const guildMemberStatusSortOrder = new Map<EGuildMemberStatus, number>([
+export const guildMemberStatusSortOrder = new Map<EGuildMemberStatus | string, number>([
   [EGuildMemberStatus.Online, 0],
   [EGuildMemberStatus.Away, 1],
   [EGuildMemberStatus.Unknown, 2],
@@ -71,3 +71,15 @@ export const guildMemberStatusSortOrder = new Map<EGuildMemberStatus, number>([
   [EGuildMemberStatus.Banned, 5],
   [EGuildMemberStatus.Offline, 6],
 ]);
+
+export const ranks = [
+  "Железо",
+  "Бронза",
+  "Серебро",
+  "Золото",
+  "Платина",
+  "Алмаз",
+  "Мастер",
+  "Грандмастер",
+  "Претендент",
+];

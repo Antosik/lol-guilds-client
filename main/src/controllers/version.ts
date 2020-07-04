@@ -3,7 +3,7 @@ import type { UpdateInfo } from "electron-updater";
 import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { VersionService } from "@guilds-main/services/version";
 
-import { Result } from "@guilds-main/utils/result";
+import { Result } from "@guilds-shared/helpers/result";
 
 
 export class VersionController {

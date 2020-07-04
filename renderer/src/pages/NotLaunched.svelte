@@ -1,8 +1,8 @@
-<script>
+<script lang="typescript">
   import { rpc } from "../data/rpc";
 
-  function LCUReconnect() {
-    rpc.invoke("lcu:connect");
+  async function LCUReconnect() {
+    await rpc.invoke("lcu:connect");
   }
 </script>
 

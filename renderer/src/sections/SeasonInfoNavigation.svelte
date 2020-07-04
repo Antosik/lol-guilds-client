@@ -1,36 +1,33 @@
-<script>
-  import { format, formatDistance } from "date-fns";
-  import { ru } from "date-fns/locale";
-  import { onMount } from "svelte";
-  import { link } from "svelte-spa-router";
-  import active from "svelte-spa-router/active";
+<script lang="typescript">
+  import { onMount } from 'svelte';
+  import { link } from 'svelte-spa-router';
+  import active from 'svelte-spa-router/active';
+  import { formatDate, formatDateDistanceTo } from '../utils/format';
 
-  export let season;
-  export let stage;
+  export let season: IGuildAPISeasonResponse;
+  export let stage: IGuildAPIStageResponse | undefined;
 
-  let time = new Date();
+  let now = new Date();
 
-  const formatDate = (date) => format(new Date(date), "d MMMM", { locale: ru });
-  const formatDateDistance = (now, start, end) => {
+  const formatDateDistance = (time: Date, start: Date | string, end: Date | string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    const formatOptions = { addSuffix: true, locale: ru };
 
-    if (now > endDate) {
-      const distance = formatDistance(endDate, now, formatOptions);
+    if (time > endDate) {
+      const distance = formatDateDistanceTo(endDate, time);
       return `Закончился ${distance}`;
-    } else if (now > startDate) {
-      const distance = formatDistance(endDate, now, formatOptions);
+    } else if (time > startDate) {
+      const distance = formatDateDistanceTo(endDate, time);
       return `Закончится ${distance}`;
     } else {
-      const distance = formatDistance(startDate, now, formatOptions);
+      const distance = formatDateDistanceTo(startDate, time);
       return `Начнется ${distance}`;
     }
   };
 
   onMount(() => {
     const interval = setInterval(() => {
-      time = new Date();
+      now = new Date();
     }, 1000);
 
     return () => {
@@ -83,10 +80,10 @@
       {#if stage}
         <h3>Этап {stage.number}</h3>
         <p>{formatDate(stage.start_date)} - {formatDate(stage.end_date)}</p>
-        <p>{formatDateDistance(time, stage.start_date, stage.end_date)}</p>
+        <p>{formatDateDistance(now, stage.start_date, stage.end_date)}</p>
       {:else}
         <p>{formatDate(season.start_date)} - {formatDate(season.end_date)}</p>
-        <p>{formatDateDistance(time, season.start_date, season.end_date)}</p>
+        <p>{formatDateDistance(now, season.start_date, season.end_date)}</p>
       {/if}
     </div>
   </div>

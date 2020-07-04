@@ -1,23 +1,25 @@
-<script>
-  import { format } from "date-fns";
-  import { ru } from "date-fns/locale";
-  import { link, push } from "svelte-spa-router";
-  import active from "svelte-spa-router/active";
+<script lang="typescript">
+  import { link, push } from 'svelte-spa-router';
+  import active from 'svelte-spa-router/active';
+  import { formatDate } from '../utils/format';
 
-  export let seasons = [];
-  export let selectedSeason = null;
-  export let selectedStage = null;
+  export let seasons: IGuildAPISeasonResponse[] = [];
+  export let selectedSeason: number | undefined;
+  export let selectedStage: number | undefined;
 
-  $: season_info =
-    selectedSeason && seasons.find(season => season.id === selectedSeason);
+  let season_info: IGuildAPISeasonResponse | undefined;
+  $: season_info = selectedSeason
+    ? seasons.find((season) => season.id === selectedSeason)
+    : undefined;
+
+  let stage_info: IGuildAPIStageResponse | undefined;
   $: stage_info =
-    selectedStage &&
-    season_info &&
-    season_info.stages.find(stage => stage.id === selectedStage);
+    selectedStage && season_info
+      ? season_info.stages.find((stage: IGuildAPIStageResponse) => stage.id === selectedStage)
+      : undefined;
 
-  const onSeasonChange = e => push(`/client/rating/season/${e.target.value}`);
-  const formatDate = date =>
-    format(new Date(date), "d MMMM", { locale: ru });
+  const onSeasonChange = (e: Event) =>
+    push(`/client/rating/season/${(e.target as HTMLSelectElement).value}`);
 </script>
 
 <style>
@@ -82,7 +84,7 @@
         <p>
           {formatDate(stage_info.start_date)} - {formatDate(stage_info.end_date)}
         </p>
-      {:else}
+      {:else if season_info}
         <p>
           {formatDate(season_info.start_date)} - {formatDate(season_info.end_date)}
         </p>
@@ -99,22 +101,22 @@
       </li>
     {/if}
 
-    {#each season_info.stages as stage (stage.id)}
-      <li class="season-selector__stages-list-item">
-        {#if stage.is_open}
-          <a
-            href={`/client/rating/season/${selectedSeason}/stage/${stage.id}`}
-            class="use-active"
-            use:link
-            use:active>
-            Этап {stage.number}
-          </a>
-        {:else}
-          <span class="stage-not-active">
-            Этап {stage.number}
-          </span>
-        {/if}
-      </li>
-    {/each}
+    {#if season_info}
+      {#each season_info.stages as stage (stage.id)}
+        <li class="season-selector__stages-list-item">
+          {#if stage.is_open}
+            <a
+              href={`/client/rating/season/${selectedSeason}/stage/${stage.id}`}
+              class="use-active"
+              use:link
+              use:active>
+              Этап {stage.number}
+            </a>
+          {:else}
+            <span class="stage-not-active">Этап {stage.number}</span>
+          {/if}
+        </li>
+      {/each}
+    {/if}
   </ul>
 </div>

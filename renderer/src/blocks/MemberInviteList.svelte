@@ -1,21 +1,28 @@
-<script>
-  import { createEventDispatcher } from "svelte";
-  import { guildMemberStatusSortOrder } from "@guilds-shared/helpers/gameflow";
-  import MemberInviteListItem from "./MemberInviteListItem.svelte";
+<script lang="typescript">
+  import { createEventDispatcher } from 'svelte';
+  import { guildMemberStatusSortOrder } from '@guilds-shared/helpers/gameflow';
+  import MemberInviteListItem from './MemberInviteListItem.svelte';
 
-  export let allowInvite = true;
-  export let members = [];
+  export let allowInvite: boolean = true;
+  export let members: IInternalGuildMember[] = [];
 
   const dispatch = createEventDispatcher();
-  const inviteToParty = e => dispatch("member-invite", e.detail);
-  const sendFriendRequest = e => dispatch("friend-request", e.detail);
-  const openChatWith = e => dispatch("open-chat", e.detail);
+  const inviteToParty = (e: Event) => {
+    dispatch('member-invite', (e as CustomEvent<string>).detail);
+  };
+  const sendFriendRequest = (e: Event) => {
+    dispatch('friend-request', (e as CustomEvent<string>).detail);
+  };
+  const openChatWith = (e: Event) => {
+    dispatch('open-chat', (e as CustomEvent<string>).detail);
+  };
 
-  function sortMembers(arr) {
+  function sortMembers(arr: IInternalGuildMember[]) {
     return arr.sort(
       ({ name: n1, status: s1 }, { name: n2, status: s2 }) =>
         n1.localeCompare(n2) &&
-        guildMemberStatusSortOrder.get(s1) - guildMemberStatusSortOrder.get(s2)
+        guildMemberStatusSortOrder.get(s1 ?? 'offline')! -
+          guildMemberStatusSortOrder.get(s2 ?? 'offline')!,
     );
   }
 </script>

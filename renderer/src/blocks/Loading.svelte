@@ -1,5 +1,5 @@
-<script>
-  import LoadingSpinner from "../components/LoadingSpinner.svelte";
+<script lang="typescript">
+  import LoadingSpinner from '../components/LoadingSpinner.svelte';
 </script>
 
 <style>

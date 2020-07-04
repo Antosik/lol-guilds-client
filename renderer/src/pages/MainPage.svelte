@@ -1,36 +1,41 @@
-<script>
-  import { onMount, onDestroy } from "svelte";
-  import Router, { replace, location } from "svelte-spa-router";
+<script lang="typescript">
+  import { onMount, onDestroy } from 'svelte';
+  import Router, { replace, location } from 'svelte-spa-router';
 
-  import { rpc } from "../data/rpc";
-  import { appStore } from "../store/app";
-  import { summonerStore } from "../store/summoner";
-  import { guildStore } from "../store/guild";
-  import { subroutes, subprefix } from "../routes";
+  import { rpc } from '../data/rpc';
+  import { appStore } from '../store/app';
+  import { summonerStore } from '../store/summoner';
+  import { guildStore } from '../store/guild';
+  import { subroutes, subprefix } from '../routes';
 
-  import ScrollTopButton from "../components/ScrollTopButton";
-  import Loading from "../blocks/Loading.svelte";
-  import SummonerInfo from "../sections/SummonerInfo.svelte";
-  import Navigation from "../sections/Navigation.svelte";
+  import ScrollTopButton from '../components/ScrollTopButton.svelte';
+  import Loading from '../blocks/Loading.svelte';
+  import SummonerInfo from '../sections/SummonerInfo.svelte';
+  import Navigation from '../sections/Navigation.svelte';
 
-  let scrollY = 0;
+  let guild: IGuildAPIClubResponse | undefined | null;
+  $: guild = $guildStore.guild;
+  $: console.log(guild);
+
+  let scrollY: number = 0;
   const scrollToTop = () =>
     $summonerStore.summoner &&
     document
-      .querySelector(".main-application")
-      .scrollIntoView({ behavior: "smooth", block: "start" });
+      .querySelector('.main-application')!
+      .scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  const LCUReconnect = () => rpc.invoke("lcu:connect");
-  const onAppScroll = e => (scrollY = e.target.scrollTop);
+  const LCUReconnect = () => rpc.invoke('lcu:connect');
+  const onAppScroll = (e: Event) =>
+    (scrollY = (e.target as HTMLDivElement).scrollTop);
 
   onMount(() => {
-    document.querySelector("#app").addEventListener("scroll", onAppScroll);
+    document.querySelector('#app')!.addEventListener('scroll', onAppScroll);
     if (!$summonerStore.summoner) {
-      replace("/summoner-loading");
+      replace('/summoner-loading');
     }
   });
   onDestroy(() => {
-    document.querySelector("#app").removeEventListener("scroll", onAppScroll);
+    document.querySelector('#app')!.removeEventListener('scroll', onAppScroll);
   });
 </script>
 
@@ -49,17 +54,17 @@
   <div class="main-application" on:scroll={onAppScroll}>
     <SummonerInfo
       summoner={$summonerStore.summoner}
-      guild={$guildStore}
+      guild={guild}
       status={$summonerStore.status}
       style={$location === '/client/' ? 'normal' : 'light'}
       on:click-reconnect={LCUReconnect} />
-    {#if $guildStore.guild}
+    {#if guild}
       <Navigation />
     {/if}
     <main class="subpages">
-      {#if $guildStore.guild === undefined}
+      {#if guild === undefined}
         <Loading>Подключаемся к системе гильдий...</Loading>
-      {:else if $guildStore.guild === null}
+      {:else if guild === null}
         <div class="guilds_not-participating flex-center">
           <h2>Вы не участвуете в программе "Гильдий".</h2>
           <p>
@@ -68,7 +73,10 @@
           </p>
         </div>
       {:else}
-        <Router routes={subroutes} prefix={subprefix} on:routeLoaded={appStore.setCurrentPageLoaded} />
+        <Router
+          routes={subroutes}
+          prefix={subprefix}
+          on:routeLoaded={appStore.setCurrentPageLoaded} />
       {/if}
     </main>
   </div>

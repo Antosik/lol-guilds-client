@@ -49,7 +49,7 @@ export class MultiController {
   private async _onLCULobbyReceivedInvitation(invites: ILCUAPILobbyReceivedInvitationsResponse[]) {
 
     if (isEmpty(invites)) {
-      this._rpc.send("lcu:invitations", []);
+      this._rpc.send("lcu:invitations", Result.create([], "success"));
       return;
     }
 
@@ -66,7 +66,7 @@ export class MultiController {
       )
       .map<IInternalReceivedInvitation>(invite => ({ fromSummonerName: invite.fromSummonerName, invitationId: invite.invitationId, fromGuild: true }));
 
-    this._rpc.send("lcu:invitations", invitesFromMembers);
+    this._rpc.send("lcu:invitations", Result.create(invitesFromMembers, "success"));
   }
   // #endregion RPC Events Handling (Outer)
 

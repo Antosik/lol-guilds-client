@@ -1,10 +1,12 @@
 {
   "extends": "../tsconfig.json",
-
   "compilerOptions": {
+    "lib": [
+      "ES2019"
+    ],
+    "target": "ES2019",
     "outDir": "../target/"
   },
-
   "include": [
     "./src/**/*",
     "../shared/types/**/*"

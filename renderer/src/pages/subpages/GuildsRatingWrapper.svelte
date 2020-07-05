@@ -1,33 +1,31 @@
-<script>
-  import { onMount } from "svelte";
-  import Router, { link, push, location } from "svelte-spa-router";
-
-  import { rpc } from "@guilds-web/data/rpc";
-  import { appStore } from "@guilds-web/store/app";
+<script lang="typescript">
+  import { onMount } from 'svelte';
+  import Router, { push } from 'svelte-spa-router';
+  import { isExists } from '@guilds-shared/helpers/typeguards';
+  import { rpc } from '@guilds-web/data/rpc';
+  import { appStore } from '@guilds-web/store/app';
   import {
     rating_subprefix as subprefix,
-    rating_subroutes as subroutes
-  } from "@guilds-web/routes/subroutes";
-  
-  import Loading from "@guilds-web/blocks/Loading.svelte";
-  import RatingNavigation from "@guilds-web/sections/RatingNavigation";
+    rating_subroutes as subroutes,
+  } from '@guilds-web/routes/subroutes';
 
-  export let params = {};
+  import Loading from '@guilds-web/blocks/Loading.svelte';
+  import RatingNavigation from '@guilds-web/sections/RatingNavigation.svelte';
 
-  $: season_id = Number(params.season_id);
-  $: stage_id = Number(params.stage_id);
+  export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
-  $: season_info = season_id && seasons.find(season => season.id === season_id);
-  $: stage_info =
-    stage_id &&
-    season_info &&
-    season_info.stages.find(stage => stage.id === stage_id);
+  let season_id: number | undefined;
+  $: season_id = isExists(params.season_id) ? Number(params.season_id) : undefined;
+  let stage_id: number | undefined;
+  $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
 
-  let seasons = [];
-  const seasonsLoadingPromise = rpc.invoke("guilds:seasons");
+  let seasons: IGuildAPISeasonResponse[] = [];
+  const seasonsLoadingPromise = rpc.invoke<IGuildAPISeasonResponse[]>(
+    'guilds:seasons',
+  );
 
   onMount(async () => {
-    seasons = await seasonsLoadingPromise;
+    seasons = (await seasonsLoadingPromise) ?? [];
     if (!season_id) {
       return push(`/client/rating/season/${seasons[0].id}`);
     }
@@ -39,7 +37,7 @@
   {#await seasonsLoadingPromise}
     <Loading>Загружаем список сезонов...</Loading>
   {:then seasons}
-    {#if season_id && season_info}
+    {#if isExists(season_id)}
       <RatingNavigation
         {seasons}
         selectedSeason={season_id}
@@ -48,7 +46,10 @@
       <Loading>Загружаем рейтинг...</Loading>
     {/if}
 
-    <Router routes={subroutes} prefix={subprefix} on:routeLoaded={appStore.setCurrentPageLoaded} />
+    <Router
+      routes={subroutes}
+      prefix={subprefix}
+      on:routeLoaded={appStore.setCurrentPageLoaded} />
   {:catch error}
     <p>Что-то пошло не так: {error.message}</p>
   {/await}

@@ -1,16 +1,19 @@
-<script>
-  import { createEventDispatcher } from "svelte";
-  import { location } from "svelte-spa-router";
-  import SummonerStatus from "../components/SummonerStatus.svelte";
-  import { appStore } from "../store/app";
+<script lang="typescript">
+  import { location } from 'svelte-spa-router';
+  import { isExists, isNotBlank } from '@guilds-shared/helpers/typeguards';
+  import { appStore } from '../store/app';
 
-  export let summoner = undefined;
-  export let status = "None";
-  export let guild = undefined;
-  export let style = "normal";
+  import SummonerStatus from '../components/SummonerStatus.svelte';
 
-  const dispatch = createEventDispatcher();
-  const pageReload = () => { appStore.setCurrentPage($location); window.location.reload(); };
+  export let summoner: ILCUAPISummonerResponse | undefined = undefined;
+  export let guild: IGuildAPIClubResponse | undefined = undefined;
+  export let status: string = 'None';
+  export let style: string = 'normal';
+
+  const pageReload = () => {
+    appStore.setCurrentPage($location);
+    window.location.reload();
+  };
 </script>
 
 <style>
@@ -64,20 +67,17 @@
 
 <header class="summoner-info" class:light={style === 'light'}>
   <h1>
-    {summoner.displayName}
-    {#if guild.guild}
-      <span>[ {guild.guild.club_name} ]</span>
+    {#if isExists(summoner)}{summoner.displayName}{:else}???{/if}
+    {#if isExists(guild)}
+      <span>[ {guild.club_name} ]</span>
     {/if}
   </h1>
-  {#if status}
+  {#if isNotBlank(status)}
     <div class="summoner-info__status">
       <SummonerStatus statusCode={status} showText={style !== 'light'} />
     </div>
   {/if}
-  <button
-    type="button"
-    class="refresh flex-center"
-    on:click={pageReload}>
+  <button type="button" class="refresh flex-center" on:click={pageReload}>
     <img src="./images/icons/refresh.svg" alt="Обновить" />
   </button>
 </header>

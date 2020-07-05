@@ -1,25 +1,13 @@
-<script>
-  import MarkdownIt from "markdown-it";
-  import MarkdownIterator from "markdown-it-for-inline";
+<script lang="typescript">
+  import { isNotBlank } from '@guilds-shared/helpers/typeguards';
+  import { markdown } from '../utils/markdown';
 
-  export let guild = undefined;
+  export let guild: IGuildAPIClubResponse | null | undefined;
 
-  const md = new MarkdownIt({
-    html: false,
-    breaks: true,
-    linkify: true,
-    typographer: true
-  })
-    .disable(["image"])
-    .use(MarkdownIterator, "url_new_win", "link_open", function(tokens, idx) {
-      const aIndex = tokens[idx].attrIndex("target");
-
-      if (aIndex < 0) {
-        tokens[idx].attrPush(["target", "_blank"]);
-      } else {
-        tokens[idx].attrs[aIndex][1] = "_blank";
-      }
-    });
+  let short_description: string | undefined;
+  $: short_description = guild?.short_description;
+  let long_description: string | undefined;
+  $: long_description = guild?.short_description;
 </script>
 
 <style>
@@ -37,7 +25,7 @@
       position: relative;
     }
     .guild-info__short_description + .guild-info__long_description:before {
-      content: "";
+      content: '';
       position: absolute;
       width: 1px;
       background: var(--main-medium);
@@ -49,23 +37,23 @@
   }
 </style>
 
-{#if guild.short_description || guild.long_description}
+{#if isNotBlank(short_description) || isNotBlank(long_description)}
   <div class="guild-info__descriptions">
 
-    {#if guild.short_description}
+    {#if isNotBlank(short_description)}
       <div class="guild-info__short_description">
         <h3>Краткое описание</h3>
         <div class="guild-info__description md-description">
-          {@html md.render(guild.short_description)}
+          {@html markdown.render(short_description)}
         </div>
       </div>
     {/if}
 
-    {#if guild.long_description}
+    {#if isNotBlank(long_description)}
       <div class="guild-info__long_description">
         <h3>Описание</h3>
         <div class="guild-info__description md-description">
-          {@html md.render(guild.long_description)}
+          {@html markdown.render(long_description)}
         </div>
       </div>
     {/if}

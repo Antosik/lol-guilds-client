@@ -1,11 +1,13 @@
 import { GuildsService } from "./guilds";
 import { LCUService } from "./lcu";
 import { EGuildMemberStatus } from "@guilds-shared/helpers/gameflow";
+import { isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class MultiService {
 
   public static async getGuildMembersWithStatus(club_id: number, guildsService: GuildsService, lcuService: LCUService): Promise<IInternalGuildMember[]> {
+    if (isNotExists(club_id) || isNotExists(guildsService) || isNotExists(lcuService)) { return []; }
 
     const guildMembers = await guildsService.getGuildMembers(club_id);
     const friendsList = await lcuService.getFriendsList();
@@ -27,6 +29,7 @@ export class MultiService {
   }
 
   public static async getGuildMembersWithBanned(club_id: number, guildsService: GuildsService, lcuService: LCUService): Promise<IInternalGuildMember[]> {
+    if (isNotExists(club_id) || isNotExists(guildsService) || isNotExists(lcuService)) { return []; }
 
     const guildMembers = await MultiService.getGuildMembersWithStatus(club_id, guildsService, lcuService);
     const bannedList = await lcuService.getBannedList();
@@ -42,11 +45,13 @@ export class MultiService {
   }
 
   public static async getInvitesWithFriendStatus(club_id: number, options: IGuildAPIPagedRequest, guildsService: GuildsService, lcuService: LCUService): Promise<IInternalInvite[]> {
+    if (isNotExists(club_id) || isNotExists(guildsService) || isNotExists(lcuService)) { return []; }
 
     const [friendsList, invites] = await Promise.all([
       lcuService.getFriendsList(),
       guildsService.getInvitesList(club_id, options)
     ]);
+
     const friendNames = friendsList.map(friend => friend.name);
 
     return invites.map(invite => ({

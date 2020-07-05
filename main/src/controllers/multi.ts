@@ -3,8 +3,9 @@ import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { GuildsService } from "@guilds-main/services/guilds";
 import type { LCUService } from "@guilds-main/services/lcu";
 
-import { Result } from "@guilds-main/utils/result";
+import { Result } from "@guilds-shared/helpers/result";
 import { MultiService } from "@guilds-main/services/multi";
+import { isEmpty, isBlank, isExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class MultiController {
@@ -47,8 +48,8 @@ export class MultiController {
 
   private async _onLCULobbyReceivedInvitation(invites: ILCUAPILobbyReceivedInvitationsResponse[]) {
 
-    if (invites.length === 0) {
-      this._rpc.send("lcu:invitations", []);
+    if (isEmpty(invites)) {
+      this._rpc.send("lcu:invitations", Result.create([], "success"));
       return;
     }
 
@@ -65,7 +66,7 @@ export class MultiController {
       )
       .map<IInternalReceivedInvitation>(invite => ({ fromSummonerName: invite.fromSummonerName, invitationId: invite.invitationId, fromGuild: true }));
 
-    this._rpc.send("lcu:invitations", invitesFromMembers);
+    this._rpc.send("lcu:invitations", Result.create(invitesFromMembers, "success"));
   }
   // #endregion RPC Events Handling (Outer)
 
@@ -88,12 +89,12 @@ export class MultiController {
     const members = await MultiService.getGuildMembersWithStatus(club_id, this._guildsService, this._lcuService);
 
     for (const member of members) {
-      if (member.puuid === undefined) continue;
+      if (isBlank(member.puuid)) continue;
 
       this._lcuService
         .removeListener(`lcu:lol-chat.v1.friends.${member.puuid}`)
         .addListener(`lcu:lol-chat.v1.friends.${member.puuid}`, (data: ILCUAPIFriendCoreResponse) => {
-          if (data) {
+          if (isExists(data)) {
             const update: IInternalGuildMember = { ...member, status: data.availability, game: data.productName.trim() };
             this._rpc.send("guilds:member-status:update", update);
           }

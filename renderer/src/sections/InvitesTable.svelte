@@ -1,30 +1,22 @@
-<script>
+<script lang="typescript">
   import { createEventDispatcher } from 'svelte';
+  import { ranks } from '@guilds-shared/helpers/gameflow';
+  import { isEmpty, isExists } from '@guilds-shared/helpers/typeguards';
 
-  export let invites = [];
-  export let sortKey = '+id';
+  export let invites: IInternalInvite[] = [];
+  export let sortKey: string = '+id';
 
   const dispatch = createEventDispatcher();
-  const acceptInvite = (id) => dispatch('invite-accept', id);
-  const declineInvite = (id) => dispatch('invite-decline', id);
-  const changeSort = (key) => {
+  const acceptInvite = (id: number) => dispatch('invite-accept', id);
+  const declineInvite = (id: number) => dispatch('invite-decline', id);
+  const changeSort = (key: string) => {
     const newSortKey =
       sortKey.includes(key) && sortKey[0] === '+' ? `-${key}` : `+${key}`;
     dispatch('sort-change', newSortKey);
   };
-  const sendFriendRequest = (nickname) => dispatch('friend-request', nickname);
-
-  const ranks = [
-    'Железо',
-    'Бронза',
-    'Серебро',
-    'Золото',
-    'Платина',
-    'Алмаз',
-    'Мастер',
-    'Грандмастер',
-    'Претендент',
-  ];
+  const sendFriendRequest = (nickname: string) => {
+    dispatch('friend-request', nickname);
+  };
 </script>
 
 <style>
@@ -85,7 +77,7 @@
   }
 </style>
 
-{#if !invites.length}
+{#if isEmpty(invites)}
   <h4>Нет заявок</h4>
 {:else}
   <table>
@@ -140,7 +132,7 @@
                   class:selected={invite.status === 1}
                   type="button"
                   on:click={() => acceptInvite(invite.id)}
-                  disabled={invite.status !== 0 && invite.status !== undefined}>
+                  disabled={isExists(invite) && invite.status !== 0}>
                   <img src="./images/icons/ok.svg" alt="Принять заявку" />
                 </button>
               </li>
@@ -150,7 +142,7 @@
                   class:selected={invite.status === 2}
                   type="button"
                   on:click={() => declineInvite(invite.id)}
-                  disabled={invite.status !== 0 && invite.status !== undefined}>
+                  disabled={isExists(invite.status) && invite.status !== 0}>
                   <img src="./images/icons/close.svg" alt="Отклонить заявку" />
                 </button>
               </li>

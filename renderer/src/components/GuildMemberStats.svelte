@@ -1,9 +1,8 @@
-<script>
-  export let index = 0;
-
-  export let summoner;
-  export let results;
+<script lang="typescript">
+  export let index: number = 0;
+  export let name: string = '???';
+  export let points: number = 0;
 </script>
 
-<h4>{index}. {summoner.summoner_name}</h4>
-<p class="points">{results.points}pt</p>
+<h4>{index}. {name}</h4>
+<p class="points">{points}pt</p>

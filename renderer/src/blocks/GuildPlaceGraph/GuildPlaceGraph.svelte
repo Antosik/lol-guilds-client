@@ -1,13 +1,18 @@
-<script>
-  import GuildPlaceGraphAxis from "./GuildPlaceGraphAxis";
-  import GuildPlaceGraphTrack from "./GuildPlaceGraphTrack";
+<script lang="typescript">
+  import { isExists } from '@guilds-shared/helpers/typeguards';
 
-  export let current = { points: 0, rank: 0 };
-  export let segments = [];
+  import GuildPlaceGraphAxis from './GuildPlaceGraphAxis.svelte';
+  import GuildPlaceGraphTrack from './GuildPlaceGraphTrack.svelte';
 
-  const currentSegment = segments.find(segment => segment.isCurrent);
-  let selectedSegmentIndex = segments.indexOf(currentSegment);
+  export let current: IInternalGuildPathPoint = { points: 0, rank: 0 };
+  export let segments: IInternalGuildPathSegment[] = [];
 
+  const currentSegment = segments.find((segment) => segment.isCurrent);
+  let selectedSegmentIndex = isExists(currentSegment)
+    ? segments.indexOf(currentSegment)
+    : 0;
+
+  let selectedSegment: IInternalGuildPathSegment;
   $: selectedSegment = segments[selectedSegmentIndex];
 
   const prevSegment = () => (selectedSegmentIndex = selectedSegmentIndex - 1);

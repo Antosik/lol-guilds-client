@@ -1,53 +1,62 @@
-<script>
-  import { createEventDispatcher, onMount, onDestroy } from "svelte";
+<script lang="typescript">
+  import { onDestroy } from 'svelte';
+  import { isExists } from '@guilds-shared/helpers/typeguards';
+  import { rpc } from '@guilds-web/data/rpc';
+  import { guildStore } from '@guilds-web/store/guild';
+  import { summonerStore } from '@guilds-web/store/summoner';
 
-  import { rpc } from "@guilds-web/data/rpc";
-  import { appStore } from "@guilds-web/store/app";
-  import { guildStore } from "@guilds-web/store/guild";
-  import { summonerStore } from "@guilds-web/store/summoner";
+  import Loading from '@guilds-web/blocks/Loading.svelte';
+  import MemberInviteList from '@guilds-web/blocks/MemberInviteList.svelte';
 
-  import Loading from "@guilds-web/blocks/Loading.svelte";
-  import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
+  let inviteState: 'friends' | 'all' = 'friends';
 
-  let inviteState = "friends";
-
+  let guildMembersToInvite: IInternalGuildMember[];
   $: guildMembersToInvite = $guildStore.members.filter(
-    ({ name }) =>
-      name.toLowerCase() !== $summonerStore.summoner.displayName.toLowerCase()
+    ({ name }) => name.toLowerCase() !== $summonerStore.summoner?.displayName.toLowerCase(),
   );
+
+  let allowInvite: boolean;
   $: allowInvite =
-    $summonerStore.status === "None" || $summonerStore.status === "Lobby";
+    $summonerStore.status === 'None' || $summonerStore.status === 'Lobby';
 
-  const memberStatusUpdate = (member) => guildStore.setMemberStatus(member);
-  const membersLoadingPromise = rpc
-    .invoke("guilds:members", $guildStore.guild.id)
-    .then((members) => guildStore.setMembers(members))
-    .then(() => {
-      rpc.invoke("guilds:member-status:subscribe", $guildStore.guild.id);
-      rpc.on("guilds:member-status:update", memberStatusUpdate);
-      return;
-    });
-
-  async function onMemberFriendRequest(event) {
-    await rpc.invoke("lcu:friend-request", event.detail);
+  // #region Events Handling
+  const onMemberStatusUpdate = (member: IInternalGuildMember) => {
+    guildStore.setMemberStatus(member);
+  };
+  async function onMemberFriendRequest(event: Event) {
+    await rpc.invoke(
+      'lcu:friend-request',
+      (event as CustomEvent<string>).detail,
+    );
   }
-  async function onMemberInvite(event) {
-    await rpc.invoke("lcu:lobby-invite", event.detail);
+  async function onMemberInvite(event: Event) {
+    await rpc.invoke('lcu:lobby-invite', (event as CustomEvent<string>).detail);
   }
   async function onMemberInviteMultiple() {
     const statuses =
-      inviteState !== "all" ? ["chat", "away"] : ["chat", "away", "unknown"];
+      inviteState !== 'all' ? ['chat', 'away'] : ['chat', 'away', 'unknown'];
+
     const ready = $guildStore.members
-      .filter((member) => statuses.includes(member.status))
+      .filter((member) => statuses.includes(member.status ?? 'offline'))
       .map((member) => member.name);
-    await rpc.invoke("lcu:lobby-invite-all", ready);
+
+    await rpc.invoke('lcu:lobby-invite-all', ready);
   }
-  async function onMemberOpenChat(event) {
-    await rpc.invoke("lcu:open-chat", event.detail);
+  async function onMemberOpenChat(event: Event) {
+    await rpc.invoke('lcu:open-chat', (event as CustomEvent<string>).detail);
   }
+  // #endregion Events Handling
+
+  const membersLoadingPromise = rpc
+    .invoke<IInternalGuildMember[]>('guilds:members', $guildStore.guild?.id)
+    .then((members) => guildStore.setMembers(members))
+    .then(() => {
+      rpc.on('guilds:member-status:update', onMemberStatusUpdate);
+      return rpc.invoke('guilds:member-status:subscribe', $guildStore.guild?.id);
+    });
 
   onDestroy(() => {
-    rpc.removeListener("guilds:member-status:update", memberStatusUpdate);
+    rpc.removeListener('guilds:member-status:update', onMemberStatusUpdate);
   });
 </script>
 
@@ -84,32 +93,36 @@
   }
 </style>
 
-<div class="guild-members">
-  <h2>Члены гильдии</h2>
+{#if isExists($guildStore.guild)}
+  <div class="guild-members">
+    <h2>Члены гильдии</h2>
 
-  {#await membersLoadingPromise}
-    <Loading>Загружаем список членов гильдии...</Loading>
-  {:then}
-    <div class="guild-members__invite-all">
-      <button
-        type="button"
-        class="flex-center"
-        on:click={onMemberInviteMultiple}>
-        {#if inviteState === 'all'}Пригласить всех{:else}Пригласить друзей{/if}
-      </button>
-      <select bind:value={inviteState} class="mini-block">
-        <option value="friends">Пригласить друзей</option>
-        <option value="all">Пригласить всех</option>
-      </select>
-    </div>
+    {#await membersLoadingPromise}
+      <Loading>Загружаем список членов гильдии...</Loading>
+    {:then}
+      <div class="guild-members__invite-all">
+        <button
+          type="button"
+          class="flex-center"
+          on:click={onMemberInviteMultiple}>
+          {#if inviteState === 'all'}
+            Пригласить всех
+          {:else}Пригласить друзей{/if}
+        </button>
+        <select bind:value={inviteState} class="mini-block">
+          <option value="friends">Пригласить друзей</option>
+          <option value="all">Пригласить всех</option>
+        </select>
+      </div>
 
-    <MemberInviteList
-      {allowInvite}
-      members={guildMembersToInvite}
-      on:member-invite={onMemberInvite}
-      on:friend-request={onMemberFriendRequest} 
-      on:open-chat={onMemberOpenChat} />
-  {:catch}
-    <h3>Произошла странная ошибка!</h3>
-  {/await}
-</div>
+      <MemberInviteList
+        {allowInvite}
+        members={guildMembersToInvite}
+        on:member-invite={onMemberInvite}
+        on:friend-request={onMemberFriendRequest}
+        on:open-chat={onMemberOpenChat} />
+    {:catch}
+      <h3>Произошла странная ошибка!</h3>
+    {/await}
+  </div>
+{/if}

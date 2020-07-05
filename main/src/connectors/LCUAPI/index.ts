@@ -8,6 +8,7 @@ import { authStore } from "@guilds-main/store/auth";
 import { lcuStore } from "@guilds-main/store/lcu";
 import { logDebug, logError } from "@guilds-main/utils/log";
 import { wait } from "@guilds-shared/helpers/functions";
+import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class LCUAPI {
@@ -23,7 +24,7 @@ export class LCUAPI {
   // #region /lol-summoner/ calls
   public async getCurrentSummoner(): Promise<ILCUAPISummonerResponse> {
     const summonerFromStore = authStore.get("summoner");
-    if (summonerFromStore !== undefined) {
+    if (isExists(summonerFromStore)) {
       return summonerFromStore;
     }
 
@@ -36,12 +37,12 @@ export class LCUAPI {
   public async getSummonerByName(name: string): Promise<ILCUAPISummonerCoreResponse | string> {
     const summonersFromStore = lcuStore.get("summoners");
     const summonerFromStore = summonersFromStore?.find(({ displayName }) => displayName.toLowerCase() === name.toLowerCase());
-    if (summonerFromStore !== undefined) {
+    if (isExists(summonerFromStore)) {
       return summonerFromStore;
     }
 
     const summoner = await this.request(`/lol-summoner/v1/summoners?name=${encodeURI(name)}`).catch(() => null) as ILCUAPISummonerResponse;
-    if (summoner === null) {
+    if (isNotExists(summoner)) {
       return name;
     }
 
@@ -57,7 +58,7 @@ export class LCUAPI {
   // #region /lol-rso-auth/ calls
   public async getIdToken(): Promise<string> {
     const tokenFromStore = authStore.get("token");
-    if (tokenFromStore !== undefined && tokenFromStore.expiry * 1000 > Date.now()) {
+    if (isExists(tokenFromStore) && tokenFromStore.expiry * 1000 > Date.now()) {
       return tokenFromStore.token;
     }
 
@@ -92,7 +93,7 @@ export class LCUAPI {
   public async sendFriendRequest(summoner: ILCUAPISummonerCoreResponse): Promise<void> {
     const sendedRequests = await this.getSendedFriendRequests();
     const alreadySended = sendedRequests.find(sendedRequest => sendedRequest.summonerId === summoner.summonerId);
-    if (alreadySended !== undefined) {
+    if (isExists(alreadySended)) {
       return;
     }
 
@@ -103,6 +104,7 @@ export class LCUAPI {
       pid: `${summoner.puuid}@ru1.pvp.net`,
       summonerId: summoner.summonerId
     };
+
     await this.request("/lol-chat/v1/friend-requests", {
       body: friendRequestData,
       method: "POST"
@@ -186,7 +188,7 @@ export class LCUAPI {
 
   // #region General
   public async request(path: string, options: ILCUAPIRequestOptions = { method: "GET" }, retry = LCUAPI.RETRY_COUNT): Promise<unknown> {
-    if (this._credentials === undefined) {
+    if (isNotExists(this._credentials)) {
       this._credentials = await this._getCredentials();
     }
 
@@ -202,7 +204,7 @@ export class LCUAPI {
 
     const result = await response.json() as Record<string, unknown> | { errorCode: string };
 
-    if (result.errorCode) {
+    if (isExists(result.errorCode)) {
       logError(`"[LCUAPI] (${retryIndex}/${LCUAPI.RETRY_COUNT}): "${opts.method} ${path}" ${response.status} "${(opts.body && JSON.stringify(opts.body)) ?? ""}" --- ${JSON.stringify(result)}`);
       // TODO: BetterError
       throw new Error(String(result));

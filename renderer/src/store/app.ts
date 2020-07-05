@@ -1,16 +1,15 @@
 import { writable } from "svelte/store";
 
 import { randomId } from "@guilds-shared/helpers/functions";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 
-export interface IAppStore {
-  notifications: Array<{ id: string, text: string }>;
-  invitations: Array<{ id: string, text: string }>;
-  currentPage: string;
-}
 
 function createAppStore() {
   const getInitialStore = (): IAppStore => ({ notifications: [], invitations: [], currentPage: "/client/" });
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { subscribe, update } = writable<IAppStore>(getInitialStore());
+
 
   const removeNotification = (id: string) => {
     update(state => ({ ...state, notifications: state.notifications.filter(notification => notification.id !== id) }));
@@ -51,18 +50,23 @@ function createAppStore() {
     window.localStorage.setItem("currentPage", url);
     update(state => ({ ...state, currentPage: url }));
   };
-  const setCurrentPageLoaded = ({ detail: { location } }: { detail: { location: string } }) => {
+
+  const setCurrentPageLoaded = (e: Event) => {
+    const { detail: { location } } = e as CustomEvent<{ location: string }>;
     window.localStorage.setItem("currentPage", location);
     update(state => ({ ...state, currentPage: location }));
   };
+
   const cleanCurrentPage = () => {
     window.localStorage.removeItem("currentPage");
     update(state => ({ ...state, currentPage: "" }));
   };
+
   const savedCurrentPage = window.localStorage.getItem("currentPage");
-  if (savedCurrentPage !== null) {
+  if (isExists(savedCurrentPage)) {
     setCurrentPage(savedCurrentPage);
   }
+
 
   return {
     subscribe,

@@ -1,23 +1,24 @@
-<script>
-  import { createEventDispatcher, onMount, onDestroy } from "svelte";
+<script lang="typescript">
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
 
-  export let options = {};
+  export let options: IntersectionObserverInit = {};
 
-  let div;
-  let observer;
+  let div: HTMLElement | null = null;
+  let observer: IntersectionObserver | null = null;
 
   const dispatch = createEventDispatcher();
 
   onMount(() => {
     observer = new IntersectionObserver(([entry]) => {
       if (entry && entry.isIntersecting) {
-        dispatch("intersect");
+        dispatch('intersect');
       }
     }, options);
-    observer.observe(div);
+
+    observer.observe(div!);
   });
   onDestroy(() => {
-    observer.disconnect();
+    observer!.disconnect();
   });
 </script>
 

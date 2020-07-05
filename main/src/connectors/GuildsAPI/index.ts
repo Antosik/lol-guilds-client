@@ -5,6 +5,7 @@ import { stringify as stringifyQuery } from "querystring";
 
 import { logDebug, logError } from "@guilds-main/utils/log";
 import { wait } from "@guilds-shared/helpers/functions";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 import { VERSION } from "@guilds-shared/env";
 
 
@@ -48,12 +49,12 @@ export class GuildsAPI {
     return invites;
   }
 
-  public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<unknown> {
+  public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<IGuildAPIInviteUpdateResponse> {
     return await this.request(`invites/requests/${invite_id}`, {
       method: "PATCH",
       version: 2,
       body: { status }
-    });
+    }) as IGuildAPIInviteUpdateResponse;
   }
   // #endregion
 
@@ -158,7 +159,7 @@ export class GuildsAPI {
 
     const result = await response.json() as Record<string, unknown> | { detail: string };
 
-    if (result?.detail !== undefined) {
+    if (isExists(result?.detail)) {
       logError(`"[GuildsAPI] (${retryIndex}/${GuildsAPI.RETRY_COUNT}): "${opts.method} /${path}" ${response.status} "${(opts.body && JSON.stringify(opts.body)) ?? ""}" --- ${JSON.stringify(result)}`);
       // TODO: BetterError
       throw new Error(String(result.detail));
@@ -169,7 +170,7 @@ export class GuildsAPI {
 
   private async _sendRequest(path: string, options: IGuildAPIRequestOptions = { method: "GET" }, retry = GuildsAPI.RETRY_COUNT): Promise<Response> {
     const apiVersion = options.version === 2 ? "api-v2" : "api";
-    const body = typeof options.body === "undefined" ? undefined : JSON.stringify(options.body);
+    const body = isExists(options.body) ? JSON.stringify(options.body) : undefined;
 
     return fetch(`https://clubs.lcu.ru.leagueoflegends.com/${apiVersion}/${path}`, {
       method: options.method,

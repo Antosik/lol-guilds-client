@@ -1,33 +1,34 @@
-import type { IKeyValue } from "@guilds-shared/interfaces/IKeyValue";
-
 import { writable } from "svelte/store";
 
-export interface IGuildStore {
-  guild?: IKeyValue | null;
-  members: IKeyValue[];
-  role: number;
-}
+import { isNotExists } from "@guilds-shared/helpers/typeguards";
+
 
 function createGuildStore() {
   const getInitialStore = (): IGuildStore => ({ guild: undefined, members: [], role: 0 });
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { subscribe, update } = writable<IGuildStore>(getInitialStore());
 
-  const setGuildData = (guild: IKeyValue): void => update(store => {
-    if (guild === null || store?.guild?.id !== guild.id) {
+
+  const setGuildData = (guild?: IGuildAPIClubResponse): void => update(store => {
+    if (isNotExists(guild) || store?.guild?.id !== guild.id) {
       return { ...getInitialStore(), guild };
     } else {
       return { ...store, guild };
     }
   });
 
-  const setRole = (role: number): void => update(store => ({ ...store, role }));
+  const setRole = (role: number = 0): void => update(store => ({ ...store, role }));
 
-  const setMembers = (members: IKeyValue[]): void => update(store => ({ ...store, members }));
-  const setMemberStatus = (member: IKeyValue): void => update(store => {
+  const setMembers = (members: IInternalGuildMember[] = []): void => update(store => ({ ...store, members }));
+
+  const setMemberStatus = (member: IInternalGuildMember): void => update(store => {
     const storeWithoutMember = store.members.filter(m => member.name !== m.name);
     return { ...store, members: [...storeWithoutMember, member] };
   });
+
   const reset = () => update(getInitialStore);
+
 
   return {
     subscribe,

@@ -1,15 +1,18 @@
-<script>
-  export let description;
-  export let rank;
-  export let points;
+<script lang="typescript">
+  import { isNotBlank, isExists } from '@guilds-shared/helpers/typeguards';
 
-  export let isCurrent = false;
-  export let isStart = false;
-  export let isEnd = false;
+  export let description: string = '';
+  export let rank: number;
+  export let points: number;
 
-  export let position = -1;
+  export let isCurrent: boolean = false;
+  export let isStart: boolean = false;
+  export let isEnd: boolean = false;
 
-  $: positionStyle = position === -1 ? "" : `left: ${position}%`;
+  export let position: number = -1;
+
+  let positionStyle: string;
+  $: positionStyle = position === -1 ? '' : `left: ${position}%`;
 </script>
 
 <style>
@@ -29,11 +32,11 @@
     top: 0;
   }
   .guild-graph__point__rank:before {
-    content: "#";
+    content: '#';
   }
   @media all and (min-width: 576px) {
     .guild-graph__point__rank:before {
-      content: "Топ-";
+      content: 'Топ-';
     }
   }
   .guild-graph__point__points {
@@ -56,12 +59,12 @@
   class:guild-graph__point--end={isEnd}
   class:guild-graph__point--current={isCurrent}
   style={positionStyle}>
-  {#if description}
+  {#if isNotBlank(description)}
     {description}
   {:else if rank}
     <div class="guild-graph__point__rank">{rank}</div>
   {/if}
-  {#if points !== undefined}
+  {#if isExists(points)}
     <div class="guild-graph__point__points">{points}pt</div>
   {/if}
 </div>

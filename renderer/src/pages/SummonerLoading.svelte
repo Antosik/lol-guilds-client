@@ -1,13 +1,10 @@
-<script>
+<script lang="typescript">
   import { onMount } from "svelte";
-  import { replace } from "svelte-spa-router";
 
   import { rpc } from "../data/rpc";
-  import { appStore } from "../store/app";
-  import { summonerStore } from "../store/summoner";
 
-  function LCUReconnect() {
-    rpc.invoke("lcu:connect");
+  async function LCUReconnect() {
+    await rpc.invoke("lcu:connect");
   }
 
   let connectTimeout = false;

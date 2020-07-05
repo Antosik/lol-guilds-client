@@ -23,7 +23,9 @@ const config: Configuration = {
     extensions: [".mjs", ".js", ".ts"],
     alias
   },
+
   entry: joinPath(__dirname, "src/index.ts"),
+
   output: {
     path: joinPath(__dirname, "..", "target/app"),
     filename: "main.js"
@@ -52,12 +54,14 @@ const config: Configuration = {
       RELEASES_URL: JSON.stringify(`${homepage}/releases/tag/v{}`)
     }),
 
-    new CopyWebpackPlugin([
-      {
-        from: joinPath(__dirname, "static"),
-        to: joinPath(__dirname, "..", "target")
-      }
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: joinPath(__dirname, "static"),
+          to: joinPath(__dirname, "..", "target")
+        }
+      ]
+    }),
   ],
 
   optimization: {

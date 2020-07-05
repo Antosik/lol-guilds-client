@@ -1,8 +1,10 @@
-<script>
-  import { link } from "svelte-spa-router";
+<script lang="typescript">
+  import { isNotBlank, isEmpty } from '@guilds-shared/helpers/typeguards';
 
-  export let myGuildId = undefined;
-  export let guilds = [];
+  export let myGuildId: number | undefined = undefined;
+  export let guilds: Array<
+    IGuildAPIClubStageRatingResponse | IGuildAPIClubSeasonRatingResponse
+  > = [];
 </script>
 
 <style>
@@ -28,7 +30,7 @@
     background: rgba(245, 240, 223, 0.2);
   }
   tr:not(:first-child):after {
-    content: "";
+    content: '';
     position: absolute;
     left: 0;
     width: 100%;
@@ -46,7 +48,7 @@
   }
 </style>
 
-{#if !guilds.length}
+{#if isEmpty(guilds)}
   <h4>Нет данных</h4>
 {:else}
   <table>
@@ -63,7 +65,7 @@
         <tr class:my-guild={guild.club.id === myGuildId}>
           <td>{i + 1}</td>
           <td>
-            {#if guild.club.lol_name}
+            {#if isNotBlank(guild.club.lol_name)}
               {guild.club.lol_name}
             {:else}Гильдия распущена{/if}
           </td>

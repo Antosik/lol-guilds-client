@@ -19,11 +19,12 @@ if (!gotTheLock) {
 
   app.on("ready", () => {
     window = new Window({ ...windowStateSaver.getState() });
+
     window.once("ready-to-show", () => {
       window.show();
     });
-    windowStateSaver.manage(window);
 
+    windowStateSaver.manage(window);
     LeagueGuildsClient.mount(window);
   });
 

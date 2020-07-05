@@ -1,5 +1,5 @@
-<script>
-  export let members = [];
+<script lang="typescript">
+  export let members: IInternalGuildMember[] = [];
 </script>
 
 <style>

@@ -1,7 +1,7 @@
-<script>
-  export let icon = "i";
-  export let label = "Информация";
-  export let text = "";
+<script lang="typescript">
+  export let icon: string = 'i';
+  export let label: string = 'Информация';
+  export let text: string = '';
 </script>
 
 <style>
@@ -42,7 +42,10 @@
 
 <div class="tooltip-container">
   <div class="tooltip-icon flex-center">
-    <img src="./images/icons/{icon}.svg" alt={label} class="tooltip-icon__img" />
+    <img
+      src="./images/icons/{icon}.svg"
+      alt={label}
+      class="tooltip-icon__img" />
   </div>
   <div role="tooltip" class="tooltip-data flex-center">{text}</div>
 </div>

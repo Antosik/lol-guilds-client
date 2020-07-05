@@ -21,7 +21,8 @@
     "*.config.*",
     "node_modules",
     "dist",
-    "target"
+    "target",
+    "*.svelte"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -30,14 +31,6 @@
       "tsconfig.json"
     ]
   },
-  "overrides": [
-    {
-      "files": [
-        "**/*.svelte"
-      ],
-      "processor": "svelte3/svelte3"
-    }
-  ],
   "rules": {
     // indent rule
     "@typescript-eslint/indent": [

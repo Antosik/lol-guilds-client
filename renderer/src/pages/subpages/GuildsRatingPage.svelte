@@ -1,66 +1,107 @@
-<script>
-  import { onMount } from "svelte";
-  import { location } from "svelte-spa-router";
+<script lang="typescript">
+  import { location } from 'svelte-spa-router';
+  import {
+    isEmpty,
+    isExists,
+    isNotEmpty,
+  } from '@guilds-shared/helpers/typeguards';
+  import { rpc } from '@guilds-web/data/rpc';
+  import { guildStore } from '@guilds-web/store/guild';
 
-  import { rpc } from "@guilds-web/data/rpc";
-  import { guildStore } from "@guilds-web/store/guild";
+  import IntersectionObs from '@guilds-web/components/IntersectionObs.svelte';
+  import Loading from '@guilds-web/blocks/Loading.svelte';
+  import GuildStats from '@guilds-web/sections/GuildStats.svelte';
+  import GuildsRatingTable from '@guilds-web/sections/GuildsRatingTable.svelte';
 
-  import IntersectionObs from "@guilds-web/components/IntersectionObs";
-  import Loading from "@guilds-web/blocks/Loading.svelte";
-  import GuildStats from "@guilds-web/sections/GuildStats";
-  import GuildsRatingTable from "@guilds-web/sections/GuildsRatingTable";
+  export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
-  export let params = {};
-
-  let guilds = [];
-  let currentPage = 1;
-  let myRatingLoadingPromise;
+  let guilds: Array<
+    IGuildAPIClubStageRatingResponse | IGuildAPIClubSeasonRatingResponse
+  > = [];
+  let currentPage: number = 1;
+  let myRatingLoadingPromise: Promise<
+    | IGuildAPIClubSeasonRatingResponse
+    | IGuildAPIClubStageRatingResponse
+    | undefined
+  >;
   let initialRatingLoading = true;
   let finished = false;
 
-  $: season_id = Number(params.season_id);
-  $: stage_id = Number(params.stage_id);
+  const SEASON_CLUBS_COUNT = 500;
+  const STAGE_CLUBS_COUNT = 25;
+
+  let season_id: number | undefined;
+  $: season_id = isExists(params.season_id)
+    ? Number(params.season_id)
+    : undefined;
+  let stage_id: number | undefined;
+  $: stage_id = isExists(params.season_id)
+    ? Number(params.stage_id)
+    : undefined;
 
   $: afterNavigation($location);
   $: loadRating($location, currentPage);
 
-  function afterNavigation() {
+  let guild: IGuildAPIClubResponse;
+  $: guild = $guildStore.guild!;
+
+  function afterNavigation(_: string) {
     guilds = [];
     currentPage = 1;
     initialRatingLoading = true;
     finished = false;
     myRatingLoadingPromise = !season_id
-      ? undefined
+      ? Promise.resolve(undefined)
       : !stage_id
-      ? rpc.invoke("guilds:stats:season", season_id)
-      : rpc.invoke("guilds:stats:stage", season_id, stage_id);
+      ? rpc.invoke<IGuildAPIClubSeasonRatingResponse>(
+          'guilds:stats:season',
+          season_id,
+        )
+      : rpc.invoke<IGuildAPIClubStageRatingResponse>(
+          'guilds:stats:stage',
+          season_id,
+          stage_id,
+        );
   }
 
-  function loadRating(_, page) {
+  async function loadRating(_: string, page: number) {
     return !season_id
-      ? undefined
+      ? Promise.resolve()
       : !stage_id
       ? rpc
-          .invoke("guilds:rating:season", season_id, { page })
-          .then(list => {
-            guilds = [...guilds, ...list];
+          .invoke<IGuildAPIClubSeasonRatingResponse[]>(
+            'guilds:rating:season',
+            season_id,
+            { page },
+          )
+          .then((list) => {
             initialRatingLoading = false;
 
-            if (list.length === 0) {
+            if (isEmpty(list)) {
               finished = true;
+              return;
             }
+
+            guilds = [...guilds, ...list];
           })
       : rpc
-          .invoke("guilds:rating:stage", season_id, stage_id, {
-            page
-          })
-          .then(list => {
-            guilds = [...guilds, ...list];
+          .invoke<IGuildAPIClubStageRatingResponse[]>(
+            'guilds:rating:stage',
+            season_id,
+            stage_id,
+            {
+              page,
+            },
+          )
+          .then((list) => {
             initialRatingLoading = false;
 
-            if (list.length === 0) {
+            if (isEmpty(list)) {
               finished = true;
+              return;
             }
+
+            guilds = [...guilds, ...list];
           });
   }
 </script>
@@ -70,16 +111,21 @@
     <h3>Гильдия</h3>
     <Loading>Загружаем информацию о гильдии...</Loading>
   {:then guild}
-    <GuildStats {guild} />
+    {#if isExists(guild)}
+      <GuildStats {guild} />
+    {:else}
+      <h3>Гильдия - ???</h3>
+      <p>Нет данных</p>
+    {/if}
   {/await}
 </div>
 
 <div class="guilds-rating">
   <h3>Рейтинг гильдий</h3>
-  {#if guilds.length}
-    <GuildsRatingTable {guilds} myGuildId={$guildStore.guild.id} />
+  {#if isNotEmpty(guilds)}
+    <GuildsRatingTable {guilds} myGuildId={guild.id} />
 
-    {#if !finished && ((!stage_id && guilds.length < 1500) || (stage_id && guilds.length < 25))}
+    {#if !finished && ((!stage_id && guilds.length < SEASON_CLUBS_COUNT) || (stage_id && guilds.length < STAGE_CLUBS_COUNT))}
       <IntersectionObs on:intersect={() => currentPage++}>
         <Loading>Загружаем еще одну страницу...</Loading>
       </IntersectionObs>

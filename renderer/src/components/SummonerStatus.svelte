@@ -1,12 +1,13 @@
-<script>
+<script lang="typescript">
   import {
     gameflowLocale,
-    gameflowNotBusyStatusCode
-  } from "@guilds-shared/helpers/gameflow";
+    gameflowNotBusyStatusCode,
+  } from '@guilds-shared/helpers/gameflow';
 
-  export let statusCode = "None";
-  export let showText = true;
+  export let statusCode: string = 'None';
+  export let showText: boolean = true;
 
+  let isBusy: boolean;
   $: isBusy = !gameflowNotBusyStatusCode.includes(statusCode);
 </script>
 

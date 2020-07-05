@@ -7,6 +7,7 @@ import { auth, connect, request } from "league-connect";
 import { authStore } from "@guilds-main/store/auth";
 import { logDebug, logError } from "@guilds-main/utils/log";
 import { wait } from "@guilds-shared/helpers/functions";
+import { isExists, isNotExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
 
 
 export class LCUAPISocket extends EventEmitter {
@@ -20,7 +21,7 @@ export class LCUAPISocket extends EventEmitter {
   private _socket?: LeagueWebSocket;
 
   public get isConnected(): boolean {
-    return this._socket !== undefined && this._socket.readyState === this._socket.OPEN;
+    return isExists(this._socket) && this._socket.readyState === this._socket.OPEN;
   }
 
   constructor() {
@@ -64,7 +65,7 @@ export class LCUAPISocket extends EventEmitter {
 
   // #region Listener handlers
   public _socketListener(json: string): void {
-    if (json.length > 0) {
+    if (isNotBlank(json)) {
       const payload = JSON.parse(json) as unknown[];
 
       const [event] = payload.slice(2) as [EventResponse];
@@ -77,10 +78,10 @@ export class LCUAPISocket extends EventEmitter {
 
   // #region Connect handlers
   private _setSocketReconnectTimer(mode: "on" | "off"): void {
-    if (this._reconnectTimer !== undefined && mode === "off") {
+    if (isExists(this._reconnectTimer) && mode === "off") {
       clearInterval(this._reconnectTimer);
       this._reconnectTimer = undefined;
-    } else if (this._reconnectTimer === undefined && mode === "on") {
+    } else if (isNotExists(this._reconnectTimer) && mode === "on") {
       this._reconnectTimer = setInterval(this.connect, LCUAPISocket.RECONNECT_INTERVAL);
     }
   }
@@ -90,7 +91,7 @@ export class LCUAPISocket extends EventEmitter {
 
     if (this.isConnected && this._isInited) return;
 
-    if (this._socket) {
+    if (isExists(this._socket)) {
       this._socket.unsubscribe("/process-control/v1/process");
       this._socket.subscribe<ILCUAPIProcessControlResponse>("/process-control/v1/process", this._onProcessStateChange);
 
@@ -111,7 +112,7 @@ export class LCUAPISocket extends EventEmitter {
     if (!this.isConnected && this._isInited) return;
     this._isInited = false;
 
-    if (this._socket !== undefined) {
+    if (isExists(this._socket)) {
       this._socket.removeAllListeners();
       this._socket.close();
     }

@@ -1,5 +1,7 @@
-<script>
-  export let guild = undefined;
+<script lang="typescript">
+  import { isExists } from '@guilds-shared/helpers/typeguards';
+
+  export let guild: IGuildAPIClubResponse | null | undefined;
 </script>
 
 <style>
@@ -37,19 +39,21 @@
   }
 </style>
 
-<div class="guild-info__top flex-center">
-  <div class="guild-info__top__item">Глава: {guild.owner.summoner_name}</div>
+{#if isExists(guild)}
+  <div class="guild-info__top flex-center">
+    <div class="guild-info__top__item">Глава: {guild.owner.summoner_name}</div>
 
-  <div class="guild-info__top__item">
-    Завершено сезонов: {guild.seasons_count}
-  </div>
+    <div class="guild-info__top__item">
+      Завершено сезонов: {guild.seasons_count}
+    </div>
 
-  <div class="guild-info__top__item">
-    <span
-      class="recruitment-status"
-      class:recruitment-status--active={guild.is_hiring}>
-      <span class="status__circle" />
-      Набор {guild.is_hiring ? 'открыт' : 'закрыт'}
-    </span>
+    <div class="guild-info__top__item">
+      <span
+        class="recruitment-status"
+        class:recruitment-status--active={guild.is_hiring}>
+        <span class="status__circle" />
+        Набор {guild.is_hiring ? 'открыт' : 'закрыт'}
+      </span>
+    </div>
   </div>
-</div>
+{/if}

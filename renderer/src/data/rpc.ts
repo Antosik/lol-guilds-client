@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { IpcRendererEvent } from "electron";
-import type { Result } from "@guilds-main/utils/result";
-import type { RPCHandlerEventType } from "@guilds-shared/interfaces/IRPCHandler";
+import type { Result } from "@guilds-shared/helpers/result";
 
 import { ipcRenderer } from "electron";
 import { EventEmitter } from "events";
 
 import { appStore } from "@guilds-web/store/app";
 import { flowId } from "@guilds-shared/helpers/rpc";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class ClientRPC extends EventEmitter {
@@ -28,16 +28,16 @@ export class ClientRPC extends EventEmitter {
     ipcRenderer.send(this._id, { event, data });
   }
 
-  public async invoke(event: RPCHandlerEventType, ...data: unknown[]): Promise<unknown> {
-    const response = await ipcRenderer.invoke(this._id, { event, data }) as Result<unknown>;
+  public async invoke<T = unknown>(event: RPCHandlerEventType, ...data: unknown[]): Promise<T | undefined> {
+    const response = await ipcRenderer.invoke(this._id, { event, data }) as Result<T>;
 
-    if (response?.notification !== undefined) {
+    if (isExists(response?.notification)) {
       appStore.addNotification(response.notification);
     }
 
     if (response?.status === "error") {
       appStore.addNotification(
-        response.error !== undefined
+        isExists(response?.error)
           ? response.error.toString()
           : "Внутренняя ошибка приложения"
       );

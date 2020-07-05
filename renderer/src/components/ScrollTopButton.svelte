@@ -1,9 +1,8 @@
-<script>
-  import { createEventDispatcher } from "svelte";
+<script lang="typescript">
+  import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
-
-  const onClick = () => dispatch("click");
+  const onClick = () => dispatch('click');
 </script>
 
 <style>

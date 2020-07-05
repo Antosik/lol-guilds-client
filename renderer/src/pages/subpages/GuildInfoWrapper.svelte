@@ -1,18 +1,19 @@
-<script>
-  import { onMount } from "svelte";
-  import Router, { link } from "svelte-spa-router";
-
-  import { rpc } from "@guilds-web/data/rpc";
-  import { appStore } from "@guilds-web/store/app";
-  import { guildStore } from "@guilds-web/store/guild";
+<script lang="typescript">
+  import Router from 'svelte-spa-router';
+  import { isExists } from '@guilds-shared/helpers/typeguards';
+  import { appStore } from '@guilds-web/store/app';
+  import { guildStore } from '@guilds-web/store/guild';
   import {
     guild_subprefix as subprefix,
     guild_subroutes as subroutes,
-  } from "@guilds-web/routes/subroutes";
+  } from '@guilds-web/routes/subroutes';
 
-  import GuildInfo from "@guilds-web/sections/GuildInfo";
-  import GuildDescriptions from "@guilds-web/sections/GuildDescriptions";
-  import GuildInfoNavigation from "@guilds-web/sections/GuildInfoNavigation";
+  import GuildInfo from '@guilds-web/sections/GuildInfo.svelte';
+  import GuildDescriptions from '@guilds-web/sections/GuildDescriptions.svelte';
+  import GuildInfoNavigation from '@guilds-web/sections/GuildInfoNavigation.svelte';
+
+  let guild_name: string;
+  $: guild_name = $guildStore.guild?.club_name ?? '???';
 </script>
 
 <style>
@@ -22,21 +23,23 @@
   }
 </style>
 
-<div class="page guild-info">
-  <h2>Гильдия "{$guildStore.guild.club_name}"</h2>
+{#if isExists($guildStore.guild)}
+  <div class="page guild-info">
+    <h2>Гильдия "{guild_name}"</h2>
 
-  <div class="guild-info__info">
-    <GuildInfo guild={$guildStore.guild} />
+    <div class="guild-info__info">
+      <GuildInfo guild={$guildStore.guild} />
+    </div>
+
+    <GuildDescriptions guild={$guildStore.guild} />
+
+    <div>
+      <GuildInfoNavigation />
+
+      <Router
+        routes={subroutes}
+        prefix={subprefix}
+        on:routeLoaded={appStore.setCurrentPageLoaded} />
+    </div>
   </div>
-
-  <GuildDescriptions guild={$guildStore.guild} />
-
-  <div>
-    <GuildInfoNavigation />
-    
-    <Router
-      routes={subroutes}
-      prefix={subprefix}
-      on:routeLoaded={appStore.setCurrentPageLoaded} />
-  </div>
-</div>
+{/if}

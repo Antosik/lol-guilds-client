@@ -1,7 +1,7 @@
 import { app } from "electron";
 
 import { LeagueGuildsClient } from "./client";
-import { Window } from "./ui/window";
+import { BrowserWindow as Window } from "./ui/window";
 import { WindowStateSaver } from "./ui/windowStateSaver";
 import { logError } from "./utils/log";
 import "./utils/security";
@@ -20,12 +20,12 @@ if (!gotTheLock) {
   app.on("ready", () => {
     window = new Window({ ...windowStateSaver.getState() });
 
+    windowStateSaver.manage(window);
+    LeagueGuildsClient.mount(window);
+
     window.once("ready-to-show", () => {
       window.show();
     });
-
-    windowStateSaver.manage(window);
-    LeagueGuildsClient.mount(window);
   });
 
   app.on("window-all-closed", () => {

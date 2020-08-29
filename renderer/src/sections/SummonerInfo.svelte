@@ -5,8 +5,8 @@
 
   import SummonerStatus from '../components/SummonerStatus.svelte';
 
-  export let summoner: ILCUAPISummonerResponse | undefined = undefined;
-  export let guild: IGuildAPIClubResponse | undefined = undefined;
+  export let summoner: ILCUAPISummonerResponse | NotExisting = undefined;
+  export let guild: IGuildAPIClubResponse | NotExisting = undefined;
   export let status: string = 'None';
   export let style: string = 'normal';
 

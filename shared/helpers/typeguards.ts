@@ -1,5 +1,3 @@
-type NotExisting = undefined | null;
-
 export function isNotExists<T>(item: T | NotExisting): item is NotExisting {
   return item === undefined || item === null;
 }

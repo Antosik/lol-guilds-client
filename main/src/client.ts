@@ -1,5 +1,5 @@
 import type { AppUpdater } from "electron-updater";
-import type { Window } from "./ui/window";
+import type { BrowserWindow as Window } from "./ui/window";
 
 import { autoUpdater } from "electron-updater";
 
@@ -14,6 +14,7 @@ import { VersionService } from "./services/version";
 import { GuildsService } from "./services/guilds";
 import { LCUService } from "./services/lcu";
 import { MultiController } from "./controllers/multi";
+import { AppController } from "./controllers/app";
 
 
 export class LeagueGuildsClient {
@@ -35,6 +36,7 @@ export class LeagueGuildsClient {
   private _guildsController: GuildsController;
 
   private _multiController: MultiController;
+  private _appController: AppController;
 
   public static mount(window: Window): LeagueGuildsClient {
     return new this(window);
@@ -64,6 +66,9 @@ export class LeagueGuildsClient {
 
     this._multiController = new MultiController(this._rpc, this._guildsService, this._lcuService);
     this._multiController.handleEvents();
+
+    this._appController = new AppController(this._rpc);
+    this._appController.handleEvents();
 
     this._rpc.addListener("lcu:connected", async () => {
       const token = await this._lcuApi.getIdToken();

@@ -90,3 +90,4 @@ declare type VersionEventType = "version:get" | "version:check" | "version:insta
 declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType;
 
 declare type IKeyValue = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+declare type NotExisting = undefined | null;

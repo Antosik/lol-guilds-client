@@ -1,10 +1,10 @@
 import type { BrowserWindowConstructorOptions } from "electron";
 
-import { BrowserWindow } from "electron";
+import { BrowserWindow as Window } from "electron";
 import isDev from "electron-is-dev";
 import { join as joinPath, resolve as resolvePath } from "path";
 
-export class Window extends BrowserWindow {
+export class BrowserWindow extends Window {
   constructor(options: BrowserWindowConstructorOptions = {}) {
     const htmlPath = isDev ? resolvePath("target", "index.html") : joinPath(process.resourcesPath, "index.html");
     const preloadPath = isDev ? resolvePath("target/renderer", "preload.js") : joinPath(process.resourcesPath, "renderer", "preload.js");
@@ -30,4 +30,4 @@ export class Window extends BrowserWindow {
   }
 }
 
-export const createWindow = (options: BrowserWindowConstructorOptions = {}): Window => new Window(options);
+export const createWindow = (options: BrowserWindowConstructorOptions = {}): BrowserWindow => new BrowserWindow(options);

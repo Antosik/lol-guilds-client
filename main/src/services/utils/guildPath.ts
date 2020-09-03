@@ -9,6 +9,7 @@ const sortByPoints = (first: IInternalGuildPathPoint, second: IInternalGuildPath
 const filterEmptyPoints = (point: IInternalGuildPathPoint) => isExists(point.rank) || point.absolute;
 
 function constructSegment(guildPoint: IInternalGuildPathPoint, start: IInternalGuildPathPoint, end: IInternalGuildPathPoint): IInternalGuildPathSegment {
+
   const progress = calculateRelativeProgress(guildPoint.points, start.points, end.points);
   const isCurrent = start.points <= guildPoint.points && guildPoint.points <= end.points;
 
@@ -22,6 +23,7 @@ function constructSegment(guildPoint: IInternalGuildPathPoint, start: IInternalG
 }
 
 function constructSegments(guildPoint: IInternalGuildPathPoint, points: IInternalGuildPathPoint[], topPoints: IInternalGuildPathPoint[] = []): IInternalGuildPathSegment[] {
+
   const segments: IInternalGuildPathSegment[] = [];
 
   for (let i = 0, len = points.length - 1; i < len; i++) {
@@ -45,6 +47,7 @@ function constructSegments(guildPoint: IInternalGuildPathPoint, points: IInterna
 }
 
 export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number): Promise<IInternalGuildPath> {
+
   let absolutePoints: IInternalGuildPathPoint[] = [
     { points: 0, absolute: true }, { description: "Старт", points: 1000, absolute: true }
   ];
@@ -79,6 +82,7 @@ export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number
 }
 
 export async function getGuildStagePath(guildsApi: GuildsAPI, season_id: number, stage_id: number): Promise<IInternalGuildPath> {
+
   let absolutePoints: IInternalGuildPathPoint[] = [
     { points: 0, absolute: true }, { description: "Старт", points: 1000, absolute: true }
   ];

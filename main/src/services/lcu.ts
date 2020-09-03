@@ -6,72 +6,84 @@ import { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import { isBlank, isNotBlank, isExists, isNotExists, isEmpty } from "@guilds-shared/helpers/typeguards";
 
 
-export class LCUService {
+export class LCUService implements IService {
 
-  private _lcuApi: LCUAPI;
-  private _lcuApiSocket: LCUAPISocket;
+  #lcuApi: LCUAPI;
+  #lcuApiSocket: LCUAPISocket;
 
   constructor(
     lcuApi: LCUAPI,
     lcuApiSocket: LCUAPISocket
   ) {
-    this._lcuApi = lcuApi;
-    this._lcuApiSocket = lcuApiSocket;
+    this.#lcuApi = lcuApi;
+    this.#lcuApiSocket = lcuApiSocket;
   }
 
-  public addListener(event: string, callback: (...args: any[]) => any): this {
-    this._lcuApiSocket.addListener(event, callback);
-    return this;
-  }
-  public removeListener(event: string): this {
-    this._lcuApiSocket.removeAllListeners(event);
-    return this;
-  }
 
+  // #region Events
+  public addListener(event: string, callback: TAnyFunc): this {
+    this.#lcuApiSocket.addListener(event, callback);
+    return this;
+  }
+  public removeAllListeners(event: string): this {
+    this.#lcuApiSocket.removeAllListeners(event);
+    return this;
+  }
+  public removeListener(event: string, callback: TAnyFunc): this {
+    this.#lcuApiSocket.removeListener(event, callback);
+    return this;
+  }
+  // #endregion Events
+
+
+  // #region Main
   public async connectSocket(): Promise<boolean> {
-    if (!this._lcuApiSocket.isConnected) {
+
+    if (!this.#lcuApiSocket.isConnected) {
       authStore.delete("summoner");
       authStore.delete("token");
     }
-    return await this._lcuApiSocket.connect();
+
+    return this.#lcuApiSocket.connect();
   }
 
   public disconnectSocket(): void {
-    return this._lcuApiSocket.disconnect();
+    return this.#lcuApiSocket.disconnect();
   }
 
   public async getCurrentSummoner(): Promise<ILCUAPISummonerResponse> {
-    return await this._lcuApi.getCurrentSummoner();
+    return this.#lcuApi.getCurrentSummoner();
   }
 
   public async getStatus(): Promise<EGameflowStatus> {
-    return await this._lcuApi.getStatus();
+    return this.#lcuApi.getStatus();
   }
 
   public async getFriendsList(): Promise<ILCUAPIFriendCoreResponse[]> {
-    return await this._lcuApi.getFriendsList();
+    return this.#lcuApi.getFriendsList();
   }
 
   public async getBannedList(): Promise<ILCUAPIBannedCoreResponse[]> {
-    return await this._lcuApi.getBannedList();
+    return this.#lcuApi.getBannedList();
   }
 
   public async sendFriendRequestByNickname(nickname: string): Promise<{ status: boolean, notfound?: string }> {
+
     if (isBlank(nickname)) { throw new Error("Incorrect nickname"); }
 
     try {
-      const summoner = await this._lcuApi.getSummonerByName(nickname);
+      const summoner = await this.#lcuApi.getSummonerByName(nickname);
       if (typeof summoner === "string") {
         return { status: true, notfound: nickname };
       }
 
-      const sendedRequests = await this._lcuApi.getSendedFriendRequests();
+      const sendedRequests = await this.#lcuApi.getSendedFriendRequests();
       const alreadySended = sendedRequests.find(request => request.summonerId === summoner.summonerId);
       if (isExists(alreadySended)) {
         return { status: true };
       }
 
-      await this._lcuApi.sendFriendRequest(summoner);
+      await this.#lcuApi.sendFriendRequest(summoner);
       return { status: true };
     } catch (e) {
       return { status: false };
@@ -79,13 +91,14 @@ export class LCUService {
   }
 
   private async _createLobbyWithGameflowChecks() {
-    const currentGameflow = await this._lcuApi.getStatus();
+
+    const currentGameflow = await this.#lcuApi.getStatus();
     if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) {
       throw new Error("Не удалось создать лобби");
     }
 
     if (currentGameflow !== EGameflowStatus.Lobby) {
-      const lobbyStatus = await this._lcuApi.createLobby();
+      const lobbyStatus = await this.#lcuApi.createLobby();
       if (!lobbyStatus) {
         throw new Error("Не удалось создать лобби");
       }
@@ -93,12 +106,13 @@ export class LCUService {
   }
 
   private async _searchForSummoners(nicknames: string[]): Promise<{ found: ILCUAPISummonerCoreResponse[], notfound: string[] }> {
+
     if (isEmpty(nicknames)) { return { found: [], notfound: [] }; }
 
     const summoners = await Promise.all(
       nicknames
         .filter(isNotBlank)
-        .map((nickname) => this._lcuApi.getSummonerByName(nickname.trim()))
+        .map((nickname) => this.#lcuApi.getSummonerByName(nickname.trim()))
     );
 
     const notFoundSummoners: string[] = [];
@@ -115,13 +129,14 @@ export class LCUService {
   }
 
   public async sendLobbyInviteByNickname(nicknames: string[]): Promise<{ found: ILCUAPISummonerCoreResponse[], notfound: string[] }> {
+
     if (isEmpty(nicknames)) { return { found: [], notfound: [] }; }
 
     await this._createLobbyWithGameflowChecks();
 
     const { found, notfound } = await this._searchForSummoners(nicknames);
 
-    const inviteStatus = await this._lcuApi.sendLobbyInvitation(found);
+    const inviteStatus = await this.#lcuApi.sendLobbyInvitation(found);
     if (!inviteStatus) {
       throw new Error("Не удалось отправить запрос");
     }
@@ -130,21 +145,22 @@ export class LCUService {
   }
 
   public async openFriendChat(nickname: string): Promise<unknown> {
+
     if (isBlank(nickname)) { throw new Error("Incorrect nickname"); }
 
-    const summoner = await this._lcuApi.getSummonerByName(nickname.trim());
+    const summoner = await this.#lcuApi.getSummonerByName(nickname.trim());
 
     if (typeof summoner === "string") {
       return;
     }
 
-    return this._lcuApi.createChatWithSummoner(summoner)
-      .then(() => this._lcuApi.setActiveConversation(summoner));
+    return this.#lcuApi.createChatWithSummoner(summoner)
+      .then(() => this.#lcuApi.setActiveConversation(summoner));
   }
 
   public async getReceivedInvitations(): Promise<IInternalReceivedInvitation[]> {
 
-    const invites = await this._lcuApi.getReceivedInvitations();
+    const invites = await this.#lcuApi.getReceivedInvitations();
 
     return invites
       .filter(invite =>
@@ -157,13 +173,12 @@ export class LCUService {
 
   public async acceptReceivedInvitation(invitation_id: string): Promise<void> {
     if (isNotExists(invitation_id)) { throw new Error("Incorrect invitation"); }
-
-    return await this._lcuApi.acceptReceivedInvitation(invitation_id);
+    return this.#lcuApi.acceptReceivedInvitation(invitation_id);
   }
 
   public async declineReceivedInvitation(invitation_id: string): Promise<void> {
     if (isNotExists(invitation_id)) { throw new Error("Incorrect invitation"); }
-
-    return await this._lcuApi.declineReceivedInvitation(invitation_id);
+    return this.#lcuApi.declineReceivedInvitation(invitation_id);
   }
+  // #endregion Main
 }

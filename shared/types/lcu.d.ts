@@ -134,6 +134,7 @@ declare interface ILCUAPILobbyCore {
 }
 // #region Lobby Requests & Responses
 
+
 // #region Session Responses
 declare type ELCUAPISessionState = "initializing" | "connected" | "loaded" | "disconnected" | "shuttingdown";
 
@@ -169,11 +170,13 @@ declare interface ILCUAPISummonerResponse extends ILCUAPISummonerCoreResponse {
 }
 // #endregion Summoner Requests & Responses
 
+
 // #region ProcessControl Response
 declare interface ILCUAPIProcessControlResponse {
   status: string;
 }
 // #endregion ProcessControl Response
+
 
 // #region Utils
 declare interface ILCUAPIRequestOptions {

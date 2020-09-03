@@ -1,33 +1,44 @@
 import type { AppUpdater, UpdateCheckResult } from "electron-updater";
 
 
-export class VersionService {
+export class VersionService implements IService {
 
-  private _appUpdater: AppUpdater;
+  #appUpdater: AppUpdater;
 
   constructor(appUpdater: AppUpdater) {
-    this._appUpdater = appUpdater;
+    this.#appUpdater = appUpdater;
 
     void appUpdater.checkForUpdatesAndNotify();
   }
 
-  public addListener(event: string, callback: (...args: any[]) => any): this {
-    this._appUpdater.addListener(event, callback);
+
+  // #region Events
+  public addListener(event: string, callback: TAnyFunc): this {
+    this.#appUpdater.addListener(event, callback);
     return this;
   }
 
+  public removeListener(event: string, callback: TAnyFunc): this {
+    this.#appUpdater.removeListener(event, callback);
+    return this;
+  }
+  // #endregion Events
+
+
+  // #region Main
   public getVersion(): string {
-    return this._appUpdater.currentVersion.version;
+    return this.#appUpdater.currentVersion.version;
   }
 
   public async checkForUpdates(): Promise<UpdateCheckResult> {
-    return await this._appUpdater.checkForUpdates();
+    return this.#appUpdater.checkForUpdates();
   }
 
   public runUpdateInstall(): void {
-    return this._appUpdater.quitAndInstall(
+    return this.#appUpdater.quitAndInstall(
       true, // silent run
       true  // force run after update
     );
   }
+  // #endregion Main
 }

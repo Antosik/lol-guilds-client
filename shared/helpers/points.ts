@@ -58,6 +58,7 @@ export const points_for_game = [
 ];
 
 export function calculateRelativeProgress(current: number, start: number, end: number): number {
+
   const relativePoints = current - start < 0 ? 0 : current - start;
   const relativeEnd = end - start;
 

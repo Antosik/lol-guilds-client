@@ -69,14 +69,6 @@ declare interface IInternalGuildMembersStageRatingWithSummoner {
   summoner: IGuildAPISummonerResponse;
 }
 
-declare type IRPCHandlerFunc = (...args: any[]) => IRPCHandlerResponse | Promise<IRPCHandlerResponse>; // eslint-disable-line @typescript-eslint/no-explicit-any
-
-declare interface IRPCHandlerResponse {
-  status: "ok" | "error";
-  notification?: string;
-  data?: unknown;
-}
-
 type GuildsEventSeasonsType = "guilds:seasons" | "guilds:season" | "guilds:season:live" | "guilds:season:prev";
 type GuildsEventMembersType = "guilds:members" | "guilds:members:season" | "guilds:members:stage" | "guilds:member-status:subscribe";
 type GuildsEventRatingType = "guilds:rating:season" | "guilds:rating:stage";
@@ -87,7 +79,9 @@ type GuildsEventInviteType = "guilds:invites:list" | "guilds:invites:accept" | "
 declare type GuildsEventType = "guilds:club" | "guilds:role" | GuildsEventSeasonsType | GuildsEventMembersType | GuildsEventRatingType | GuildsEventStatsType | GuildsEventGamesType | GuildsEventPathType | GuildsEventInviteType;
 declare type LCUEventType = "lcu:connect" | "lcu:lobby-invite" | "lcu:lobby-invite-all" | "lcu:friend-request" | "lcu:invitation:accept" | "lcu:invitation:decline" | "lcu:open-chat";
 declare type VersionEventType = "version:get" | "version:check" | "version:install";
-declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType;
+declare type AppEventType = "app:window:isMaximized" | "app:window:minimize" | "app:window:maximize" | "app:window:unmaximize" | "app:window:close";
+declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType | AppEventType;
 
 declare type IKeyValue = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 declare type NotExisting = undefined | null;
+declare type TAnyFunc = (...args: any[]) => any;

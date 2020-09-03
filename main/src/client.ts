@@ -3,40 +3,41 @@ import type { BrowserWindow as Window } from "./ui/window";
 
 import { autoUpdater } from "electron-updater";
 
-import { LCUAPI } from "./connectors/LCUAPI";
 import { GuildsAPI } from "./connectors/GuildsAPI";
+import { LCUAPI } from "./connectors/LCUAPI";
 import { LCUAPISocket } from "./connectors/LCUAPI/socket";
+import { AppController } from "./controllers/app";
 import { GuildsController } from "./controllers/guilds";
 import { LCUController } from "./controllers/lcu";
+import { MultiController } from "./controllers/multi";
 import { VersionController } from "./controllers/version";
-import { MainRPC } from "./utils/rpc";
-import { VersionService } from "./services/version";
 import { GuildsService } from "./services/guilds";
 import { LCUService } from "./services/lcu";
-import { MultiController } from "./controllers/multi";
-import { AppController } from "./controllers/app";
+import { VersionService } from "./services/version";
+import { MainRPC } from "./utils/rpc";
 
 
-export class LeagueGuildsClient {
-  private _lcuApi: LCUAPI;
-  private _lcuApiSocket: LCUAPISocket;
-  private _appUpdater: AppUpdater;
+export class LeagueGuildsClient implements IDestroyable {
 
-  private _window: Window;
-  private _rpc: MainRPC;
-  private _guildsApi: GuildsAPI;
+  #lcuApi: LCUAPI;
+  #lcuApiSocket: LCUAPISocket;
+  #appUpdater: AppUpdater;
 
-  private _versionService: VersionService;
-  private _versionController: VersionController;
+  #window: Window;
+  #rpc: MainRPC;
+  #guildsApi: GuildsAPI;
 
-  private _lcuService: LCUService;
-  private _lcuController: LCUController;
+  #versionService: VersionService;
+  #versionController: VersionController;
 
-  private _guildsService: GuildsService;
-  private _guildsController: GuildsController;
+  #lcuService: LCUService;
+  #lcuController: LCUController;
 
-  private _multiController: MultiController;
-  private _appController: AppController;
+  #guildsService: GuildsService;
+  #guildsController: GuildsController;
+
+  #multiController: MultiController;
+  #appController: AppController;
 
   public static mount(window: Window): LeagueGuildsClient {
     return new this(window);
@@ -44,41 +45,43 @@ export class LeagueGuildsClient {
 
   constructor(window: Window) {
 
-    this._window = window;
-    this._rpc = new MainRPC(window);
+    this.#window = window;
+    this.#rpc = new MainRPC(window);
 
-    this._lcuApi = new LCUAPI();
-    this._lcuApiSocket = new LCUAPISocket();
-    this._guildsApi = new GuildsAPI();
-    this._appUpdater = autoUpdater;
+    this.#lcuApi = new LCUAPI();
+    this.#lcuApiSocket = new LCUAPISocket();
+    this.#guildsApi = new GuildsAPI();
+    this.#appUpdater = autoUpdater;
 
-    this._versionService = new VersionService(this._appUpdater);
-    this._versionController = new VersionController(this._rpc, this._versionService);
-    this._versionController.handleEvents();
+    this.#versionService = new VersionService(this.#appUpdater);
+    this.#versionController = new VersionController(this.#rpc, this.#versionService);
 
-    this._lcuService = new LCUService(this._lcuApi, this._lcuApiSocket);
-    this._lcuController = new LCUController(this._rpc, this._lcuService);
-    this._lcuController.handleEvents();
+    this.#lcuService = new LCUService(this.#lcuApi, this.#lcuApiSocket);
+    this.#lcuController = new LCUController(this.#rpc, this.#lcuService);
 
-    this._guildsService = new GuildsService(this._guildsApi);
-    this._guildsController = new GuildsController(this._rpc, this._guildsService);
-    this._guildsController.handleEvents();
+    this.#guildsService = new GuildsService(this.#guildsApi);
+    this.#guildsController = new GuildsController(this.#rpc, this.#guildsService);
 
-    this._multiController = new MultiController(this._rpc, this._guildsService, this._lcuService);
-    this._multiController.handleEvents();
+    this.#multiController = new MultiController(this.#rpc, this.#guildsService, this.#lcuService);
 
-    this._appController = new AppController(this._rpc);
-    this._appController.handleEvents();
+    this.#appController = new AppController(this.#rpc);
 
-    this._rpc.addListener("lcu:connected", async () => {
-      const token = await this._lcuApi.getIdToken();
-      this._guildsApi.setToken(token);
-      this._rpc.send("guilds:connected");
+    this.#rpc.addListener("lcu:connected", async () => {
+      const token = await this.#lcuApi.getIdToken();
+      this.#guildsApi.setToken(token);
+      this.#rpc.send("guilds:connected");
     });
   }
 
   public destroy(): void {
-    this._rpc.destroy();
-    this._lcuApiSocket.disconnect();
+
+    this.#rpc.destroy();
+    this.#lcuApiSocket.destroy();
+
+    this.#versionController.destroy();
+    this.#lcuController.destroy();
+    this.#guildsController.destroy();
+    this.#multiController.destroy();
+    this.#appController.destroy();
   }
 }

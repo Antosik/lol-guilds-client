@@ -10,18 +10,20 @@ import { VERSION } from "@guilds-shared/env";
 
 
 export class GuildsAPI {
+
   private static RETRY_INTERVAL = 500;
   private static RETRY_COUNT = 3;
 
-  private _token?: string;
+  #token?: string;
 
   public setToken(token: string): void {
-    this._token = token;
+    this.#token = token;
   }
+
 
   // #region Club API
   public async getCurrentSummoner(): Promise<IGuildAPICurrentSummonerResponse> {
-    return await this.request("contest/summoner", { method: "GET", version: 2 }) as IGuildAPICurrentSummonerResponse;
+    return this.request("contest/summoner", { method: "GET", version: 2 }) as Promise<IGuildAPICurrentSummonerResponse>;
   }
 
   public async getGuildMembers(club_id: number): Promise<IGuildAPIMemberResponse[]> {
@@ -50,13 +52,14 @@ export class GuildsAPI {
   }
 
   public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<IGuildAPIInviteUpdateResponse> {
-    return await this.request(`invites/requests/${invite_id}`, {
+    return this.request(`invites/requests/${invite_id}`, {
       method: "PATCH",
       version: 2,
       body: { status }
-    }) as IGuildAPIInviteUpdateResponse;
+    }) as Promise<IGuildAPIInviteUpdateResponse>;
   }
   // #endregion
+
 
   // #region Season API
   public async getSeasons(): Promise<IGuildAPISeasonResponse[]> {
@@ -65,7 +68,7 @@ export class GuildsAPI {
   }
 
   public async getSeason(season_id: number): Promise<IGuildAPISeasonResponse> {
-    return await this.request(`contest/season/${season_id}`, { method: "GET", version: 2 }) as IGuildAPISeasonResponse;
+    return this.request(`contest/season/${season_id}`, { method: "GET", version: 2 }) as Promise<IGuildAPISeasonResponse>;
   }
 
   public async getCurrentSeason(): Promise<IGuildAPISeasonResponse | undefined> {
@@ -84,7 +87,7 @@ export class GuildsAPI {
   }
 
   public async getSeasonById(season_id: number): Promise<IGuildAPISeasonResponse> {
-    return await this.request(`contest/season/${season_id}`, { method: "GET", version: 2 }) as IGuildAPISeasonResponse;
+    return this.request(`contest/season/${season_id}`, { method: "GET", version: 2 }) as Promise<IGuildAPISeasonResponse>;
   }
   // #endregion Season API
 
@@ -107,11 +110,11 @@ export class GuildsAPI {
   }
 
   public async getSeasonRatingForMyClub(season_id: number): Promise<IGuildAPIClubSeasonRatingResponse> {
-    return await this.request(`contest/season/${season_id}/clubs/current`, { method: "GET", version: 1 }) as IGuildAPIClubSeasonRatingResponse;
+    return this.request(`contest/season/${season_id}/clubs/current`, { method: "GET", version: 1 }) as Promise<IGuildAPIClubSeasonRatingResponse>;
   }
 
   public async getStageRatingForMyClub(stage_id: number, season_id: number): Promise<IGuildAPIClubStageRatingResponse> {
-    return await this.request(`contest/season/${season_id}/stages/${stage_id}/clubs/me`, { method: "GET", version: 1 }) as IGuildAPIClubStageRatingResponse;
+    return this.request(`contest/season/${season_id}/stages/${stage_id}/clubs/me`, { method: "GET", version: 1 }) as Promise<IGuildAPIClubStageRatingResponse>;
   }
 
   public async getStageRatingForClub(club_id: number, stage_id: number, season_id: number, options?: IGuildAPIPagedRequest): Promise<IGuildAPIClubStageRatingResponse | undefined> {
@@ -147,7 +150,8 @@ export class GuildsAPI {
 
   // #region General
   public async request(path: string, options: IGuildAPIRequestOptions = { method: "GET" }, retry = GuildsAPI.RETRY_COUNT): Promise<unknown> {
-    const opts: IGuildAPIRequestOptions = { method: "GET", version: 1, body: undefined, ...options };
+
+    const opts: IGuildAPIRequestOptions = { version: 1, body: undefined, ...options };
     const response = await this._sendRequest(path, opts, retry);
     const retryIndex = GuildsAPI.RETRY_COUNT - retry;
 
@@ -169,6 +173,7 @@ export class GuildsAPI {
   }
 
   private async _sendRequest(path: string, options: IGuildAPIRequestOptions = { method: "GET" }, retry = GuildsAPI.RETRY_COUNT): Promise<Response> {
+
     const apiVersion = options.version === 2 ? "api-v2" : "api";
     const body = isExists(options.body) ? JSON.stringify(options.body) : undefined;
 
@@ -177,7 +182,7 @@ export class GuildsAPI {
       body,
       headers: {
         "Accept": "application/json",
-        "Authorization": `JWT ${this._token ?? ""}`,
+        "Authorization": `JWT ${this.#token ?? ""}`,
         "Content-Type": "application/json",
         "User-Agent": `League Guilds Client v${VERSION} (https://github.com/Antosik/lol-guilds-client)`
       }

@@ -10,24 +10,25 @@ import { wait } from "@guilds-shared/helpers/functions";
 import { isExists, isNotExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
 
 
-export class LCUAPISocket extends EventEmitter {
+export class LCUAPISocket extends EventEmitter implements IDestroyable {
+
   private static SESSION_PING_RETRY = 3;
   private static SESSION_PING_INTERVAL = 1000;
   private static RECONNECT_INTERVAL = 3000;
-  private _reconnectTimer?: NodeJS.Timer;
 
-  private _isInited: boolean;
-  private _credentials?: Credentials;
-  private _socket?: LeagueWebSocket;
+  #reconnectTimer?: NodeJS.Timer;
+  #isInited: boolean;
+  #credentials?: Credentials;
+  #socket?: LeagueWebSocket;
 
   public get isConnected(): boolean {
-    return isExists(this._socket) && this._socket.readyState === this._socket.OPEN;
+    return isExists(this.#socket) && this.#socket.readyState === this.#socket.OPEN;
   }
 
   constructor() {
     super();
 
-    this._isInited = false;
+    this.#isInited = false;
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this.connect = this.connect.bind(this);
@@ -38,14 +39,19 @@ export class LCUAPISocket extends EventEmitter {
   }
 
   public setCredentials(credentials: Credentials): void {
-    this._credentials = credentials;
+    this.#credentials = credentials;
+  }
+
+  public destroy(): void {
+    this.disconnect();
   }
 
   // #region Socket
   public async connect(): Promise<boolean> {
+
     try {
-      this._credentials = await auth();
-      this._socket = await connect(this._credentials);
+      this.#credentials = await auth();
+      this.#socket = await connect(this.#credentials);
 
       await this._onConnect();
 
@@ -65,6 +71,7 @@ export class LCUAPISocket extends EventEmitter {
 
   // #region Listener handlers
   public _socketListener(json: string): void {
+
     if (isNotBlank(json)) {
       const payload = JSON.parse(json) as unknown[];
 
@@ -78,48 +85,50 @@ export class LCUAPISocket extends EventEmitter {
 
   // #region Connect handlers
   private _setSocketReconnectTimer(mode: "on" | "off"): void {
-    if (isExists(this._reconnectTimer) && mode === "off") {
-      clearInterval(this._reconnectTimer);
-      this._reconnectTimer = undefined;
-    } else if (isNotExists(this._reconnectTimer) && mode === "on") {
-      this._reconnectTimer = setInterval(this.connect, LCUAPISocket.RECONNECT_INTERVAL);
+
+    if (isExists(this.#reconnectTimer) && mode === "off") {
+      clearInterval(this.#reconnectTimer);
+      this.#reconnectTimer = undefined;
+    } else if (isNotExists(this.#reconnectTimer) && mode === "on") {
+      this.#reconnectTimer = setInterval(this.connect, LCUAPISocket.RECONNECT_INTERVAL);
     }
   }
 
   private async _onConnect(): Promise<void> {
+
     this._setSocketReconnectTimer("off");
 
-    if (this.isConnected && this._isInited) return;
+    if (this.isConnected && this.#isInited) return;
 
-    if (isExists(this._socket)) {
-      this._socket.unsubscribe("/process-control/v1/process");
-      this._socket.subscribe<ILCUAPIProcessControlResponse>("/process-control/v1/process", this._onProcessStateChange);
+    if (isExists(this.#socket)) {
+      this.#socket.unsubscribe("/process-control/v1/process");
+      this.#socket.subscribe<ILCUAPIProcessControlResponse>("/process-control/v1/process", this._onProcessStateChange);
 
-      this._socket.unsubscribe("/lol-chat/v1/session");
-      this._socket.subscribe<ILCUAPISessionResponse>("/lol-chat/v1/session", this._onSessionStateChange);
+      this.#socket.unsubscribe("/lol-chat/v1/session");
+      this.#socket.subscribe<ILCUAPISessionResponse>("/lol-chat/v1/session", this._onSessionStateChange);
     } else {
       return this.disconnect();
     }
 
-    this._socket.addListener("message", this._socketListener);
+    this.#socket.addListener("message", this._socketListener);
 
     return this._pingSessionState();
   }
 
   private _onDisconnect() {
+
     this._setSocketReconnectTimer("on");
 
-    if (!this.isConnected && this._isInited) return;
-    this._isInited = false;
+    if (!this.isConnected && this.#isInited) return;
+    this.#isInited = false;
 
-    if (isExists(this._socket)) {
-      this._socket.removeAllListeners();
-      this._socket.close();
+    if (isExists(this.#socket)) {
+      this.#socket.removeAllListeners();
+      this.#socket.close();
     }
 
-    this._credentials = undefined;
-    this._socket = undefined;
-    this._credentials = undefined;
+    this.#credentials = undefined;
+    this.#socket = undefined;
     authStore.clear();
 
     this.emit("lcu:disconnected");
@@ -129,14 +138,15 @@ export class LCUAPISocket extends EventEmitter {
 
   // #region Utils
   private async _pingSessionState(retry = LCUAPISocket.SESSION_PING_RETRY): Promise<void> {
+
     return request({
       url: "/lol-chat/v1/session",
       method: "GET"
-    }, this._credentials)
+    }, this.#credentials)
       .then(res => res.json())
       .then((data: ILCUAPISessionResponse) => {
         if (data.sessionState === "connected" || data.sessionState === "loaded") {
-          this._isInited = true;
+          this.#isInited = true;
           this.emit("lcu:connected");
         } else {
           throw new Error();
@@ -162,8 +172,9 @@ export class LCUAPISocket extends EventEmitter {
   }
 
   private _onSessionStateChange(data: ILCUAPISessionResponse | null) {
+
     if (data?.sessionState === "loaded") {
-      this._isInited = true;
+      this.#isInited = true;
       this.emit("lcu:connect");
     } else if (data?.sessionState === "disconnected") {
       return this.disconnect();

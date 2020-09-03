@@ -12,17 +12,20 @@ import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class LCUAPI {
+
   private static RETRY_INTERVAL = 750;
   private static RETRY_COUNT = 3;
 
-  private _credentials?: Credentials;
+  #credentials?: Credentials;
 
   public setCredentials(credentials: Credentials): void {
-    this._credentials = credentials;
+    this.#credentials = credentials;
   }
+
 
   // #region /lol-summoner/ calls
   public async getCurrentSummoner(): Promise<ILCUAPISummonerResponse> {
+
     const summonerFromStore = authStore.get("summoner");
     if (isExists(summonerFromStore)) {
       return summonerFromStore;
@@ -35,6 +38,7 @@ export class LCUAPI {
   }
 
   public async getSummonerByName(name: string): Promise<ILCUAPISummonerCoreResponse | string> {
+
     const summonersFromStore = lcuStore.get("summoners");
     const summonerFromStore = summonersFromStore?.find(({ displayName }) => displayName.toLowerCase() === name.toLowerCase());
     if (isExists(summonerFromStore)) {
@@ -57,6 +61,7 @@ export class LCUAPI {
 
   // #region /lol-rso-auth/ calls
   public async getIdToken(): Promise<string> {
+
     const tokenFromStore = authStore.get("token");
     if (isExists(tokenFromStore) && tokenFromStore.expiry * 1000 > Date.now()) {
       return tokenFromStore.token;
@@ -72,7 +77,7 @@ export class LCUAPI {
 
   // #region /lol-gameflow/ calls
   public async getStatus(): Promise<EGameflowStatus> {
-    return await this.request("/lol-gameflow/v1/gameflow-phase") as EGameflowStatus;
+    return this.request("/lol-gameflow/v1/gameflow-phase") as Promise<EGameflowStatus>;
   }
   // #endregion /lol-gameflow/ calls
 
@@ -87,10 +92,11 @@ export class LCUAPI {
   }
 
   public async getSendedFriendRequests(): Promise<ILCUAPIFriendRequest[]> {
-    return await this.request("/lol-chat/v1/friend-requests") as ILCUAPIFriendRequest[];
+    return this.request("/lol-chat/v1/friend-requests") as Promise<ILCUAPIFriendRequest[]>;
   }
 
   public async sendFriendRequest(summoner: ILCUAPISummonerCoreResponse): Promise<void> {
+
     const sendedRequests = await this.getSendedFriendRequests();
     const alreadySended = sendedRequests.find(sendedRequest => sendedRequest.summonerId === summoner.summonerId);
     if (isExists(alreadySended)) {
@@ -121,7 +127,7 @@ export class LCUAPI {
     const requestData = {
       id: `${summoner.puuid}@ru1.pvp.net`
     };
-    return await this.request("/lol-chat/v1/conversations/active", {
+    return this.request("/lol-chat/v1/conversations/active", {
       body: requestData,
       method: "PUT"
     });
@@ -129,7 +135,7 @@ export class LCUAPI {
 
   public async createChatWithSummoner(summoner: ILCUAPISummonerCoreResponse): Promise<unknown> {
 
-    return await this.request("/lol-chat/v1/conversations", {
+    return this.request("/lol-chat/v1/conversations", {
       method: "POST",
       body: {
         type: "chat",
@@ -143,7 +149,7 @@ export class LCUAPI {
 
   // #region /lol-lobby/ calls
   public async createLobby(type: ELCUAPIQueueId = 400): Promise<boolean> {
-    return await this.request("/lol-lobby/v2/lobby", {
+    return this.request("/lol-lobby/v2/lobby", {
       body: { queueId: type },
       method: "POST"
     })
@@ -158,7 +164,7 @@ export class LCUAPI {
       toSummonerId: summoner.summonerId
     }) as { state: ELCUAPIInvitationState, toSummonerId: number });
 
-    return await this.request("/lol-lobby/v2/lobby/invitations", {
+    return this.request("/lol-lobby/v2/lobby/invitations", {
       body: invitations,
       method: "POST"
     })
@@ -167,7 +173,7 @@ export class LCUAPI {
   }
 
   public async getReceivedInvitations(): Promise<ILCUAPILobbyReceivedInvitationsResponse[]> {
-    return await this.request("/lol-lobby/v2/received-invitations") as ILCUAPILobbyReceivedInvitationsResponse[];
+    return this.request("/lol-lobby/v2/received-invitations") as Promise<ILCUAPILobbyReceivedInvitationsResponse[]>;
   }
 
   public async acceptReceivedInvitation(invitation_id: string): Promise<void> {
@@ -188,11 +194,12 @@ export class LCUAPI {
 
   // #region General
   public async request(path: string, options: ILCUAPIRequestOptions = { method: "GET" }, retry = LCUAPI.RETRY_COUNT): Promise<unknown> {
-    if (isNotExists(this._credentials)) {
-      this._credentials = await this._getCredentials();
+
+    if (isNotExists(this.#credentials)) {
+      this.#credentials = await this._getCredentials();
     }
 
-    const opts: ILCUAPIRequestOptions = { method: "GET", body: undefined, ...options };
+    const opts: ILCUAPIRequestOptions = { body: undefined, ...options };
     const response = await this._sendRequest(path, options, retry);
     const retryIndex = LCUAPI.RETRY_COUNT - retry;
 
@@ -214,12 +221,14 @@ export class LCUAPI {
   }
 
   private async _sendRequest(path: string, options: ILCUAPIRequestOptions = { method: "GET" }, retry = LCUAPI.RETRY_COUNT): Promise<Response> {
+
     return request({
       url: path,
       method: options.method,
       body: options.body
     })
       .catch(error => {
+
         const retryIndex = LCUAPI.RETRY_COUNT - retry;
         logError(`"[LCUAPI] (${retryIndex}/${LCUAPI.RETRY_COUNT}): "${options.method} ${path}" "${(options.body && JSON.stringify(options.body)) ?? ""}" --- `, error);
 
@@ -233,6 +242,7 @@ export class LCUAPI {
   }
 
   private _getCredentials(retry = LCUAPI.RETRY_COUNT): Promise<Credentials | undefined> {
+
     return auth()
       .catch(error => {
         const retryIndex = LCUAPI.RETRY_COUNT - retry;

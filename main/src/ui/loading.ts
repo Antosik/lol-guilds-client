@@ -9,21 +9,17 @@ export class BrowserWindow extends Window {
 
   constructor(options: BrowserWindowConstructorOptions = {}) {
 
-    const htmlPath = isDev ? resolvePath("target", "index.html") : joinPath(process.resourcesPath, "index.html");
-    const preloadPath = isDev ? resolvePath("target/renderer", "preload.js") : joinPath(process.resourcesPath, "renderer", "preload.js");
+    const htmlPath = isDev ? resolvePath("target", "loading.html") : joinPath(process.resourcesPath, "loading.html");
 
     const settings: BrowserWindowConstructorOptions = {
-      title: "League Guilds Client",
-      width: 800,
-      height: 600,
-      minWidth: 350,
-      minHeight: 400,
+      title: "League Guilds Client - Loading...",
+      width: 300,
+      height: 400,
       show: false,
       frame: false,
-      webPreferences: {
-        nodeIntegration: true,
-        preload: preloadPath
-      },
+      resizable: false,
+      movable: true,
+      fullscreenable: false,
       ...options
     };
     super(settings);

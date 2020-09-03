@@ -11,13 +11,14 @@ import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class ClientRPC extends EventEmitter {
-  private _id: string = flowId;
+
+  #id: string = flowId;
 
   constructor() {
     super();
 
     this.handleFlow = this.handleFlow.bind(this);   // eslint-disable-line @typescript-eslint/no-unsafe-assignment
-    ipcRenderer.on(this._id, this.handleFlow);
+    ipcRenderer.on(this.#id, this.handleFlow);
 
     this.emit("ready");
   }
@@ -25,11 +26,12 @@ export class ClientRPC extends EventEmitter {
 
   // #region Main
   public send(event: string, data: unknown = undefined): void {
-    ipcRenderer.send(this._id, { event, data });
+    ipcRenderer.send(this.#id, { event, data });
   }
 
   public async invoke<T = unknown>(event: RPCHandlerEventType, ...data: unknown[]): Promise<T | undefined> {
-    const response = await ipcRenderer.invoke(this._id, { event, data }) as Result<T>;
+
+    const response = await ipcRenderer.invoke(this.#id, { event, data }) as Result<T>;
 
     if (isExists(response?.notification)) {
       appStore.addNotification(response.notification);
@@ -48,7 +50,7 @@ export class ClientRPC extends EventEmitter {
 
   public destroy(): void {
     this.removeAllListeners();
-    ipcRenderer.removeListener(this._id, this.handleFlow);
+    ipcRenderer.removeListener(this.#id, this.handleFlow);
   }
   // #endregion
 

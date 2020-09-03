@@ -100,7 +100,7 @@
   };
 
   onMount(() => {
-    rpc.invoke('lcu:connect');
+    rpc.send('lcu:connect');
 
     rpc.on('lcu:connected', onConnect);
     rpc.on('lcu:disconnected', onDisconnect);

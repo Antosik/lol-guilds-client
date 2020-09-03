@@ -8,53 +8,40 @@ import { MultiService } from "@guilds-main/services/multi";
 import { isEmpty, isBlank, isExists } from "@guilds-shared/helpers/typeguards";
 
 
-export class MultiController {
+export class MultiController implements IController, IDestroyable {
 
-  private _rpc: MainRPC;
-  private _guildsService: GuildsService;
-  private _lcuService: LCUService;
+  #rpc: MainRPC;
+  #guildsService: GuildsService;
+  #lcuService: LCUService;
 
   constructor(
     rpc: MainRPC,
     guildsService: GuildsService,
     lcuService: LCUService
   ) {
-    this._rpc = rpc;
-    this._guildsService = guildsService;
-    this._lcuService = lcuService;
+    this.#rpc = rpc;
+    this.#guildsService = guildsService;
+    this.#lcuService = lcuService;
 
-    // Event handlers binding
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-    this._onLCULobbyReceivedInvitation = this._onLCULobbyReceivedInvitation.bind(this);
-    this._handleGetMembers = this._handleGetMembers.bind(this);
-    this._handleSubscribeToMembersStatus = this._handleSubscribeToMembersStatus.bind(this);
-    this._handleInvitesList = this._handleInvitesList.bind(this);
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+    this._bindMethods();
+    this._addEventHandlers();
   }
 
-  public handleEvents(): this {
-    return this
-      ._handleLCUApiEvents()
-      ._handleRPCEvents();
+  public destroy(): void {
+    this._removeEventHandlers();
   }
 
 
   // #region LCU Events Handling (Inner)
-  private _handleLCUApiEvents(): this {
-    this._lcuService.addListener("lcu:lol-lobby.v2.received-invitations", this._onLCULobbyReceivedInvitation);
-
-    return this;
-  }
-
   private async _onLCULobbyReceivedInvitation(invites: ILCUAPILobbyReceivedInvitationsResponse[]) {
 
     if (isEmpty(invites)) {
-      this._rpc.send("lcu:invitations", Result.create([], "success"));
+      this.#rpc.send("lcu:invitations", Result.create([], "success"));
       return;
     }
 
-    const club = await this._guildsService.getCurrentClub();
-    const members = await this._guildsService.getGuildMembers(club.id);
+    const club = await this.#guildsService.getCurrentClub();
+    const members = await this.#guildsService.getGuildMembers(club.id);
     const membersName = members.map(member => member.summoner.summoner_name);
 
     const invitesFromMembers = invites
@@ -66,44 +53,91 @@ export class MultiController {
       )
       .map<IInternalReceivedInvitation>(invite => ({ fromSummonerName: invite.fromSummonerName, invitationId: invite.invitationId, fromGuild: true }));
 
-    this._rpc.send("lcu:invitations", Result.create(invitesFromMembers, "success"));
+    this.#rpc.send("lcu:invitations", Result.create(invitesFromMembers, "success"));
   }
   // #endregion RPC Events Handling (Outer)
 
 
   // #region RPC Events Handling (Outer)
-  private _handleRPCEvents(): this {
-    this._rpc.setHandler("guilds:members", this._handleGetMembers);
-    this._rpc.setHandler("guilds:member-status:subscribe", this._handleSubscribeToMembersStatus);
-    this._rpc.setHandler("guilds:invites:list", this._handleInvitesList);
-
-    return this;
-  }
-
   private async _handleGetMembers(club_id: number) {
-    return Result.resolve(MultiService.getGuildMembersWithBanned(club_id, this._guildsService, this._lcuService));
+    return Result.resolve(MultiService.getGuildMembersWithBanned(club_id, this.#guildsService, this.#lcuService));
   }
 
   private async _handleSubscribeToMembersStatus(club_id: number) {
 
-    const members = await MultiService.getGuildMembersWithStatus(club_id, this._guildsService, this._lcuService);
+    const members = await MultiService.getGuildMembersWithStatus(club_id, this.#guildsService, this.#lcuService);
 
     for (const member of members) {
       if (isBlank(member.puuid)) continue;
 
-      this._lcuService
-        .removeListener(`lcu:lol-chat.v1.friends.${member.puuid}`)
+      this.#lcuService
+        .removeAllListeners(`lcu:lol-chat.v1.friends.${member.puuid}`)
         .addListener(`lcu:lol-chat.v1.friends.${member.puuid}`, (data: ILCUAPIFriendCoreResponse) => {
           if (isExists(data)) {
             const update: IInternalGuildMember = { ...member, status: data.availability, game: data.productName.trim() };
-            this._rpc.send("guilds:member-status:update", update);
+            this.#rpc.send("guilds:member-status:update", update);
           }
         });
     }
   }
 
   private _handleInvitesList(club_id: number, options: IGuildAPIPagedRequest) {
-    return Result.resolve(MultiService.getInvitesWithFriendStatus(club_id, options, this._guildsService, this._lcuService));
+    return Result.resolve(MultiService.getInvitesWithFriendStatus(club_id, options, this.#guildsService, this.#lcuService));
   }
   // #endregion RPC Events Handling (Outer)
+
+
+  // #region Utility
+  _addEventHandlers(): this {
+    return this
+      ._addLCUApiEventHandlers()
+      ._addRPCEventHandlers();
+  }
+
+  private _addLCUApiEventHandlers(): this {
+    this.#lcuService.addListener("lcu:lol-lobby.v2.received-invitations", this._onLCULobbyReceivedInvitation);
+    return this;
+  }
+
+  private _addRPCEventHandlers(): this {
+
+    this.#rpc
+      .setHandler("guilds:members", this._handleGetMembers)
+      .setHandler("guilds:member-status:subscribe", this._handleSubscribeToMembersStatus)
+      .setHandler("guilds:invites:list", this._handleInvitesList);
+
+    return this;
+  }
+
+  _removeEventHandlers(): this {
+    return this
+      ._removeLCUApiEventHandlers()
+      ._removeRPCEventHandlers();
+  }
+
+  private _removeLCUApiEventHandlers(): this {
+    this.#lcuService.removeListener("lcu:lol-lobby.v2.received-invitations", this._onLCULobbyReceivedInvitation);
+    return this;
+  }
+
+  private _removeRPCEventHandlers(): this {
+
+    this.#rpc
+      .removeHandler("guilds:members")
+      .removeHandler("guilds:member-status:subscribe")
+      .removeHandler("guilds:invites:list");
+
+    return this;
+  }
+
+  private _bindMethods() {
+
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    this._onLCULobbyReceivedInvitation = this._onLCULobbyReceivedInvitation.bind(this);
+    this._handleGetMembers = this._handleGetMembers.bind(this);
+    this._handleSubscribeToMembersStatus = this._handleSubscribeToMembersStatus.bind(this);
+    this._handleInvitesList = this._handleInvitesList.bind(this);
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+  }
+  // #endregion Utility
 }

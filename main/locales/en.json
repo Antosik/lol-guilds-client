@@ -68,16 +68,16 @@
     "add-to-see-status": "To see the status of a player, add him to your friends"
   },
   "loading": {
-    "into-system": "Connecting to the guild system...",
-    "another-page": "Loading another page...",
-    "invites": "Loading the list of applicants...",
-    "members": "Loading the list of the guild members...",
-    "guild": "Loading information about the guild...",
-    "rating": "Loading the rating...",
-    "seasons": "Loading the list of seasons...",
-    "season": "Receiving data about the season...",
-    "games": "Loading the list of games...",
-    "summoner": "Loading information about the summoner..."
+    "into-system": "Connecting to the guild system",
+    "another-page": "Loading another page",
+    "invites": "Loading the list of applicants",
+    "members": "Loading the list of the guild members",
+    "guild": "Loading information about the guild",
+    "rating": "Loading the rating",
+    "seasons": "Loading the list of seasons",
+    "season": "Receiving data about the season",
+    "games": "Loading the list of games",
+    "summoner": "Loading information about the summoner"
   },
   "not-found": {
     "invites": "No applications",

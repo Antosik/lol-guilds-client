@@ -112,7 +112,9 @@
 <div class="my-guild-rating">
   {#await myRatingLoadingPromise}
     <h3>{$_('main.guild')}</h3>
-    <Loading>{$_('loading.guild')}</Loading>
+    <Loading>
+      <span class="with-loading-ellipsis">{$_('loading.guild')}</span>
+    </Loading>
   {:then guild}
     {#if isExists(guild)}
       <GuildStats {guild} />
@@ -130,11 +132,17 @@
 
     {#if !finished && ((!stage_id && guilds.length < SEASON_CLUBS_COUNT) || (stage_id && guilds.length < STAGE_CLUBS_COUNT))}
       <IntersectionObs on:intersect={() => currentPage++}>
-        <Loading>{$_('loading.another-page')}</Loading>
+        <Loading>
+          <span class="with-loading-ellipsis">
+            {$_('loading.another-page')}
+          </span>
+        </Loading>
       </IntersectionObs>
     {/if}
   {:else if initialRatingLoading}
-    <Loading>{$_('loading.rating')}</Loading>
+    <Loading>
+      <span class="with-loading-ellipsis">{$_('loading.rating')}</span>
+    </Loading>
   {:else}
     <p>{$_('not-found.data')}</p>
   {/if}

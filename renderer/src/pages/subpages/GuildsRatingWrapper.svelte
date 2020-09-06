@@ -40,7 +40,9 @@
 <div class="page rating-page">
 
   {#await seasonsLoadingPromise}
-    <Loading>{$_('loading.seasons')}</Loading>
+    <Loading>
+      <span class="with-loading-ellipsis">{$_('loading.seasons')}</span>
+    </Loading>
   {:then seasons}
 
     {#if isExists(season_id)}
@@ -49,7 +51,9 @@
         selectedSeason={season_id}
         selectedStage={stage_id} />
     {:else}
-      <Loading>{$_('loading.rating')}</Loading>
+      <Loading>
+        <span class="with-loading-ellipsis">{$_('loading.rating')}</span>
+      </Loading>
     {/if}
 
     <Router

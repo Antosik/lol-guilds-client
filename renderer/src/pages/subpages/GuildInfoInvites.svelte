@@ -100,11 +100,17 @@
 
     {#if !finished}
       <IntersectionObs on:intersect={() => currentPage++}>
-        <Loading>{$_('loading.another-page')}</Loading>
+        <Loading>
+          <span class="with-loading-ellipses">
+            {$_('loading.another-page')}
+          </span>
+        </Loading>
       </IntersectionObs>
     {/if}
   {:else if initialInvitesLoading}
-    <Loading>{$_('loading.invites')}</Loading>
+    <Loading>
+      <span class="with-loading-ellipses">{$_('loading.invites')}</span>
+    </Loading>
   {:else}
     <p>{$_('notfound.invites')}</p>
   {/if}

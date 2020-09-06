@@ -190,7 +190,9 @@
 </style>
 
 {#await seasonLoadingPromise}
-  <Loading>{$_('loading.season')}</Loading>
+  <Loading>
+    <span class="with-loading-ellipsis">{$_('loading.season')}</span>
+  </Loading>
 {:then season}
 
   {#if isExists(season)}
@@ -198,7 +200,9 @@
       <h3>{$_('main.rating-position')}</h3>
 
       {#await guildRatingLoadingPromise}
-        <Loading>{$_('loading.rating')}</Loading>
+        <Loading>
+          <span class="with-loading-ellipsis">{$_('loading.rating')}</span>
+        </Loading>
       {:then guild}
 
         {#if isExists(guild)}
@@ -233,7 +237,9 @@
       <h3>{$_('main.guild-members-rating')}</h3>
 
       {#await topMembersLoadingPromise}
-        <Loading>{$_('loading.members')}</Loading>
+        <Loading>
+          <span class="with-loading-ellipsis">{$_('loading.members')}</span>
+        </Loading>
       {:then topMembers}
         {#if isNotEmpty(topMembers)}
           <p>
@@ -266,7 +272,9 @@
           {/each}
         </ul>
       {:else if initialGamesLoading}
-        <Loading>{$_('loading.games')}</Loading>
+        <Loading>
+          <span class="with-loading-ellipsis">{$_('loading.games')}</span>
+        </Loading>
       {:else}
         <p>{$_('not-found.data')}</p>
       {/if}

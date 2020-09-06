@@ -10,8 +10,18 @@
   --main-medium: hsl(42, 40%, 80%); /* #E0D4B8 */
   --main-dark: hsl(42, 16%, 44%); /* #C2AA70 */
   --main-background: hsl(60, 5%, 8%); /* #161614 */
-  --main-background-transparent: hsla(218, 80%, 2%, 0.65); /* rgba(1, 4, 9, 0.65) */
-  --main-background-transparent-dark: hsla(218, 80%, 2%, 0.85); /* rgba(1, 4, 9, 0.85) */
+  --main-background-transparent: hsla(
+    218,
+    80%,
+    2%,
+    0.65
+  ); /* rgba(1, 4, 9, 0.65) */
+  --main-background-transparent-dark: hsla(
+    218,
+    80%,
+    2%,
+    0.85
+  ); /* rgba(1, 4, 9, 0.85) */
   --game-win: var(--status-active-normal);
   --game-lose: var(--status-away);
   --grid-gap: 20px;
@@ -296,4 +306,22 @@ a[href*="vk.com"]:before {
 .md-description ul {
   margin-left: 20px;
   list-style: initial;
+}
+
+.with-loading-ellipsis {
+  position: relative;
+}
+.with-loading-ellipsis:after {
+  position: absolute;
+  margin-left: 0.1rem;
+  content: " ...";
+  display: inline-block;
+  animation: loading-ellipsis steps(4) 2s infinite;
+  clip: rect(auto, 0, auto, auto);
+}
+
+@keyframes loading-ellipsis {
+  to {
+    clip: rect(auto, 1em, auto, auto);
+  }
 }

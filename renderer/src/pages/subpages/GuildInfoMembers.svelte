@@ -15,7 +15,9 @@
 
 <div class="guild-info__members">
   {#await membersLoadingPromise}
-    <Loading>{$_('loading.members')}</Loading>
+    <Loading>
+      <span class="with-loading-ellipsis">{$_('loading.members')}</span>
+    </Loading>
   {:then}
     <MemberList members={$guildStore.members} />
   {:catch}

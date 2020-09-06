@@ -17,7 +17,9 @@
 </script>
 
 <div class="absolute-full flex-center summoner-loading">
-  <h1 class="summoner-loading__heading">{$_('loading.summoner')}</h1>
+  <h1 class="summoner-loading__heading">
+    <span class="with-loading-ellipsis">{$_('loading.summoner')}</span>
+  </h1>
   {#if connectTimeout}
     <button
       class="flex-center summoner-loading__button"

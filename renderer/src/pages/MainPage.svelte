@@ -71,7 +71,9 @@
 
     <main class="subpages">
       {#if guild === undefined}
-        <Loading>{$_('loading.into-system')}</Loading>
+        <Loading>
+          <span class="with-loading-ellipsis">{$_('loading.into-system')}</span>
+        </Loading>
       {:else if guild === null}
         <div class="guilds_not-participating flex-center">
           <h2>{$_('guilds-program.not-participating')}</h2>

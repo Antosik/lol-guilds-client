@@ -104,7 +104,9 @@
     <h2>{$_('main.guild-members')}</h2>
 
     {#await membersLoadingPromise}
-      <Loading>{$_('loading.members')}</Loading>
+      <Loading>
+        <span class="with-loading-ellipsis">{$_('loading.members')}</span>
+      </Loading>
     {:then}
       <div class="guild-members__invite-all">
         <button

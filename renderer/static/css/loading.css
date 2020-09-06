@@ -27,15 +27,6 @@
   font-size: 18px;
 }
 
-.loading__text:after {
-  position: absolute;
-  margin-left: 0.1rem;
-  content: " ...";
-  display: inline-block;
-  animation: loading steps(4) 2s infinite;
-  clip: rect(auto, 0, auto, auto);
-}
-
 @keyframes logoRotation {
   0% {
     transform: rotateY(0deg);
@@ -47,11 +38,5 @@
 
   100% {
     transform: rotateY(0deg);
-  }
-}
-
-@keyframes loading {
-  to {
-    clip: rect(auto, 18px, auto, auto);
   }
 }

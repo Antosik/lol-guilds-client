@@ -240,7 +240,7 @@ button:disabled img {
 }
 
 .horizontal-scroll {
-  width: calc(100vw - 20px * 2);
+  width: calc(100vw - 24px * 2);
 }
 .horizontal-scroll__scrollable {
   padding-bottom: 10px;
@@ -296,4 +296,22 @@ a[href*="vk.com"]:before {
 .md-description ul {
   margin-left: 20px;
   list-style: initial;
+}
+
+.with-loading-ellipsis {
+  position: relative;
+}
+.with-loading-ellipsis:after {
+  position: absolute;
+  margin-left: 0.1rem;
+  content: " ...";
+  display: inline-block;
+  animation: loading-ellipsis steps(4) 2s infinite;
+  clip: rect(auto, 0, auto, auto);
+}
+
+@keyframes loading-ellipsis {
+  to {
+    clip: rect(auto, 1em, auto, auto);
+  }
 }

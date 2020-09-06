@@ -1,6 +1,8 @@
-<script lang="typescript">
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+<script context="module" lang="typescript">
+  import { createEventDispatcher, onMount, onDestroy } from "svelte";
+</script>
 
+<script lang="typescript">
   export let options: IntersectionObserverInit = {};
 
   let div: HTMLElement | null = null;
@@ -11,7 +13,7 @@
   onMount(() => {
     observer = new IntersectionObserver(([entry]) => {
       if (entry && entry.isIntersecting) {
-        dispatch('intersect');
+        dispatch("intersect");
       }
     }, options);
 

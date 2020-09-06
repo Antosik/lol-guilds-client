@@ -21,7 +21,7 @@ function createAppStore() {
         id: randomId(),
         text
       };
-      setTimeout(() => removeNotification(notification.id), 5000);
+      setTimeout(() => removeNotification(notification.id), 4000);
       return ({ ...state, notifications: [...state.notifications, notification] });
     });
   };
@@ -51,8 +51,8 @@ function createAppStore() {
     update(state => ({ ...state, currentPage: url }));
   };
 
-  const setCurrentPageLoaded = (e: Event) => {
-    const { detail: { location } } = e as CustomEvent<{ location: string }>;
+  const setCurrentPageLoaded = (e: CustomEvent<{ location: string }>) => {
+    const { detail: { location } } = e;
     window.localStorage.setItem("currentPage", location);
     update(state => ({ ...state, currentPage: location }));
   };

@@ -77,11 +77,13 @@ type GuildsEventGamesType = "guilds:games:season" | "guilds:games:stage";
 type GuildsEventPathType = "guilds:path:season" | "guilds:path:stage";
 type GuildsEventInviteType = "guilds:invites:list" | "guilds:invites:accept" | "guilds:invites:decline";
 declare type GuildsEventType = "guilds:club" | "guilds:role" | GuildsEventSeasonsType | GuildsEventMembersType | GuildsEventRatingType | GuildsEventStatsType | GuildsEventGamesType | GuildsEventPathType | GuildsEventInviteType;
-declare type LCUEventType = "lcu:connect" | "lcu:lobby-invite" | "lcu:lobby-invite-all" | "lcu:friend-request" | "lcu:invitation:accept" | "lcu:invitation:decline" | "lcu:open-chat";
+declare type LCUEventType = "lcu:connect" | "lcu:disconnect" | "lcu:lobby-invite" | "lcu:lobby-invite-all" | "lcu:friend-request" | "lcu:invitation:accept" | "lcu:invitation:decline" | "lcu:open-chat";
 declare type VersionEventType = "version:get" | "version:check" | "version:install";
-declare type AppEventType = "app:window:isMaximized" | "app:window:minimize" | "app:window:maximize" | "app:window:unmaximize" | "app:window:close";
+type AppWindowEventType = "app:window:isMaximized" | "app:window:minimize" | "app:window:maximize" | "app:window:unmaximize" | "app:window:close";
+type AppI18NWindowType = "app:i18n:set-locale" | "app:i18n:locale" | "app:i18n:load";
+declare type AppEventType = AppWindowEventType | AppI18NWindowType;
 declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType | AppEventType;
 
 declare type IKeyValue = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-declare type NotExisting = undefined | null;
+declare type NotExisting = void | undefined | null;
 declare type TAnyFunc = (...args: any[]) => any;

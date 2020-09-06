@@ -2,6 +2,7 @@ import type { LCUAPI } from "@guilds-main/connectors/LCUAPI";
 import type { LCUAPISocket } from "@guilds-main/connectors/LCUAPI/socket";
 
 import { authStore } from "@guilds-main/store/auth";
+import { i18n } from "@guilds-main/utils/i18n";
 import { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import { isBlank, isNotBlank, isExists, isNotExists, isEmpty } from "@guilds-shared/helpers/typeguards";
 
@@ -69,7 +70,7 @@ export class LCUService implements IService {
 
   public async sendFriendRequestByNickname(nickname: string): Promise<{ status: boolean, notfound?: string }> {
 
-    if (isBlank(nickname)) { throw new Error("Incorrect nickname"); }
+    if (isBlank(nickname)) { throw new Error(i18n.t("social.friend-request.failure")); }
 
     try {
       const summoner = await this.#lcuApi.getSummonerByName(nickname);
@@ -94,13 +95,13 @@ export class LCUService implements IService {
 
     const currentGameflow = await this.#lcuApi.getStatus();
     if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) {
-      throw new Error("Не удалось создать лобби");
+      throw new Error(i18n.t("social.lobby.failure"));
     }
 
     if (currentGameflow !== EGameflowStatus.Lobby) {
       const lobbyStatus = await this.#lcuApi.createLobby();
       if (!lobbyStatus) {
-        throw new Error("Не удалось создать лобби");
+        throw new Error(i18n.t("social.lobby.failure"));
       }
     }
   }
@@ -138,7 +139,7 @@ export class LCUService implements IService {
 
     const inviteStatus = await this.#lcuApi.sendLobbyInvitation(found);
     if (!inviteStatus) {
-      throw new Error("Не удалось отправить запрос");
+      throw new Error(i18n.t("error.request"));
     }
 
     return { found, notfound };
@@ -146,7 +147,7 @@ export class LCUService implements IService {
 
   public async openFriendChat(nickname: string): Promise<unknown> {
 
-    if (isBlank(nickname)) { throw new Error("Incorrect nickname"); }
+    if (isBlank(nickname)) { throw new Error(i18n.t("social.open-chat.failure")); }
 
     const summoner = await this.#lcuApi.getSummonerByName(nickname.trim());
 
@@ -172,12 +173,12 @@ export class LCUService implements IService {
   }
 
   public async acceptReceivedInvitation(invitation_id: string): Promise<void> {
-    if (isNotExists(invitation_id)) { throw new Error("Incorrect invitation"); }
+    if (isNotExists(invitation_id)) { throw new Error(i18n.t("social.lobby-accept.failure")); }
     return this.#lcuApi.acceptReceivedInvitation(invitation_id);
   }
 
   public async declineReceivedInvitation(invitation_id: string): Promise<void> {
-    if (isNotExists(invitation_id)) { throw new Error("Incorrect invitation"); }
+    if (isNotExists(invitation_id)) { throw new Error(i18n.t("social.lobby-decline.failure")); }
     return this.#lcuApi.declineReceivedInvitation(invitation_id);
   }
   // #endregion Main

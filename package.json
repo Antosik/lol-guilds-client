@@ -31,6 +31,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.4",
     "@types/copy-webpack-plugin": "^6.0.0",
+    "@types/i18next-fs-backend": "^1.0.0",
     "@types/markdown-it": "^10.0.2",
     "@types/mini-css-extract-plugin": "^0.9.1",
     "@types/node": "^10.17.14",
@@ -83,10 +84,13 @@
     "electron-log": "^4.2.4",
     "electron-store": "^6.0.0",
     "electron-updater": "^4.3.4",
+    "i18next": "^19.7.0",
+    "i18next-fs-backend": "^1.0.7",
     "league-connect": "^2.0.1",
     "markdown-it": "^11.0.0",
     "markdown-it-for-inline": "^0.1.1",
     "node-fetch": "^2.6.0",
+    "svelte-i18n": "^3.0.4",
     "svelte-spa-router": "^2.2.0"
   }
 }

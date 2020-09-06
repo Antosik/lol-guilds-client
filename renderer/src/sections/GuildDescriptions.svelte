@@ -1,7 +1,10 @@
-<script lang="typescript">
-  import { isNotBlank } from '@guilds-shared/helpers/typeguards';
-  import { markdown } from '../utils/markdown';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { isNotBlank } from "@guilds-shared/helpers/typeguards";
+  import { markdown } from "../utils/markdown";
+</script>
 
+<script lang="typescript">
   export let guild: IGuildAPIClubResponse | null | undefined;
 
   let short_description: string | undefined;
@@ -25,7 +28,7 @@
       position: relative;
     }
     .guild-info__short_description + .guild-info__long_description:before {
-      content: '';
+      content: "";
       position: absolute;
       width: 1px;
       background: var(--main-medium);
@@ -42,7 +45,7 @@
 
     {#if isNotBlank(short_description)}
       <div class="guild-info__short_description">
-        <h3>Краткое описание</h3>
+        <h3>{$_('guild-info.short-description')}</h3>
         <div class="guild-info__description md-description">
           {@html markdown.render(short_description)}
         </div>
@@ -51,7 +54,7 @@
 
     {#if isNotBlank(long_description)}
       <div class="guild-info__long_description">
-        <h3>Описание</h3>
+        <h3>{$_('guild-info.long-description')}</h3>
         <div class="guild-info__description md-description">
           {@html markdown.render(long_description)}
         </div>

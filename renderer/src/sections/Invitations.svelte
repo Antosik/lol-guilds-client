@@ -1,13 +1,19 @@
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
+
+  import Invitation from "../components/Invitation.svelte";
+</script>
+
 <script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-
-  import Invitation from '../components/Invitation.svelte';
-
   export let invitations: INotification[] = [];
 
   const dispatch = createEventDispatcher();
-  const onAccept = (e: Event) => dispatch('invite-accept', (e as CustomEvent<string>).detail);
-  const onDecline = (e: Event) => dispatch('invite-decline', (e as CustomEvent<string>).detail);
+  const onAccept = (e: CustomEvent<string>) => {
+    dispatch("invite-accept", e.detail);
+  };
+  const onDecline = (e: CustomEvent<string>) => {
+    dispatch("invite-decline", e.detail);
+  };
 </script>
 
 <style>

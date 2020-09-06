@@ -1,13 +1,16 @@
-<script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-  import { fade } from 'svelte/transition';
-  import { cubicInOut } from 'svelte/easing';
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
+  import { cubicInOut } from "svelte/easing";
+  import { _ } from "svelte-i18n";
+</script>
 
-  export let id: string = '';
-  export let text: string = '';
+<script lang="typescript">
+  export let id: string = "";
+  export let text: string = "";
 
   const dispatch = createEventDispatcher();
-  const onClose = () => dispatch('close', id);
+  const onClose = () => dispatch("close", id);
 </script>
 
 <style>
@@ -45,7 +48,7 @@
     type="button"
     on:click={onClose}
     class="notification__close-button flex-center">
-    <img src="./images/icons/close.svg" alt="Закрыть уведомление" />
+    <img src="./images/icons/close.svg" alt={$_('utils.close-notification')} />
   </button>
   <p class="notification__text">{text}</p>
 </li>

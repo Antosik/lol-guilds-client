@@ -59,6 +59,10 @@ const config: Configuration = {
         {
           from: joinPath(__dirname, "static"),
           to: joinPath(__dirname, "..", "target")
+        },
+        {
+          from: joinPath(__dirname, "locales"),
+          to: joinPath(__dirname, "..", "target/locales")
         }
       ]
     }),

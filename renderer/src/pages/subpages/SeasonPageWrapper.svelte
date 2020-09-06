@@ -1,26 +1,29 @@
-<script lang="typescript">
-  import { onMount } from 'svelte';
-  import Router from 'svelte-spa-router';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
-  import { rpc } from '@guilds-web/data/rpc';
-  import { appStore } from '@guilds-web/store/app';
+<script context="module" lang="typescript">
+  import { onMount } from "svelte";
+  import { _ } from "svelte-i18n";
+  import Router from "svelte-spa-router";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+  import { rpc } from "@guilds-web/data/rpc";
+  import { appStore } from "@guilds-web/store/app";
   import {
     season_subprefix as subprefix,
     season_subroutes as subroutes,
-  } from '@guilds-web/routes/subroutes';
+  } from "@guilds-web/routes/subroutes";
 
-  import Loading from '@guilds-web/blocks/Loading.svelte';
-  import SeasonInfoNavigation from '@guilds-web/sections/SeasonInfoNavigation.svelte';
+  import Loading from "@guilds-web/blocks/Loading.svelte";
+  import SeasonInfoNavigation from "@guilds-web/sections/SeasonInfoNavigation.svelte";
+</script>
 
+<script lang="typescript">
   export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
   let season: IGuildAPISeasonResponse | undefined;
   const seasonLoadingPromise = rpc
-    .invoke<IGuildAPISeasonResponse>('guilds:season:live')
+    .invoke<IGuildAPISeasonResponse>("guilds:season:live")
     .then((liveSeason) =>
       isExists(liveSeason)
         ? liveSeason
-        : rpc.invoke<IGuildAPISeasonResponse>('guilds:season:prev'),
+        : rpc.invoke<IGuildAPISeasonResponse>("guilds:season:prev")
     );
 
   let stage_id: number | undefined;
@@ -40,7 +43,9 @@
 <div class="page rating-page">
 
   {#await seasonLoadingPromise}
-    <Loading>Загружаем список сезонов...</Loading>
+    <Loading>
+      <span class="with-loading-ellipsis">{$_('loading.seasons')}</span>
+    </Loading>
   {:then season}
     {#if isExists(season)}
       <SeasonInfoNavigation {season} {stage} />
@@ -50,10 +55,10 @@
         prefix={subprefix}
         on:routeLoaded={appStore.setCurrentPageLoaded} />
     {:else}
-      <p>Нет активного сезона!</p>
+      <p>{$_('not-found.active-season')}</p>
     {/if}
   {:catch error}
-    <p>Что-то пошло не так: {error.message}</p>
+    <p>{$_('error.something', { values: { message: error.message } })}</p>
   {/await}
 
 </div>

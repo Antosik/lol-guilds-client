@@ -69,7 +69,6 @@ export class VersionController implements IController, IDestroyable {
 
   private async _handleVersionCheck() {
     await this.#versionService.checkForUpdates();
-    return;
   }
 
   private _handleVersionInstall() {

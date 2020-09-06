@@ -1,21 +1,23 @@
-<script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-  import { ranks } from '@guilds-shared/helpers/gameflow';
-  import { isEmpty, isExists } from '@guilds-shared/helpers/typeguards';
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
+  import { _ } from "svelte-i18n";
+  import { isEmpty, isExists } from "@guilds-shared/helpers/typeguards";
+</script>
 
+<script lang="typescript">
   export let invites: IInternalInvite[] = [];
-  export let sortKey: string = '+id';
+  export let sortKey: string = "+id";
 
   const dispatch = createEventDispatcher();
-  const acceptInvite = (id: number) => dispatch('invite-accept', id);
-  const declineInvite = (id: number) => dispatch('invite-decline', id);
+  const acceptInvite = (id: number) => dispatch("invite-accept", id);
+  const declineInvite = (id: number) => dispatch("invite-decline", id);
   const changeSort = (key: string) => {
     const newSortKey =
-      sortKey.includes(key) && sortKey[0] === '+' ? `-${key}` : `+${key}`;
-    dispatch('sort-change', newSortKey);
+      sortKey.includes(key) && sortKey[0] === "+" ? `-${key}` : `+${key}`;
+    dispatch("sort-change", newSortKey);
   };
   const sendFriendRequest = (nickname: string) => {
-    dispatch('friend-request', nickname);
+    dispatch("friend-request", nickname);
   };
 </script>
 
@@ -36,16 +38,16 @@
     margin: 20px;
   }
   th.sort-asc:after {
-    content: ' (↑)';
+    content: " (↑)";
   }
   th.sort-desc:after {
-    content: ' (↓)';
+    content: " (↓)";
   }
   tr {
     position: relative;
   }
   tr:not(:first-child):after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     width: 100%;
@@ -78,9 +80,10 @@
 </style>
 
 {#if isEmpty(invites)}
-  <h4>Нет заявок</h4>
+  <h4>{$_('not-found.invites')}</h4>
 {:else}
   <table>
+
     <thead>
       <tr>
         <th
@@ -93,37 +96,38 @@
           class:sort-asc={sortKey === '+displayName'}
           class:sort-desc={sortKey === '-displayName'}
           on:click={() => changeSort('displayName')}>
-          Никнейм игрока
+          {$_('guild-invites.player-displayName')}
         </th>
         <th
           class:sort-asc={sortKey === '+level'}
           class:sort-desc={sortKey === '-level'}
           on:click={() => changeSort('level')}>
-          Уровень
+          {$_('guild-invites.player-level')}
         </th>
         <th
           class:sort-asc={sortKey === '+rank'}
           class:sort-desc={sortKey === '-rank'}
           on:click={() => changeSort('rank')}>
-          Ранг
+          {$_('guild-invites.player-rank')}
         </th>
         <th
           class:sort-asc={sortKey === '+points'}
           class:sort-desc={sortKey === '-points'}
           on:click={() => changeSort('points')}>
-          Очков за прошлый сезон
+          {$_('guild-invites.player-points')}
         </th>
         <td />
       </tr>
     </thead>
+
     <tbody>
       {#each invites as invite, i (invite.id)}
         <tr>
           <td>{i + 1}</td>
           <td>{invite.displayName}</td>
           <td>{invite.level}</td>
-          <td>{ranks[invite.rank]}</td>
-          <td>{invite.points}</td>
+          <td>{$_(`ranked.${invite.rank}`)}</td>
+          <td>{invite.points}pt</td>
           <td>
             <ul>
               <li>
@@ -133,7 +137,9 @@
                   type="button"
                   on:click={() => acceptInvite(invite.id)}
                   disabled={isExists(invite) && invite.status !== 0}>
-                  <img src="./images/icons/ok.svg" alt="Принять заявку" />
+                  <img
+                    src="./images/icons/ok.svg"
+                    alt={$_('guild-invites.accept-invite')} />
                 </button>
               </li>
               <li>
@@ -143,7 +149,9 @@
                   type="button"
                   on:click={() => declineInvite(invite.id)}
                   disabled={isExists(invite.status) && invite.status !== 0}>
-                  <img src="./images/icons/close.svg" alt="Отклонить заявку" />
+                  <img
+                    src="./images/icons/close.svg"
+                    alt={$_('guild-invites.decline-invite')} />
                 </button>
               </li>
               {#if !invite.isFriend}
@@ -154,7 +162,7 @@
                     on:click={() => sendFriendRequest(invite.displayName)}>
                     <img
                       src="./images/icons/user.svg"
-                      alt="Отправить заявку в друзья" />
+                      alt={$_('send.friend-request')} />
                   </button>
                 </li>
               {/if}
@@ -163,5 +171,6 @@
         </tr>
       {/each}
     </tbody>
+
   </table>
 {/if}

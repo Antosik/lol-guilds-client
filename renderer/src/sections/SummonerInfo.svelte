@@ -1,14 +1,17 @@
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { location } from "svelte-spa-router";
+  import { isExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
+  import { appStore } from "../store/app";
+
+  import SummonerStatus from "../components/SummonerStatus.svelte";
+</script>
+
 <script lang="typescript">
-  import { location } from 'svelte-spa-router';
-  import { isExists, isNotBlank } from '@guilds-shared/helpers/typeguards';
-  import { appStore } from '../store/app';
-
-  import SummonerStatus from '../components/SummonerStatus.svelte';
-
   export let summoner: ILCUAPISummonerResponse | NotExisting = undefined;
   export let guild: IGuildAPIClubResponse | NotExisting = undefined;
-  export let status: string = 'None';
-  export let style: string = 'normal';
+  export let status: string = "None";
+  export let style: string = "normal";
 
   const pageReload = () => {
     appStore.setCurrentPage($location);
@@ -66,18 +69,22 @@
 </style>
 
 <header class="summoner-info" class:light={style === 'light'}>
+
   <h1>
     {#if isExists(summoner)}{summoner.displayName}{:else}???{/if}
     {#if isExists(guild)}
       <span>[ {guild.club_name} ]</span>
     {/if}
   </h1>
+
   {#if isNotBlank(status)}
     <div class="summoner-info__status">
       <SummonerStatus statusCode={status} showText={style !== 'light'} />
     </div>
   {/if}
+
   <button type="button" class="refresh flex-center" on:click={pageReload}>
-    <img src="./images/icons/refresh.svg" alt="Обновить" />
+    <img src="./images/icons/refresh.svg" alt={$_('utils.reload')} />
   </button>
+
 </header>

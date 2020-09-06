@@ -1,5 +1,6 @@
 import type { GuildsAPI } from "@guilds-main/connectors/GuildsAPI";
 
+import { i18n } from "@guilds-main/utils/i18n";
 import { getGuildSeasonPath, getGuildStagePath } from "./utils/guildPath";
 import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
 
@@ -88,7 +89,7 @@ export class GuildsService implements IService {
   }
 
   public async getSeason(season_id: number): Promise<IGuildAPISeasonResponse> {
-    if (isNotExists(season_id)) { throw new Error("Incorrect season"); }
+    if (isNotExists(season_id)) { throw new Error(i18n.t("guild-api.season.failure")); }
     return this.#guildsApi.getSeason(season_id);
   }
 
@@ -123,14 +124,14 @@ export class GuildsService implements IService {
   }
 
   public async getGuildSeasonPath(season_id: number): Promise<IInternalGuildPath> {
-    if (isNotExists(season_id)) { throw new Error("Incorrect season"); }
+    if (isNotExists(season_id)) { throw new Error(i18n.t("guild-api.season.failure")); }
     return getGuildSeasonPath(this.#guildsApi, season_id);
   }
 
   public async getGuildStagePath(season_id: number, stage_id: number): Promise<IInternalGuildPath> {
 
-    if (isNotExists(season_id)) { throw new Error("Incorrect season"); }
-    if (isNotExists(stage_id)) { throw new Error("Incorrect stage"); }
+    if (isNotExists(season_id)) { throw new Error(i18n.t("guild-api.season.failure")); }
+    if (isNotExists(stage_id)) { throw new Error(i18n.t("guild-api.stage.failure")); }
 
     return getGuildStagePath(this.#guildsApi, season_id, stage_id);
   }
@@ -163,7 +164,7 @@ export class GuildsService implements IService {
   }
 
   public async updateInvite(invite_id: number, status: 1 | 2 = 1): Promise<IGuildAPIInviteUpdateResponse> {
-    if (isNotExists(invite_id)) { throw new Error("Incorrect invite"); }
+    if (isNotExists(invite_id)) { throw new Error(i18n.t("guild-api.invite.failure")); }
     return this.#guildsApi.updateInvite(invite_id, status);
   }
 }

@@ -1,18 +1,21 @@
-<script lang="typescript">
-  import { location } from 'svelte-spa-router';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { location } from "svelte-spa-router";
   import {
     isEmpty,
     isExists,
     isNotEmpty,
-  } from '@guilds-shared/helpers/typeguards';
-  import { rpc } from '@guilds-web/data/rpc';
-  import { guildStore } from '@guilds-web/store/guild';
+  } from "@guilds-shared/helpers/typeguards";
+  import { rpc } from "@guilds-web/data/rpc";
+  import { guildStore } from "@guilds-web/store/guild";
 
-  import IntersectionObs from '@guilds-web/components/IntersectionObs.svelte';
-  import Loading from '@guilds-web/blocks/Loading.svelte';
-  import GuildStats from '@guilds-web/sections/GuildStats.svelte';
-  import GuildsRatingTable from '@guilds-web/sections/GuildsRatingTable.svelte';
+  import IntersectionObs from "@guilds-web/components/IntersectionObs.svelte";
+  import Loading from "@guilds-web/blocks/Loading.svelte";
+  import GuildStats from "@guilds-web/sections/GuildStats.svelte";
+  import GuildsRatingTable from "@guilds-web/sections/GuildsRatingTable.svelte";
+</script>
 
+<script lang="typescript">
   export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
   let guilds: Array<
@@ -54,13 +57,13 @@
       ? Promise.resolve(undefined)
       : !stage_id
       ? rpc.invoke<IGuildAPIClubSeasonRatingResponse>(
-          'guilds:stats:season',
-          season_id,
+          "guilds:stats:season",
+          season_id
         )
       : rpc.invoke<IGuildAPIClubStageRatingResponse>(
-          'guilds:stats:stage',
+          "guilds:stats:stage",
           season_id,
-          stage_id,
+          stage_id
         );
   }
 
@@ -70,9 +73,9 @@
       : !stage_id
       ? rpc
           .invoke<IGuildAPIClubSeasonRatingResponse[]>(
-            'guilds:rating:season',
+            "guilds:rating:season",
             season_id,
-            { page },
+            { page }
           )
           .then((list) => {
             initialRatingLoading = false;
@@ -86,12 +89,12 @@
           })
       : rpc
           .invoke<IGuildAPIClubStageRatingResponse[]>(
-            'guilds:rating:stage',
+            "guilds:rating:stage",
             season_id,
             stage_id,
             {
               page,
-            },
+            }
           )
           .then((list) => {
             initialRatingLoading = false;
@@ -108,31 +111,39 @@
 
 <div class="my-guild-rating">
   {#await myRatingLoadingPromise}
-    <h3>Гильдия</h3>
-    <Loading>Загружаем информацию о гильдии...</Loading>
+    <h3>{$_('main.guild')}</h3>
+    <Loading>
+      <span class="with-loading-ellipsis">{$_('loading.guild')}</span>
+    </Loading>
   {:then guild}
     {#if isExists(guild)}
       <GuildStats {guild} />
     {:else}
-      <h3>Гильдия - ???</h3>
-      <p>Нет данных</p>
+      <h3>{$_('main.guild')} - ???</h3>
+      <p>{$_('not-found.data')}</p>
     {/if}
   {/await}
 </div>
 
 <div class="guilds-rating">
-  <h3>Рейтинг гильдий</h3>
+  <h3>{$_('guilds-rating.head')}</h3>
   {#if isNotEmpty(guilds)}
     <GuildsRatingTable {guilds} myGuildId={guild.id} />
 
     {#if !finished && ((!stage_id && guilds.length < SEASON_CLUBS_COUNT) || (stage_id && guilds.length < STAGE_CLUBS_COUNT))}
       <IntersectionObs on:intersect={() => currentPage++}>
-        <Loading>Загружаем еще одну страницу...</Loading>
+        <Loading>
+          <span class="with-loading-ellipsis">
+            {$_('loading.another-page')}
+          </span>
+        </Loading>
       </IntersectionObs>
     {/if}
   {:else if initialRatingLoading}
-    <Loading>Загружаем рейтинг...</Loading>
+    <Loading>
+      <span class="with-loading-ellipsis">{$_('loading.rating')}</span>
+    </Loading>
   {:else}
-    <p>Нет данных</p>
+    <p>{$_('not-found.data')}</p>
   {/if}
 </div>

@@ -1,9 +1,12 @@
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+
+  import GuildPlaceGraphAxis from "./GuildPlaceGraphAxis.svelte";
+  import GuildPlaceGraphTrack from "./GuildPlaceGraphTrack.svelte";
+</script>
+
 <script lang="typescript">
-  import { isExists } from '@guilds-shared/helpers/typeguards';
-
-  import GuildPlaceGraphAxis from './GuildPlaceGraphAxis.svelte';
-  import GuildPlaceGraphTrack from './GuildPlaceGraphTrack.svelte';
-
   export let current: IInternalGuildPathPoint = { points: 0, rank: 0 };
   export let segments: IInternalGuildPathSegment[] = [];
 
@@ -63,6 +66,7 @@
 </style>
 
 <div class="guild-graph">
+
   <button
     class="guild-graph__nav guild-graph__nav--prev flex-center"
     type="button"
@@ -70,9 +74,10 @@
     on:click={prevSegment}>
     <img
       src="./images/icons/arrow-left.svg"
-      alt="Назад"
+      alt={$_('utils.prev')}
       class="guild-graph__nav__img" />
   </button>
+
   <div class="guild-graph__figure">
     <div class="guild-graph__track">
       <GuildPlaceGraphTrack {...selectedSegment} currentPoint={current} />
@@ -81,6 +86,7 @@
       <GuildPlaceGraphAxis {...selectedSegment} currentPoint={current} />
     </div>
   </div>
+
   <button
     class="guild-graph__nav guild-graph__nav--next flex-center"
     type="button"
@@ -88,7 +94,8 @@
     on:click={nextSegment}>
     <img
       src="./images/icons/arrow-right.svg"
-      alt="Вперед"
+      alt={$_('utils.next')}
       class="guild-graph__nav__img" />
   </button>
+
 </div>

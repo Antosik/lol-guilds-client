@@ -45,13 +45,12 @@
   .modal__close-button {
     width: 28px;
     height: 28px;
-    padding: 0.25rem;
     position: absolute;
     top: -1px;
     right: -1px;
   }
   .modal__close-button img {
-    max-width: 100%;
+    width: 12px;
   }
   .modal__heading,
   .modal__content {
@@ -64,9 +63,12 @@
 </style>
 
 {#if isOpen}
-  <div class="modal-overlay" transition:fade on:click={onClose} />
+  <div
+    class="modal-overlay"
+    transition:fade={{ duration: 200 }}
+    on:click={onClose} />
 
-  <div class="modal" transition:fade>
+  <div class="modal" transition:fade={{ duration: 200 }}>
     <button class="flex-center modal__close-button" on:click={onClose}>
       <img src="./images/icons/close.svg" alt={$_('utils.close')} />
     </button>

@@ -250,7 +250,7 @@ button:disabled img {
 }
 
 .horizontal-scroll {
-  width: calc(100vw - 20px * 2);
+  width: calc(100vw - 24px * 2);
 }
 .horizontal-scroll__scrollable {
   padding-bottom: 10px;

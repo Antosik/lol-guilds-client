@@ -1,10 +1,16 @@
-<script lang="typescript">
-  import { _, locale } from 'svelte-i18n';
-  import { link, push } from 'svelte-spa-router';
-  import active from 'svelte-spa-router/active';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
-  import { formatDate } from '../utils/format';
+<script context="module" lang="typescript">
+  import { _, locale } from "svelte-i18n";
+  import { link, push } from "svelte-spa-router";
+  import active from "svelte-spa-router/active";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+  import { formatDate } from "../utils/format";
 
+  const onSeasonChange = (e: Event) => {
+    push(`/client/rating/season/${(e.target as HTMLSelectElement).value}`);
+  };
+</script>
+
+<script lang="typescript">
   export let seasons: IGuildAPISeasonResponse[] = [];
   export let selectedSeason: number | undefined;
   export let selectedStage: number | undefined;
@@ -18,12 +24,9 @@
   $: stage_info =
     isExists(selectedStage) && isExists(season_info)
       ? season_info.stages.find(
-          (stage: IGuildAPIStageResponse) => stage.id === selectedStage,
+          (stage: IGuildAPIStageResponse) => stage.id === selectedStage
         )
       : undefined;
-
-  const onSeasonChange = (e: Event) =>
-    push(`/client/rating/season/${(e.target as HTMLSelectElement).value}`);
 </script>
 
 <style>
@@ -117,7 +120,9 @@
               {$_('main.stage')} {stage.number}
             </a>
           {:else}
-            <span class="stage-not-active">{$_('main.stage')} {stage.number}</span>
+            <span class="stage-not-active">
+              {$_('main.stage')} {stage.number}
+            </span>
           {/if}
         </li>
       {/each}

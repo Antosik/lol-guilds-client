@@ -1,7 +1,9 @@
-<script lang="typescript">
-  import { _ } from 'svelte-i18n';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+</script>
 
+<script lang="typescript">
   export let guild: IGuildAPIClubResponse | null | undefined;
 </script>
 
@@ -42,7 +44,9 @@
 
 {#if isExists(guild)}
   <div class="guild-info__top flex-center">
-    <div class="guild-info__top__item">{$_('guild-info.leader')}: {guild.owner.summoner_name}</div>
+    <div class="guild-info__top__item">
+      {$_('guild-info.leader')}: {guild.owner.summoner_name}
+    </div>
 
     <div class="guild-info__top__item">
       {$_('guild-info.seasons-count')}: {guild.seasons_count}

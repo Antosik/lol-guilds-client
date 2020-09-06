@@ -1,6 +1,25 @@
 <script lang="typescript" context="module">
-  import { init, addMessages } from "svelte-i18n";
-  import { isNotBlank } from "@guilds-shared/helpers/typeguards";
+  import { onMount, onDestroy } from "svelte";
+  import { _, init, addMessages } from "svelte-i18n";
+  import Router, { replace } from "svelte-spa-router";
+
+  import { Result } from "@guilds-shared/helpers/result";
+  import {
+    isNotExists,
+    isExists,
+    isEmpty,
+    isNotBlank,
+  } from "@guilds-shared/helpers/typeguards";
+  import { rpc } from "./data/rpc";
+  import { appStore } from "./store/app";
+  import { summonerStore } from "./store/summoner";
+  import { guildStore } from "./store/guild";
+  import { routes } from "./routes";
+
+  import Modal from "./components/Modal.svelte";
+  import Invitations from "./sections/Invitations.svelte";
+  import Notifications from "./sections/Notifications.svelte";
+  import SettingsModal from "./sections/SettingsModal.svelte";
 
   if (
     isExists(window.LGC) &&
@@ -19,30 +38,38 @@
       loadingDelay: 0,
     });
   }
+
+  const onNotificationClose = (e: CustomEvent<string>) => {
+    appStore.removeNotification(e.detail);
+  };
+  const onSummoner = (e: Result<ILCUAPISummonerResponse>) => {
+    summonerStore.setSummoner(e.data);
+  };
+  const onGameflow = (e: Result<string>) => summonerStore.setStatus(e.data);
+  const onConnect = () => {
+    guildStore.reset();
+    summonerStore.setAuth(true);
+  };
+  const onDisconnect = () => {
+    guildStore.reset();
+    summonerStore.setAuth(false);
+  };
+  const onOnlineChange = () => {
+    rpc.send(navigator.onLine ? "lcu:connect" : "lcu:disconnect");
+  };
+  const onInvitationAccept = async (e: CustomEvent<string>) => {
+    const invitationid = e.detail;
+    appStore.removeInvitation(invitationid);
+    await rpc.invoke("lcu:invitation:accept", invitationid);
+  };
+  const onInvitationDecline = async (e: CustomEvent<string>) => {
+    const invitationid = e.detail;
+    appStore.removeInvitation(invitationid);
+    await rpc.invoke("lcu:invitation:decline", invitationid);
+  };
 </script>
 
 <script lang="typescript">
-  import { onMount, onDestroy } from "svelte";
-  import { _ } from "svelte-i18n";
-  import Router, { replace } from "svelte-spa-router";
-
-  import { Result } from "@guilds-shared/helpers/result";
-  import {
-    isNotExists,
-    isExists,
-    isEmpty,
-  } from "@guilds-shared/helpers/typeguards";
-  import { rpc } from "./data/rpc";
-  import { appStore } from "./store/app";
-  import { summonerStore } from "./store/summoner";
-  import { guildStore } from "./store/guild";
-  import { routes } from "./routes";
-
-  import Modal from "./components/Modal.svelte";
-  import Invitations from "./sections/Invitations.svelte";
-  import Notifications from "./sections/Notifications.svelte";
-  import SettingsModal from "./sections/SettingsModal.svelte";
-
   const handleRouting = (
     auth: boolean,
     summoner?: ILCUAPISummonerResponse | null
@@ -62,21 +89,6 @@
   const onSettingsModalOpen = () => (isSettingsModalOpen = true);
   const onSettingsModalClose = () => (isSettingsModalOpen = false);
 
-  const onNotificationClose = (e: Event) => {
-    appStore.removeNotification((e as CustomEvent).detail);
-  };
-  const onSummoner = (e: Result<ILCUAPISummonerResponse>) => {
-    summonerStore.setSummoner(e.data);
-  };
-  const onGameflow = (e: Result<string>) => summonerStore.setStatus(e.data);
-  const onConnect = () => {
-    guildStore.reset();
-    summonerStore.setAuth(true);
-  };
-  const onDisconnect = () => {
-    guildStore.reset();
-    summonerStore.setAuth(false);
-  };
   const onGuilds = async () => {
     const club = await rpc.invoke<IGuildAPIClubResponse>("guilds:club");
     guildStore.setGuildData(club);
@@ -90,18 +102,6 @@
       );
       guildStore.setRole(role);
     }
-  };
-  const onOnlineChange = () =>
-    rpc.send(navigator.onLine ? "lcu:connect" : "lcu:disconnect");
-  const onInvitationAccept = async (e: Event) => {
-    const invitationid = (e as CustomEvent<string>).detail;
-    appStore.removeInvitation(invitationid);
-    await rpc.invoke("lcu:invitation:accept", invitationid);
-  };
-  const onInvitationDecline = async (e: Event) => {
-    const invitationid = (e as CustomEvent<string>).detail;
-    appStore.removeInvitation(invitationid);
-    await rpc.invoke("lcu:invitation:decline", invitationid);
   };
   const onReceivedInvitation = (e: Result<IInternalReceivedInvitation[]>) => {
     if (isEmpty(e.data)) {

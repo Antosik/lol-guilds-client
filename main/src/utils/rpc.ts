@@ -11,7 +11,7 @@ import { flowId } from "@guilds-shared/helpers/rpc";
 import { isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
-export type TRPCHandlerResult = Result | Promise<Result> | undefined | Promise<undefined>;
+export type TRPCHandlerResult = Result | Promise<Result> | NotExisting | Promise<NotExisting>;
 export type IRPCHandlerFunc = (...args: any[]) => TRPCHandlerResult; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 

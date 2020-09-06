@@ -1,9 +1,11 @@
-<script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-  import { _ } from 'svelte-i18n';
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
+  import { _ } from "svelte-i18n";
+</script>
 
+<script lang="typescript">
   const dispatch = createEventDispatcher();
-  const onClick = () => dispatch('click');
+  const onClick = () => dispatch("click");
 </script>
 
 <style>

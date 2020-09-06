@@ -1,20 +1,22 @@
-<script lang="typescript">
-  import { _ } from 'svelte-i18n';
-  import Router from 'svelte-spa-router';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
-  import { appStore } from '@guilds-web/store/app';
-  import { guildStore } from '@guilds-web/store/guild';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import Router from "svelte-spa-router";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+  import { appStore } from "@guilds-web/store/app";
+  import { guildStore } from "@guilds-web/store/guild";
   import {
     guild_subprefix as subprefix,
     guild_subroutes as subroutes,
-  } from '@guilds-web/routes/subroutes';
+  } from "@guilds-web/routes/subroutes";
 
-  import GuildInfo from '@guilds-web/sections/GuildInfo.svelte';
-  import GuildDescriptions from '@guilds-web/sections/GuildDescriptions.svelte';
-  import GuildInfoNavigation from '@guilds-web/sections/GuildInfoNavigation.svelte';
+  import GuildInfo from "@guilds-web/sections/GuildInfo.svelte";
+  import GuildDescriptions from "@guilds-web/sections/GuildDescriptions.svelte";
+  import GuildInfoNavigation from "@guilds-web/sections/GuildInfoNavigation.svelte";
+</script>
 
+<script lang="typescript">
   let guild_name: string;
-  $: guild_name = $guildStore.guild?.club_name ?? '???';
+  $: guild_name = $guildStore.guild?.club_name ?? "???";
 </script>
 
 <style>

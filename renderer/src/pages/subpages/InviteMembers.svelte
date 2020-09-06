@@ -1,63 +1,68 @@
+<script context="module" lang="typescript">
+  import { onDestroy } from "svelte";
+  import { _ } from "svelte-i18n";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+  import { rpc } from "@guilds-web/data/rpc";
+  import { guildStore } from "@guilds-web/store/guild";
+  import { summonerStore } from "@guilds-web/store/summoner";
+
+  import Loading from "@guilds-web/blocks/Loading.svelte";
+  import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
+
+  const onMemberStatusUpdate = (member: IInternalGuildMember) => {
+    guildStore.setMemberStatus(member);
+  };
+
+  async function onMemberFriendRequest(event: CustomEvent<string>) {
+    await rpc.invoke("lcu:friend-request", event.detail);
+  }
+  async function onMemberInvite(event: CustomEvent<string>) {
+    await rpc.invoke("lcu:lobby-invite", event.detail);
+  }
+  async function onMemberOpenChat(event: CustomEvent<string>) {
+    await rpc.invoke("lcu:open-chat", event.detail);
+  }
+</script>
+
 <script lang="typescript">
-  import { onDestroy } from 'svelte';
-  import { _ } from 'svelte-i18n';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
-  import { rpc } from '@guilds-web/data/rpc';
-  import { guildStore } from '@guilds-web/store/guild';
-  import { summonerStore } from '@guilds-web/store/summoner';
-
-  import Loading from '@guilds-web/blocks/Loading.svelte';
-  import MemberInviteList from '@guilds-web/blocks/MemberInviteList.svelte';
-
-  let inviteState: 'friends' | 'all' = 'friends';
+  let inviteState: "friends" | "all" = "friends";
 
   let guildMembersToInvite: IInternalGuildMember[];
   $: guildMembersToInvite = $guildStore.members.filter(
-    ({ name }) => name.toLowerCase() !== $summonerStore.summoner?.displayName.toLowerCase(),
+    ({ name }) =>
+      name.toLowerCase() !== $summonerStore.summoner?.displayName.toLowerCase()
   );
 
   let allowInvite: boolean;
   $: allowInvite =
-    $summonerStore.status === 'None' || $summonerStore.status === 'Lobby';
+    $summonerStore.status === "None" || $summonerStore.status === "Lobby";
 
   // #region Events Handling
-  const onMemberStatusUpdate = (member: IInternalGuildMember) => {
-    guildStore.setMemberStatus(member);
-  };
-  async function onMemberFriendRequest(event: Event) {
-    await rpc.invoke(
-      'lcu:friend-request',
-      (event as CustomEvent<string>).detail,
-    );
-  }
-  async function onMemberInvite(event: Event) {
-    await rpc.invoke('lcu:lobby-invite', (event as CustomEvent<string>).detail);
-  }
   async function onMemberInviteMultiple() {
     const statuses =
-      inviteState !== 'all' ? ['chat', 'away'] : ['chat', 'away', 'unknown'];
+      inviteState !== "all" ? ["chat", "away"] : ["chat", "away", "unknown"];
 
     const ready = $guildStore.members
-      .filter((member) => statuses.includes(member.status ?? 'offline'))
+      .filter((member) => statuses.includes(member.status ?? "offline"))
       .map((member) => member.name);
 
-    await rpc.invoke('lcu:lobby-invite-all', ready);
-  }
-  async function onMemberOpenChat(event: Event) {
-    await rpc.invoke('lcu:open-chat', (event as CustomEvent<string>).detail);
+    await rpc.invoke("lcu:lobby-invite-all", ready);
   }
   // #endregion Events Handling
 
   const membersLoadingPromise = rpc
-    .invoke<IInternalGuildMember[]>('guilds:members', $guildStore.guild?.id)
+    .invoke<IInternalGuildMember[]>("guilds:members", $guildStore.guild?.id)
     .then((members) => guildStore.setMembers(members))
     .then(() => {
-      rpc.addListener('guilds:member-status:update', onMemberStatusUpdate);
-      return rpc.invoke('guilds:member-status:subscribe', $guildStore.guild?.id);
+      rpc.addListener("guilds:member-status:update", onMemberStatusUpdate);
+      return rpc.invoke(
+        "guilds:member-status:subscribe",
+        $guildStore.guild?.id
+      );
     });
 
   onDestroy(() => {
-    rpc.removeListener('guilds:member-status:update', onMemberStatusUpdate);
+    rpc.removeListener("guilds:member-status:update", onMemberStatusUpdate);
   });
 </script>
 

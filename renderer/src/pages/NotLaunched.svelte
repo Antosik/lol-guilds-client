@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
   import { rpc } from "../data/rpc";
 

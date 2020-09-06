@@ -1,14 +1,16 @@
-<script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-  import { fade } from 'svelte/transition';
-  import { cubicInOut } from 'svelte/easing';
-  import { _ } from 'svelte-i18n';
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
+  import { cubicInOut } from "svelte/easing";
+  import { _ } from "svelte-i18n";
+</script>
 
-  export let id: string = '';
-  export let text: string = '';
+<script lang="typescript">
+  export let id: string = "";
+  export let text: string = "";
 
   const dispatch = createEventDispatcher();
-  const onClose = () => dispatch('close', id);
+  const onClose = () => dispatch("close", id);
 </script>
 
 <style>

@@ -1,16 +1,10 @@
-<script lang="typescript">
+<script context="module" lang="typescript">
   import { onDestroy, onMount } from "svelte";
   import { _ } from "svelte-i18n";
   import { rpc } from "../data/rpc";
   import { ISSUES_URL, RELEASES_URL } from "@guilds-shared/env";
 
   import LoadingSpinner from "../components/LoadingSpinner.svelte";
-
-  let updateCheckState: string;
-  let downloadProgress: number = 0;
-  let nextVersion: any;
-
-  const versionPromise = rpc.invoke("version:get");
 
   const checkForUpdate = async (e: Event) => {
     e.stopPropagation();
@@ -23,6 +17,14 @@
     e.preventDefault();
     await rpc.invoke("version:install");
   };
+</script>
+
+<script lang="typescript">
+  let updateCheckState: string;
+  let downloadProgress: number = 0;
+  let nextVersion: any;
+
+  const versionPromise = rpc.invoke("version:get");
 
   const states = [
     "process",
@@ -120,7 +122,6 @@
 </style>
 
 <div class="flex-center version-block">
-
   <a
     href={ISSUES_URL}
     target="_blank"
@@ -130,6 +131,7 @@
       alt={$_('settings.bugreport')}
       class="version-block__issues-link__img" />
   </a>
+
   {#await versionPromise then version}
     <button
       type="button"
@@ -140,6 +142,7 @@
       {/if}
       {version}
     </button>
+
     {#if updateCheckState === 'available' || updateCheckState === 'downloading'}
       <div
         class="flex-center version-block__update-state

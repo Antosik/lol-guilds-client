@@ -1,19 +1,21 @@
-<script lang="typescript">
-  import { _ } from 'svelte-i18n';
-  import { location } from 'svelte-spa-router';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { location } from "svelte-spa-router";
   import {
     isEmpty,
     isExists,
     isNotEmpty,
-  } from '@guilds-shared/helpers/typeguards';
-  import { rpc } from '@guilds-web/data/rpc';
-  import { guildStore } from '@guilds-web/store/guild';
+  } from "@guilds-shared/helpers/typeguards";
+  import { rpc } from "@guilds-web/data/rpc";
+  import { guildStore } from "@guilds-web/store/guild";
 
-  import IntersectionObs from '@guilds-web/components/IntersectionObs.svelte';
-  import Loading from '@guilds-web/blocks/Loading.svelte';
-  import GuildStats from '@guilds-web/sections/GuildStats.svelte';
-  import GuildsRatingTable from '@guilds-web/sections/GuildsRatingTable.svelte';
+  import IntersectionObs from "@guilds-web/components/IntersectionObs.svelte";
+  import Loading from "@guilds-web/blocks/Loading.svelte";
+  import GuildStats from "@guilds-web/sections/GuildStats.svelte";
+  import GuildsRatingTable from "@guilds-web/sections/GuildsRatingTable.svelte";
+</script>
 
+<script lang="typescript">
   export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
   let guilds: Array<
@@ -55,13 +57,13 @@
       ? Promise.resolve(undefined)
       : !stage_id
       ? rpc.invoke<IGuildAPIClubSeasonRatingResponse>(
-          'guilds:stats:season',
-          season_id,
+          "guilds:stats:season",
+          season_id
         )
       : rpc.invoke<IGuildAPIClubStageRatingResponse>(
-          'guilds:stats:stage',
+          "guilds:stats:stage",
           season_id,
-          stage_id,
+          stage_id
         );
   }
 
@@ -71,9 +73,9 @@
       : !stage_id
       ? rpc
           .invoke<IGuildAPIClubSeasonRatingResponse[]>(
-            'guilds:rating:season',
+            "guilds:rating:season",
             season_id,
-            { page },
+            { page }
           )
           .then((list) => {
             initialRatingLoading = false;
@@ -87,12 +89,12 @@
           })
       : rpc
           .invoke<IGuildAPIClubStageRatingResponse[]>(
-            'guilds:rating:stage',
+            "guilds:rating:stage",
             season_id,
             stage_id,
             {
               page,
-            },
+            }
           )
           .then((list) => {
             initialRatingLoading = false;

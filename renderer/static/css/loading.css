@@ -30,7 +30,7 @@
 .loading__text:after {
   position: absolute;
   margin-left: 0.1rem;
-  content: ' ...';
+  content: " ...";
   display: inline-block;
   animation: loading steps(4) 2s infinite;
   clip: rect(auto, 0, auto, auto);

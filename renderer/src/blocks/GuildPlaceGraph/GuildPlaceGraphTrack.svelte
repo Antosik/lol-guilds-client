@@ -1,7 +1,9 @@
-<script lang="typescript">
-  import { isNotEmpty } from '@guilds-shared/helpers/typeguards';
-  import { calculatePosition, calculateProgress } from './helpers';
+<script context="module" lang="typescript">
+  import { isNotEmpty } from "@guilds-shared/helpers/typeguards";
+  import { calculatePosition, calculateProgress } from "./helpers";
+</script>
 
+<script lang="typescript">
   export let currentPoint: IInternalGuildPathPoint;
   export let start: IInternalGuildPathPoint;
   export let end: IInternalGuildPathPoint;

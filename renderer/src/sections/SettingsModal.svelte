@@ -1,10 +1,12 @@
-<script lang="typescript">
+<script context="module" lang="typescript">
   import { isNotBlank } from "@guilds-shared/helpers/typeguards";
 
   import LoadingSpinner from "@guilds-web/components/LoadingSpinner.svelte";
   import { _, locale, locales } from "svelte-i18n";
   import { rpc } from "../data/rpc";
+</script>
 
+<script lang="typescript">
   const onLanguageChange = (selectedLocale: string) => {
     if (selectedLocale === $locale) {
       return;
@@ -44,9 +46,11 @@
 </style>
 
 <div class="setting">
+
   <label for="language-selector" class="setting__label">
     {$_('settings.language')}
   </label>
+
   <select
     bind:value={selectedLocale}
     class="language-selector setting__input"
@@ -55,6 +59,7 @@
       <option value={locale}>{locale.toUpperCase()}</option>
     {/each}
   </select>
+
   <span class="setting__status">
     {#await languageSaveStatus}
       <LoadingSpinner />
@@ -66,4 +71,5 @@
       {$_('settings.status.error')}
     {/await}
   </span>
+
 </div>

@@ -1,5 +1,5 @@
-<script lang="typescript">
-  import { _ } from 'svelte-i18n';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
   import { link } from "svelte-spa-router";
 </script>
 

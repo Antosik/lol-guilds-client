@@ -1,8 +1,10 @@
-<script lang="typescript">
+<script context="module" lang="typescript">
   import { createEventDispatcher } from "svelte";
   import { fade } from "svelte/transition";
   import { _ } from "svelte-i18n";
+</script>
 
+<script lang="typescript">
   export let isOpen: boolean = false;
 
   const dispatch = createEventDispatcher();
@@ -62,7 +64,8 @@
 </style>
 
 {#if isOpen}
-  <div class="modal-overlay" on:click={onClose} />
+  <div class="modal-overlay" transition:fade on:click={onClose} />
+
   <div class="modal" transition:fade>
     <button class="flex-center modal__close-button" on:click={onClose}>
       <img src="./images/icons/close.svg" alt={$_('utils.close')} />

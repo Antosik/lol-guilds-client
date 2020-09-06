@@ -1,8 +1,10 @@
-<script lang="typescript">
-  import { _ } from 'svelte-i18n';
-  import { isNotBlank } from '@guilds-shared/helpers/typeguards';
-  import { markdown } from '../utils/markdown';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { isNotBlank } from "@guilds-shared/helpers/typeguards";
+  import { markdown } from "../utils/markdown";
+</script>
 
+<script lang="typescript">
   export let guild: IGuildAPIClubResponse | null | undefined;
 
   let short_description: string | undefined;
@@ -26,7 +28,7 @@
       position: relative;
     }
     .guild-info__short_description + .guild-info__long_description:before {
-      content: '';
+      content: "";
       position: absolute;
       width: 1px;
       background: var(--main-medium);

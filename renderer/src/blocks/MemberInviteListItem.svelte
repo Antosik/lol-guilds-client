@@ -1,11 +1,13 @@
-<script lang="typescript">
+<script context="module" lang="typescript">
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { isExists } from "@guilds-shared/helpers/typeguards";
 
   import GuildMemberStatus from "../components/GuildMemberStatus.svelte";
   import Tooltip from "../components/Tooltip.svelte";
+</script>
 
+<script lang="typescript">
   export let allowInvite: boolean = true;
   export let member: IInternalGuildMember | undefined = undefined;
 
@@ -62,6 +64,7 @@
 
 {#if isExists(member)}
   <li class="guild-member">
+
     <div class="guild-member__info">
       <div>{member.name}</div>
       <GuildMemberStatus statusCode={member.status} gameName={member.game} />
@@ -71,7 +74,9 @@
         </span>
       {/if}
     </div>
+
     <div class="guild-member__buttons">
+
       {#if isExists(member) && member.status === 'unknown'}
         <button
           class="guild-member__friend flex-center"
@@ -87,16 +92,17 @@
           <img src="./images/icons/chat.svg" alt={$_('send.message')} />
         </button>
       {/if}
+
       {#if isExists(member) && allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown') && member.game === 'League of Legends'}
         <button
           class="guild-member__invite flex-center"
           type="button"
           on:click={inviteToParty}>
-          <img
-            src="./images/icons/plus.svg"
-            alt={$_('send.lobby-invite')} />
+          <img src="./images/icons/plus.svg" alt={$_('send.lobby-invite')} />
         </button>
       {/if}
+
     </div>
+
   </li>
 {/if}

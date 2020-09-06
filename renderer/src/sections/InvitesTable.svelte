@@ -1,21 +1,23 @@
-<script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
-  import { isEmpty, isExists } from '@guilds-shared/helpers/typeguards';
+  import { isEmpty, isExists } from "@guilds-shared/helpers/typeguards";
+</script>
 
+<script lang="typescript">
   export let invites: IInternalInvite[] = [];
-  export let sortKey: string = '+id';
+  export let sortKey: string = "+id";
 
   const dispatch = createEventDispatcher();
-  const acceptInvite = (id: number) => dispatch('invite-accept', id);
-  const declineInvite = (id: number) => dispatch('invite-decline', id);
+  const acceptInvite = (id: number) => dispatch("invite-accept", id);
+  const declineInvite = (id: number) => dispatch("invite-decline", id);
   const changeSort = (key: string) => {
     const newSortKey =
-      sortKey.includes(key) && sortKey[0] === '+' ? `-${key}` : `+${key}`;
-    dispatch('sort-change', newSortKey);
+      sortKey.includes(key) && sortKey[0] === "+" ? `-${key}` : `+${key}`;
+    dispatch("sort-change", newSortKey);
   };
   const sendFriendRequest = (nickname: string) => {
-    dispatch('friend-request', nickname);
+    dispatch("friend-request", nickname);
   };
 </script>
 
@@ -36,16 +38,16 @@
     margin: 20px;
   }
   th.sort-asc:after {
-    content: ' (↑)';
+    content: " (↑)";
   }
   th.sort-desc:after {
-    content: ' (↓)';
+    content: " (↓)";
   }
   tr {
     position: relative;
   }
   tr:not(:first-child):after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     width: 100%;
@@ -81,6 +83,7 @@
   <h4>{$_('not-found.invites')}</h4>
 {:else}
   <table>
+
     <thead>
       <tr>
         <th
@@ -116,6 +119,7 @@
         <td />
       </tr>
     </thead>
+
     <tbody>
       {#each invites as invite, i (invite.id)}
         <tr>
@@ -133,7 +137,9 @@
                   type="button"
                   on:click={() => acceptInvite(invite.id)}
                   disabled={isExists(invite) && invite.status !== 0}>
-                  <img src="./images/icons/ok.svg" alt={$_('guild-invites.accept-invite')} />
+                  <img
+                    src="./images/icons/ok.svg"
+                    alt={$_('guild-invites.accept-invite')} />
                 </button>
               </li>
               <li>
@@ -143,7 +149,9 @@
                   type="button"
                   on:click={() => declineInvite(invite.id)}
                   disabled={isExists(invite.status) && invite.status !== 0}>
-                  <img src="./images/icons/close.svg" alt={$_('guild-invites.decline-invite')} />
+                  <img
+                    src="./images/icons/close.svg"
+                    alt={$_('guild-invites.decline-invite')} />
                 </button>
               </li>
               {#if !invite.isFriend}
@@ -163,5 +171,6 @@
         </tr>
       {/each}
     </tbody>
+
   </table>
 {/if}

@@ -1,10 +1,10 @@
-<script lang="typescript">
-  import { _ } from 'svelte-i18n';
-  import {
-    gameflowNotBusyStatusCode,
-  } from '@guilds-shared/helpers/gameflow';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { gameflowNotBusyStatusCode } from "@guilds-shared/helpers/gameflow";
+</script>
 
-  export let statusCode: string = 'None';
+<script lang="typescript">
+  export let statusCode: string = "None";
   export let showText: boolean = true;
 
   let isBusy: boolean;

@@ -1,26 +1,32 @@
+<script context="module" lang="typescript">
+  import { onMount } from "svelte";
+  import { _ } from "svelte-i18n";
+  import { location } from "svelte-spa-router";
+  import {
+    isExists,
+    isEmpty,
+    isNotEmpty,
+  } from "@guilds-shared/helpers/typeguards";
+  import { rpc } from "@guilds-web/data/rpc";
+  import { summonerStore } from "@guilds-web/store/summoner";
+  import { guildStore } from "@guilds-web/store/guild";
+
+  import GameInfo from "@guilds-web/components/GameInfo.svelte";
+  import GuildMemberStats from "@guilds-web/components/GuildMemberStats.svelte";
+  import Loading from "@guilds-web/blocks/Loading.svelte";
+  import GuildPlaceGraph from "@guilds-web/blocks/GuildPlaceGraph/GuildPlaceGraph.svelte";
+</script>
+
 <script lang="typescript">
-  import { onMount } from 'svelte';
-  import { _ } from 'svelte-i18n';
-  import { location } from 'svelte-spa-router';
-  import { isExists, isEmpty, isNotEmpty } from '@guilds-shared/helpers/typeguards';
-  import { rpc } from '@guilds-web/data/rpc';
-  import { summonerStore } from '@guilds-web/store/summoner';
-  import { guildStore } from '@guilds-web/store/guild';
-
-  import GameInfo from '@guilds-web/components/GameInfo.svelte';
-  import GuildMemberStats from '@guilds-web/components/GuildMemberStats.svelte';
-  import Loading from '@guilds-web/blocks/Loading.svelte';
-  import GuildPlaceGraph from '@guilds-web/blocks/GuildPlaceGraph/GuildPlaceGraph.svelte';
-
   export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
   let season: IGuildAPISeasonResponse | undefined;
   const seasonLoadingPromise = rpc
-    .invoke<IGuildAPISeasonResponse>('guilds:season:live')
+    .invoke<IGuildAPISeasonResponse>("guilds:season:live")
     .then((liveSeason) =>
       isExists(liveSeason)
         ? liveSeason
-        : rpc.invoke<IGuildAPISeasonResponse>('guilds:season:prev'),
+        : rpc.invoke<IGuildAPISeasonResponse>("guilds:season:prev")
     );
 
   let lastGames: IGuildAPIGameClubResponse[] = [];
@@ -36,8 +42,8 @@
   $: guildRatingLoadingPromise = !season_id
     ? Promise.resolve(undefined)
     : !stage_id
-    ? rpc.invoke<IInternalGuildPath>('guilds:path:season', season_id)
-    : rpc.invoke<IInternalGuildPath>('guilds:path:stage', season_id, stage_id);
+    ? rpc.invoke<IInternalGuildPath>("guilds:path:season", season_id)
+    : rpc.invoke<IInternalGuildPath>("guilds:path:stage", season_id, stage_id);
 
   let topMembersLoadingPromise: Promise<Array<{
     summoner: IGuildAPISummonerResponse;
@@ -48,7 +54,7 @@
   $: topMembersLoadingPromise = loadMembers(season_id, stage_id);
 
   let summoner_name: string;
-  $: summoner_name = $summonerStore.summoner?.displayName ?? '???';
+  $: summoner_name = $summonerStore.summoner?.displayName ?? "???";
 
   $: afterNavigation($location);
   $: loadGames($location, lastGamesPage);
@@ -62,11 +68,11 @@
     return !stage_id
       ? rpc
           .invoke<IGuildAPIGameClubResponse[]>(
-            'guilds:games:season',
+            "guilds:games:season",
             season_id,
             {
               page,
-            },
+            }
           )
           .then((list) => {
             initialGamesLoading = false;
@@ -79,12 +85,12 @@
           })
       : rpc
           .invoke<IGuildAPIGameClubResponse[]>(
-            'guilds:games:stage',
+            "guilds:games:stage",
             season_id,
             stage_id,
             {
               page,
-            },
+            }
           )
           .then((list) => {
             initialGamesLoading = false;
@@ -99,7 +105,7 @@
 
   async function loadMembers(
     season_id?: number,
-    stage_id?: number,
+    stage_id?: number
   ): Promise<
     Array<{
       summoner: IGuildAPISummonerResponse;
@@ -111,9 +117,9 @@
     return !stage_id
       ? rpc
           .invoke<IInternalGuildMembersSeasonRatingWithSummoner[]>(
-            'guilds:members:season',
+            "guilds:members:season",
             $guildStore.guild?.id,
-            season_id,
+            season_id
           )
           .then((members) => {
             if (isEmpty(members)) return [];
@@ -125,10 +131,10 @@
           })
       : rpc
           .invoke<IInternalGuildMembersStageRatingWithSummoner[]>(
-            'guilds:members:stage',
+            "guilds:members:stage",
             $guildStore.guild?.id,
             season_id,
-            stage_id,
+            stage_id
           )
           .then((members) => {
             if (isEmpty(members)) return [];
@@ -147,7 +153,7 @@
       results:
         | IInternalGuildMembersSeasonRating
         | IInternalGuildMembersStageRating;
-    }> = [],
+    }> = []
   ) {
     for (let i = 0, len = members.length; i < len; i++) {
       if (members[i].summoner.summoner_name === summonerName) {
@@ -155,7 +161,7 @@
       }
     }
 
-    return $_('not-found.rating');
+    return $_("not-found.rating");
   }
 
   onMount(async () => {
@@ -186,17 +192,27 @@
 {#await seasonLoadingPromise}
   <Loading>{$_('loading.season')}</Loading>
 {:then season}
+
   {#if isExists(season)}
     <div class="guild-rating">
       <h3>{$_('main.rating-position')}</h3>
+
       {#await guildRatingLoadingPromise}
         <Loading>{$_('loading.rating')}</Loading>
       {:then guild}
+
         {#if isExists(guild)}
           <div class="guild-rating__rank">
             {#if guild.current_position.rank === 0}
-              <p>{$_('guild-path.not-participating.status', { values: { points: guild.current_position.points }})}</p>
-              <p>{$_('guild-path.not-participating.needed', { values: { points: 1000 - guild.current_position.points }})}
+              <p>
+                {$_('guild-path.not-participating.status', {
+                  values: { points: guild.current_position.points },
+                })}
+              </p>
+              <p>
+                {$_('guild-path.not-participating.needed', {
+                  values: { points: 1000 - guild.current_position.points },
+                })}
               </p>
             {:else}
               <p>
@@ -215,6 +231,7 @@
 
     <div class="top-members horizontal-scroll">
       <h3>{$_('main.guild-members-rating')}</h3>
+
       {#await topMembersLoadingPromise}
         <Loading>{$_('loading.members')}</Loading>
       {:then topMembers}
@@ -257,6 +274,7 @@
   {:else}
     <p>{$_('not-found.active-season')}</p>
   {/if}
+
 {:catch error}
   <p>{$_('error.something', { values: { message: error.message } })}</p>
 {/await}

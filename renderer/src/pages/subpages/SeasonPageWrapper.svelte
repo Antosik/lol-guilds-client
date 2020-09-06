@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script context="module" lang="typescript">
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import Router from 'svelte-spa-router';
@@ -12,7 +12,9 @@
 
   import Loading from '@guilds-web/blocks/Loading.svelte';
   import SeasonInfoNavigation from '@guilds-web/sections/SeasonInfoNavigation.svelte';
+</script>
 
+<script lang="typescript">
   export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
   let season: IGuildAPISeasonResponse | undefined;

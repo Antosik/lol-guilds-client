@@ -1,15 +1,17 @@
-<script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-  import { fade } from 'svelte/transition';
-  import { cubicInOut } from 'svelte/easing';
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
+  import { cubicInOut } from "svelte/easing";
   import { _ } from "svelte-i18n";
+</script>
 
-  export let id: string = '';
-  export let text: string = '';
+<script lang="typescript">
+  export let id: string = "";
+  export let text: string = "";
 
   const dispatch = createEventDispatcher();
-  const onAccept = () => dispatch('invite-accept', id);
-  const onDecline = () => dispatch('invite-decline', id);
+  const onAccept = () => dispatch("invite-accept", id);
+  const onDecline = () => dispatch("invite-decline", id);
 </script>
 
 <style>
@@ -49,7 +51,9 @@
 <li
   class="invitation"
   transition:fade|local={{ duration: 200, delay: 0, easing: cubicInOut }}>
+
   <p class="invitation__text">{text}</p>
+
   <div class="invitation__buttons">
     <button
       type="button"
@@ -64,4 +68,5 @@
       <img src="./images/icons/close.svg" alt={$_('utils.decline')} />
     </button>
   </div>
+
 </li>

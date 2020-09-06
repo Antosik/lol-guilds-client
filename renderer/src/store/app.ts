@@ -51,8 +51,8 @@ function createAppStore() {
     update(state => ({ ...state, currentPage: url }));
   };
 
-  const setCurrentPageLoaded = (e: Event) => {
-    const { detail: { location } } = e as CustomEvent<{ location: string }>;
+  const setCurrentPageLoaded = (e: CustomEvent<{ location: string }>) => {
+    const { detail: { location } } = e;
     window.localStorage.setItem("currentPage", location);
     update(state => ({ ...state, currentPage: location }));
   };

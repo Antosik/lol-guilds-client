@@ -1,6 +1,6 @@
 <style>
   .loading-spinner {
-    content: ' ';
+    content: " ";
     display: inline-block;
     position: relative;
 

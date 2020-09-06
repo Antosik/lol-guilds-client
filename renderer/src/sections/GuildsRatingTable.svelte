@@ -1,7 +1,9 @@
-<script lang="typescript">
-  import { _ } from 'svelte-i18n';
-  import { isNotBlank, isEmpty } from '@guilds-shared/helpers/typeguards';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { isNotBlank, isEmpty } from "@guilds-shared/helpers/typeguards";
+</script>
 
+<script lang="typescript">
   export let myGuildId: number | undefined = undefined;
   export let guilds: Array<
     IGuildAPIClubStageRatingResponse | IGuildAPIClubSeasonRatingResponse
@@ -31,7 +33,7 @@
     background: rgba(245, 240, 223, 0.2);
   }
   tr:not(:first-child):after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     width: 100%;
@@ -52,7 +54,9 @@
 {#if isEmpty(guilds)}
   <h4>{$_('not-found.data')}</h4>
 {:else}
+
   <table>
+
     <thead>
       <tr>
         <th>#</th>
@@ -61,6 +65,7 @@
         <th>{$_('guilds-rating.guild-rewards')}</th>
       </tr>
     </thead>
+
     <tbody>
       {#each guilds as guild, i (guild.id)}
         <tr class:my-guild={guild.club.id === myGuildId}>
@@ -75,5 +80,6 @@
         </tr>
       {/each}
     </tbody>
+
   </table>
 {/if}

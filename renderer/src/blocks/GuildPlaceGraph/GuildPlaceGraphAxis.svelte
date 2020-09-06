@@ -1,9 +1,11 @@
+<script context="module" lang="typescript">
+  import { isNotEmpty } from "@guilds-shared/helpers/typeguards";
+  import { calculatePosition, calculateProgress } from "./helpers";
+
+  import GuildPlaceGraphPoint from "./GuildPlaceGraphPoint.svelte";
+</script>
+
 <script lang="typescript">
-  import { isNotEmpty } from '@guilds-shared/helpers/typeguards';
-  import { calculatePosition, calculateProgress } from './helpers';
-
-  import GuildPlaceGraphPoint from './GuildPlaceGraphPoint.svelte';
-
   export let currentPoint: IInternalGuildPathPoint;
 
   export let start: IInternalGuildPathPoint;

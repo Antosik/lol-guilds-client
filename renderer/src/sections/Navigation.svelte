@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import { link } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
   import { isExists } from '@guilds-shared/helpers/typeguards';
@@ -21,7 +22,7 @@
   <ul class="flex-center">
     <li>
       <a href="/client/" class="flex-center use-active" use:link use:active>
-        Главная
+        {$_('navigation.main')}
       </a>
     </li>
     <li>
@@ -30,7 +31,7 @@
         class="flex-center use-active"
         use:link
         use:active={'/client/guild/*'}>
-        Моя гильдия
+        {$_('navigation.guild')}
       </a>
     </li>
     <li>
@@ -39,7 +40,7 @@
         class="flex-center use-active"
         use:link
         use:active={'/client/rating/*'}>
-        Рейтинг
+        {$_('navigation.rating')}
       </a>
     </li>
     {#await seasonActivePromise then isSeasonActive}
@@ -49,7 +50,7 @@
           class="flex-center use-active"
           use:link
           use:active={'/client/current-season/*'}>
-          {#if isSeasonActive}Текущий сезон{:else}Предыдущий сезон{/if}
+          {#if isSeasonActive}{$_('navigation.current-season')}{:else}{$_('navigation.previous-season')}{/if}
         </a>
       </li>
     {/await}

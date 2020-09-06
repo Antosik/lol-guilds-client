@@ -1,5 +1,7 @@
 import type { GuildsAPI } from "@guilds-main/connectors/GuildsAPI";
 
+import { i18n } from "@guilds-main/utils/i18n";
+
 import { calculateRelativeProgress } from "@guilds-shared/helpers/points";
 import { isExists, isNotEmpty } from "@guilds-shared/helpers/typeguards";
 
@@ -49,7 +51,7 @@ function constructSegments(guildPoint: IInternalGuildPathPoint, points: IInterna
 export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number): Promise<IInternalGuildPath> {
 
   let absolutePoints: IInternalGuildPathPoint[] = [
-    { points: 0, absolute: true }, { description: "Старт", points: 1000, absolute: true }
+    { points: 0, absolute: true }, { description: i18n.t("guild-path.start"), points: 1000, absolute: true }
   ];
 
   const season_data = await guildsApi.getSeasonRatingForMyClub(season_id);
@@ -84,7 +86,7 @@ export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number
 export async function getGuildStagePath(guildsApi: GuildsAPI, season_id: number, stage_id: number): Promise<IInternalGuildPath> {
 
   let absolutePoints: IInternalGuildPathPoint[] = [
-    { points: 0, absolute: true }, { description: "Старт", points: 1000, absolute: true }
+    { points: 0, absolute: true }, { description: i18n.t("guild-path.start"), points: 1000, absolute: true }
   ];
 
   const { games, points, rank, rank_reward } = await guildsApi.getStageRatingForMyClub(stage_id, season_id);

@@ -3,6 +3,7 @@ import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import type { LCUService } from "@guilds-main/services/lcu";
 
+import { i18n } from "@guilds-main/utils/i18n";
 import { Result } from "@guilds-shared/helpers/result";
 import { isNotBlank, isNotEmpty } from "@guilds-shared/helpers/typeguards";
 
@@ -73,17 +74,17 @@ export class LCUController implements IController, IDestroyable {
 
     if (!requestStatus.status) {
       return Result.create()
-        .setError(new Error("Не удалось отправить запрос"));
+        .setError(new Error(i18n.t("error.request")));
 
     } else if (isNotBlank(requestStatus.notfound)) {
       const notfound = Array.isArray(requestStatus.notfound) ? requestStatus.notfound.join(", ") : requestStatus.notfound;
       return Result.create()
-        .setNotification(`Не удалось найти призывателей: ${notfound}`)
+        .setNotification(i18n.t("social.notfound", { notfound }))
         .setStatus("warning");
     }
 
     return Result.create()
-      .setNotification("Запрос в друзья успешно отправлен")
+      .setNotification(i18n.t("social.friend-request.ok"))
       .setStatus("success");
   }
 
@@ -94,12 +95,12 @@ export class LCUController implements IController, IDestroyable {
 
     if (isNotEmpty(notfound)) {
       return Result.create()
-        .setNotification(`Не удалось найти призывателей: ${notfound.join(", ")}`)
+        .setNotification(i18n.t("social.notfound", { notfound: notfound.join(", ") }))
         .setStatus("warning");
     }
 
     return Result.create()
-      .setNotification("Приглашение в лобби успешно отправлено")
+      .setNotification(i18n.t("social.lobby-request.ok"))
       .setStatus("success");
   }
 

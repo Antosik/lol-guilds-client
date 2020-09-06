@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import { isNotBlank, isEmpty } from '@guilds-shared/helpers/typeguards';
 
   export let myGuildId: number | undefined = undefined;
@@ -49,15 +50,15 @@
 </style>
 
 {#if isEmpty(guilds)}
-  <h4>Нет данных</h4>
+  <h4>{$_('not-found.data')}</h4>
 {:else}
   <table>
     <thead>
       <tr>
         <th>#</th>
-        <th>Название гильдии</th>
-        <th>Количество очков</th>
-        <th>Награды</th>
+        <th>{$_('guilds-rating.guild-name')}</th>
+        <th>{$_('guilds-rating.guild-points')}</th>
+        <th>{$_('guilds-rating.guild-rewards')}</th>
       </tr>
     </thead>
     <tbody>
@@ -67,9 +68,9 @@
           <td>
             {#if isNotBlank(guild.club.lol_name)}
               {guild.club.lol_name}
-            {:else}Гильдия распущена{/if}
+            {:else}{$_('guilds-rating.guild-disbanded')}{/if}
           </td>
-          <td>{guild.points} pt.</td>
+          <td>{guild.points}pt</td>
           <td>{guild.rank_reward ? guild.rank_reward.reward_value : ''}</td>
         </tr>
       {/each}

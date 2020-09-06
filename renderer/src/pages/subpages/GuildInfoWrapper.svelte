@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import Router from 'svelte-spa-router';
   import { isExists } from '@guilds-shared/helpers/typeguards';
   import { appStore } from '@guilds-web/store/app';
@@ -25,7 +26,7 @@
 
 {#if isExists($guildStore.guild)}
   <div class="page guild-info">
-    <h2>Гильдия "{guild_name}"</h2>
+    <h2>{$_('main.guild')} "{guild_name}"</h2>
 
     <div class="guild-info__info">
       <GuildInfo guild={$guildStore.guild} />

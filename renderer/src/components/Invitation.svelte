@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import { fade } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
+  import { _ } from "svelte-i18n";
 
   export let id: string = '';
   export let text: string = '';
@@ -54,13 +55,13 @@
       type="button"
       on:click={onAccept}
       class="invitation__button flex-center">
-      <img src="./images/icons/ok.svg" alt="Принять" />
+      <img src="./images/icons/ok.svg" alt={$_('utils.accept')} />
     </button>
     <button
       type="button"
       on:click={onDecline}
       class="invitation__button flex-center">
-      <img src="./images/icons/close.svg" alt="Отклонить" />
+      <img src="./images/icons/close.svg" alt={$_('utils.decline')} />
     </button>
   </div>
 </li>

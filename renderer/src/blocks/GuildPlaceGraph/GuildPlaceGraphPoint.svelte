@@ -36,7 +36,7 @@
   }
   @media all and (min-width: 576px) {
     .guild-graph__point__rank:before {
-      content: 'Топ-';
+      content: '#';
     }
   }
   .guild-graph__point__points {

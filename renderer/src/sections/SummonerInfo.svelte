@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import { location } from 'svelte-spa-router';
   import { isExists, isNotBlank } from '@guilds-shared/helpers/typeguards';
   import { appStore } from '../store/app';
@@ -78,6 +79,6 @@
     </div>
   {/if}
   <button type="button" class="refresh flex-center" on:click={pageReload}>
-    <img src="./images/icons/refresh.svg" alt="Обновить" />
+    <img src="./images/icons/refresh.svg" alt="{$_('utils.reload')}" />
   </button>
 </header>

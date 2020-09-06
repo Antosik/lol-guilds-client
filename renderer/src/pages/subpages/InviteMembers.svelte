@@ -1,5 +1,6 @@
 <script lang="typescript">
   import { onDestroy } from 'svelte';
+  import { _ } from 'svelte-i18n';
   import { isExists } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '@guilds-web/data/rpc';
   import { guildStore } from '@guilds-web/store/guild';
@@ -51,7 +52,7 @@
     .invoke<IInternalGuildMember[]>('guilds:members', $guildStore.guild?.id)
     .then((members) => guildStore.setMembers(members))
     .then(() => {
-      rpc.on('guilds:member-status:update', onMemberStatusUpdate);
+      rpc.addListener('guilds:member-status:update', onMemberStatusUpdate);
       return rpc.invoke('guilds:member-status:subscribe', $guildStore.guild?.id);
     });
 
@@ -95,10 +96,10 @@
 
 {#if isExists($guildStore.guild)}
   <div class="guild-members">
-    <h2>Члены гильдии</h2>
+    <h2>{$_('main.guild-members')}</h2>
 
     {#await membersLoadingPromise}
-      <Loading>Загружаем список членов гильдии...</Loading>
+      <Loading>{$_('loading.members')}</Loading>
     {:then}
       <div class="guild-members__invite-all">
         <button
@@ -106,12 +107,12 @@
           class="flex-center"
           on:click={onMemberInviteMultiple}>
           {#if inviteState === 'all'}
-            Пригласить всех
-          {:else}Пригласить друзей{/if}
+            {$_('invite.all')}
+          {:else}{$_('invite.friends')}{/if}
         </button>
         <select bind:value={inviteState} class="mini-block">
-          <option value="friends">Пригласить друзей</option>
-          <option value="all">Пригласить всех</option>
+          <option value="friends">{$_('invite.friends')}</option>
+          <option value="all">{$_('invite.all')}</option>
         </select>
       </div>
 
@@ -122,7 +123,7 @@
         on:friend-request={onMemberFriendRequest}
         on:open-chat={onMemberOpenChat} />
     {:catch}
-      <h3>Произошла странная ошибка!</h3>
+      <h3>{$_('error.unexpected')}</h3>
     {/await}
   </div>
 {/if}

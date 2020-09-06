@@ -1,6 +1,6 @@
 <script lang="typescript">
+  import { _ } from "svelte-i18n";
   import {
-    guildMemberStatusLocale,
     gameflowGameMap,
   } from '@guilds-shared/helpers/gameflow';
 
@@ -62,7 +62,7 @@
 
   {#if showText}
     <span class="status__text">
-      {guildMemberStatusLocale.get(statusCode)}
+      {$_(`status.${statusCode}`)}
       {#if gameShortName && gameShortName !== 'League of Legends'}
         ({gameShortName})
       {/if}
@@ -71,7 +71,7 @@
 
   {#if statusCode === 'unknown'}
     <span class="status__tooltip">
-      <Tooltip text="Чтобы видеть статус игрока, добавьте его в друзья" />
+      <Tooltip text={$_('tooltip.add-to-see-status')} />
     </span>
   {/if}
 </span>

@@ -4,13 +4,14 @@ import type { BrowserWindow, IpcMainEvent, IpcMainInvokeEvent } from "electron";
 import { ipcMain } from "electron";
 import { EventEmitter } from "events";
 
+import { i18n } from "@guilds-main/utils/i18n";
 import { logDebug } from "@guilds-main/utils/log";
 import { Result } from "@guilds-shared/helpers/result";
 import { flowId } from "@guilds-shared/helpers/rpc";
 import { isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
-export type TRPCHandlerResult = Result | Promise<Result> | void | Promise<void>;
+export type TRPCHandlerResult = Result | Promise<Result> | undefined | Promise<undefined>;
 export type IRPCHandlerFunc = (...args: any[]) => TRPCHandlerResult; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 
@@ -68,7 +69,7 @@ export class MainRPC extends EventEmitter implements IDestroyable {
 
   // #region Flow handlers
   private handleFlow(_: IpcMainEvent, { event, data }: { event: string, data: unknown }): void {
-    super.emit(event, data);
+    super.emit(event, data, _);
   }
 
   private handleInvoke(_: IpcMainInvokeEvent, { event, data }: { event: string, data: unknown[] }): TRPCHandlerResult {
@@ -79,7 +80,7 @@ export class MainRPC extends EventEmitter implements IDestroyable {
       logDebug(`Internal: unknown event - ${event}`);
       return Result.create()
         .setStatus("error")
-        .setNotification("Внутренняя ошибка приложения");
+        .setNotification(i18n.t("error.internal"));
     }
 
     return handler(...data);

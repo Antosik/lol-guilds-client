@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import { link } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
 
@@ -19,13 +20,13 @@
 <ul class="guild-nav__items-list">
   <li class="guild-nav__item">
     <a href={`/client/guild/`} class="use-active" use:link use:active>
-      Члены гильдии
+      {$_('main.guild-members')}
     </a>
   </li>
   {#if $guildStore.role > 0}
     <li class="guild-nav__item">
       <a href={`/client/guild/invites`} class="use-active" use:link use:active>
-        Заявки в гильдию
+        {$_('guild-info.invites')}
       </a>
     </li>
   {/if}

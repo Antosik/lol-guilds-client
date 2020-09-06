@@ -1,5 +1,6 @@
 <script lang="typescript">
   import { onMount } from 'svelte';
+  import { _ } from 'svelte-i18n';
   import Router, { push } from 'svelte-spa-router';
   import { isExists } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '@guilds-web/data/rpc';
@@ -35,7 +36,7 @@
 <div class="page rating-page">
 
   {#await seasonsLoadingPromise}
-    <Loading>Загружаем список сезонов...</Loading>
+    <Loading>{$_('loading.seasons')}</Loading>
   {:then seasons}
     {#if isExists(season_id)}
       <RatingNavigation
@@ -43,7 +44,7 @@
         selectedSeason={season_id}
         selectedStage={stage_id} />
     {:else}
-      <Loading>Загружаем рейтинг...</Loading>
+      <Loading>{$_('loading.rating')}</Loading>
     {/if}
 
     <Router
@@ -51,7 +52,7 @@
       prefix={subprefix}
       on:routeLoaded={appStore.setCurrentPageLoaded} />
   {:catch error}
-    <p>Что-то пошло не так: {error.message}</p>
+    <p>{$_('error.something', { values: { message: error.message }})}</p>
   {/await}
 
 </div>

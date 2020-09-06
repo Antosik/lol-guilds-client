@@ -1,47 +1,56 @@
 <script lang="typescript">
-  import { onMount } from 'svelte';
-  import { rpc } from '../data/rpc';
-  import { ISSUES_URL, RELEASES_URL } from '@guilds-shared/env';
+  import { onDestroy, onMount } from "svelte";
+  import { _ } from "svelte-i18n";
+  import { rpc } from "../data/rpc";
+  import { ISSUES_URL, RELEASES_URL } from "@guilds-shared/env";
 
-  import LoadingSpinner from '../components/LoadingSpinner.svelte';
+  import LoadingSpinner from "../components/LoadingSpinner.svelte";
 
   let updateCheckState: string;
   let downloadProgress: number = 0;
   let nextVersion: any;
 
-  const versionPromise = rpc.invoke('version:get');
+  const versionPromise = rpc.invoke("version:get");
 
   const checkForUpdate = async (e: Event) => {
     e.stopPropagation();
     e.preventDefault();
-    await rpc.invoke('version:check');
+    await rpc.invoke("version:check");
   };
 
   const installUpdate = async (e: Event) => {
     e.stopPropagation();
     e.preventDefault();
-    await rpc.invoke('version:install');
+    await rpc.invoke("version:install");
   };
 
+  const states = [
+    "process",
+    "downloading",
+    "available",
+    "not-available",
+    "ready",
+    "error",
+    "portable",
+  ];
+
   onMount(async () => {
-    [
-      'process',
-      'downloading',
-      'available',
-      'not-available',
-      'ready',
-      'error',
-      'portable',
-    ].forEach((state) =>
-      rpc.on(`version:update:${state}`, (e) => {
+    states.forEach((state) =>
+      rpc.addListener(`version:update:${state}`, (e) => {
         updateCheckState = state;
-        downloadProgress = state === 'downloading' ? e : 0;
+        downloadProgress = state === "downloading" ? e : 0;
         nextVersion =
-          state === 'available' || state === 'portable' ? e : undefined;
-      }),
+          state === "available" || state === "portable" ? e : undefined;
+      })
     );
 
-    await rpc.invoke('version:check');
+    await rpc.invoke("version:check");
+  });
+
+  onDestroy(async () => {
+    states.forEach((state) =>
+      rpc.removeAllListeners(`version:update:${state}`)
+    );
   });
 </script>
 
@@ -118,7 +127,7 @@
     class="flex-center version-block__issues-link mini-block">
     <img
       src="./images/icons/bug.svg"
-      alt="Сообщить об ошибке"
+      alt={$_('settings.bugreport')}
       class="version-block__issues-link__img" />
   </a>
   {#await versionPromise then version}
@@ -136,21 +145,21 @@
         class="flex-center version-block__update-state
         version-block__update-state--downloading mini-block">
         <progress max="100" value={downloadProgress} />
-        Загрузка обновления
+        {$_('update.downloading')}
       </div>
     {:else if updateCheckState === 'ready'}
       <button
         type="button"
         class="flex-center version-block__update-state mini-block"
         on:click={installUpdate}>
-        Установить обновление
+        {$_('update.install')}
       </button>
     {:else if updateCheckState === 'portable'}
       <a
         href={RELEASES_URL.replace('{}', nextVersion)}
         target="_blank"
         class="flex-center version-block__update-state mini-block">
-        Скачать обновление
+        {$_('update.download')}
       </a>
     {/if}
   {/await}

@@ -1,5 +1,6 @@
 <script lang="typescript">
   import { createEventDispatcher } from 'svelte';
+  import { _ } from 'svelte-i18n';
 
   const dispatch = createEventDispatcher();
   const onClick = () => dispatch('click');
@@ -21,5 +22,5 @@
 </style>
 
 <button type="button" class="flex-center mini-block" on:click={onClick}>
-  <img src="./images/icons/top.svg" alt="Прокрутить наверх" />
+  <img src="./images/icons/top.svg" alt={$_('utils.to-the-top')} />
 </button>

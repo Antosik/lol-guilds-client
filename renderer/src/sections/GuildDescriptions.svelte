@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import { isNotBlank } from '@guilds-shared/helpers/typeguards';
   import { markdown } from '../utils/markdown';
 
@@ -42,7 +43,7 @@
 
     {#if isNotBlank(short_description)}
       <div class="guild-info__short_description">
-        <h3>Краткое описание</h3>
+        <h3>{$_('guild-info.short-description')}</h3>
         <div class="guild-info__description md-description">
           {@html markdown.render(short_description)}
         </div>
@@ -51,7 +52,7 @@
 
     {#if isNotBlank(long_description)}
       <div class="guild-info__long_description">
-        <h3>Описание</h3>
+        <h3>{$_('guild-info.long-description')}</h3>
         <div class="guild-info__description md-description">
           {@html markdown.render(long_description)}
         </div>

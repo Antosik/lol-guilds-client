@@ -25,8 +25,11 @@ async function handleWindowControls() {
   await toggleMaximized();
 }
 
-document.onreadystatechange = async () => {
-  if (document.readyState === "complete") {
-    await handleWindowControls();
-  }
+window.LGC = {
+  currentLocale: rpc.sendSync<string>("app:i18n:locale"),
+  locales: rpc.sendSync<Record<string, IKeyValue>>("app:i18n:load")
 };
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await handleWindowControls();
+});

@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import {
     isEmpty,
     isExists,
@@ -97,12 +98,12 @@
 
     {#if !finished}
       <IntersectionObs on:intersect={() => currentPage++}>
-        <Loading>Загружаем еще одну страницу...</Loading>
+        <Loading>{$_('loading.another-page')}</Loading>
       </IntersectionObs>
     {/if}
   {:else if initialInvitesLoading}
-    <Loading>Загружаем список подавших заявки...</Loading>
+    <Loading>{$_('loading.invites')}</Loading>
   {:else}
-    <p>Нет заявок</p>
+    <p>{$_('notfound.invites')}</p>
   {/if}
 </div>

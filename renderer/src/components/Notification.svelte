@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import { fade } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
+  import { _ } from 'svelte-i18n';
 
   export let id: string = '';
   export let text: string = '';
@@ -45,7 +46,7 @@
     type="button"
     on:click={onClose}
     class="notification__close-button flex-center">
-    <img src="./images/icons/close.svg" alt="Закрыть уведомление" />
+    <img src="./images/icons/close.svg" alt={$_('utils.close-notification')} />
   </button>
   <p class="notification__text">{text}</p>
 </li>

@@ -1,0 +1,203 @@
+{
+  "social": {
+    "notfound": "Couldn't find summoners: {notfound}",
+    "friend-request": {
+      "ok": "The request to friends has been successfully sent",
+      "failure": "Couldn't send a request to a friend"
+    },
+    "lobby-request": {
+      "ok": "Lobby invitation successfully sent"
+    },
+    "lobby-creation": {
+      "failure": "Failed to create a lobby"
+    },
+    "lobby-accept": {
+      "failure": "The accept of the invitation to the lobby is failed"
+    },
+    "lobby-decline": {
+      "failure": "The decline of the invitation to the lobby is failed"
+    },
+    "open-chat": {
+      "failure": "Couldn't open the chat room"
+    }
+  },
+  "guild-api": {
+    "season": {
+      "failure": "Error on receiving data about the season"
+    },
+    "stage": {
+      "failure": "Error at receiving data on the stage"
+    },
+    "invite": {
+      "failure": "Error on receiving data on guild applications"
+    }
+  },
+  "utils": {
+    "prev": "Previous",
+    "next": "Next",
+    "reload": "Reload",
+    "note": "Note",
+    "win": "Win",
+    "lose": "Lose",
+    "accept": "Accept",
+    "decline": "Decline",
+    "close-notification": "Close the notification",
+    "to-the-top": "Scroll to the top",
+    "information": "Information",
+    "close": "Close"
+  },
+  "main": {
+    "guild": "Guild",
+    "guild-members": "Guild members",
+    "guild-members-rating": "Guild members rating",
+    "rating-position": "The current position in the rating",
+    "my-rating": "Personal Rating",
+    "my-last-games": "My latest games with the guild",
+    "stage": "Stage",
+    "season": "Season",
+    "client-not-launched": "League of Legends client is not launched!",
+    "to-season": "To the season",
+    "to-main-page": "Go home"
+  },
+  "send": {
+    "friend-request": "Send a friend request",
+    "message": "Send a message",
+    "lobby-invite": "Send an invitation to the lobby"
+  },
+  "tooltip": {
+    "add-to-see-status": "To see the status of a player, add him to your friends"
+  },
+  "loading": {
+    "into-system": "Connecting to the guild system...",
+    "another-page": "Loading another page...",
+    "invites": "Loading the list of applicants...",
+    "members": "Loading the list of the guild members...",
+    "guild": "Loading information about the guild...",
+    "rating": "Loading the rating...",
+    "seasons": "Loading the list of seasons...",
+    "season": "Receiving data about the season...",
+    "games": "Loading the list of games...",
+    "summoner": "Loading information about the summoner..."
+  },
+  "not-found": {
+    "invites": "No applications",
+    "data": "No data",
+    "rating": "No rating",
+    "active-season": "No active season",
+    "page": "Page not found"
+  },
+  "error": {
+    "unexpected": "An unexpected error has occurred!",
+    "something": "Something went wrong: {message}",
+    "request": "It was not possible to send a request",
+    "internal": "Internal application error"
+  },
+  "invite": {
+    "all": "Invite all",
+    "friends": "Invite friends",
+    "from-guild-member": "Lobby invitation from a guild member"
+  },
+  "guild-path": {
+    "start": "Start",
+    "not-participating": {
+      "status": "We're not participating. ({points}pt)",
+      "needed": "Your guild needs {points} more points to participate"
+    }
+  },
+  "guilds-program": {
+    "not-participating": "You are not participating in the \"Guilds\" program",
+    "select-guild": "You can select a Guild in the League client on the home page in the \"Guilds\" tab"
+  },
+  "guild-info": {
+    "short-description": "Short description",
+    "long-description": "Description",
+    "leader": "Leader",
+    "seasons-count": "Seasons completed",
+    "hiring": {
+      "opened": "Guild recruitment open",
+      "closed": "Guild recruitment closed"
+    },
+    "invites": "Applications to the guild"
+  },
+  "guilds-rating": {
+    "head": "Rating of guilds",
+    "guild-name": "Title of the guild",
+    "guild-points": "Number of points",
+    "guild-rewards": "Awards",
+    "guild-disbanded": "Guild disbanded",
+    "not-participating": "Unfortunately, the guild did not score enough points to participate",
+    "guild-place": "Place in the ranking"
+  },
+  "guild-invites": {
+    "player-displayName": "Player nickname",
+    "player-level": "Level",
+    "player-rank": "Rank",
+    "player-points": "Last season's points",
+    "accept-invite": "Accept application",
+    "decline-invite": "Reject application"
+  },
+  "navigation": {
+    "main": "Home",
+    "guild": "My guild",
+    "rating": "Rating",
+    "current-season": "Current season",
+    "previous-season": "Previous season"
+  },
+  "timings": {
+    "ended-at": "Ended",
+    "will-end-in": "Will end in",
+    "starts-in": "Starts in"
+  },
+  "update": {
+    "downloading": "Downloading an update",
+    "install": "Install update",
+    "download": "Download update"
+  },
+  "settings": {
+    "bugreport": "Report a bug",
+    "head": "Settings",
+    "language": "Language",
+    "status": {
+        "success": "Setting successfully saved",
+        "error": "An error occurred while saving"
+    },
+    "please-reload": "Please reload the page"
+  },
+  "gameflow": {
+    "None": "In the main menu",
+    "Lobby": "In the lobby",
+    "Matchmaking": "In queue",
+    "CheckedIntoTournament": "Participates in the tournament",
+    "ReadyCheck": "Confirms readiness",
+    "ChampSelect": "Chooses the champion",
+    "GameStart": "In game",
+    "FailedToLaunch": "In game",
+    "InProgress": "In game",
+    "Reconnect": "In game",
+    "WaitingForStats": "In game",
+    "PreEndOfGame": "In game",
+    "EndOfGame": "Finished the game",
+    "TerminatedInError": "???"
+  },
+  "status": {
+    "chat": "Online",
+    "away": "Away",
+    "dnd": "In game",
+    "offline": "Offline",
+    "mobile": "League+",
+    "unknown": "Unknown",
+    "banned": "Blocked"
+  },
+  "ranked": {
+    "0": "Iron",
+    "1": "Bronze",
+    "2": "Silver",
+    "3": "Gold",
+    "4": "Platinum",
+    "5": "Diamond",
+    "6": "Master",
+    "7": "Grandmaster",
+    "8": "Challenger"
+  },
+  "temp": "tempen"
+}

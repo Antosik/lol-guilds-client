@@ -1,6 +1,6 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import {
-    gameflowLocale,
     gameflowNotBusyStatusCode,
   } from '@guilds-shared/helpers/gameflow';
 
@@ -37,6 +37,6 @@
   <span class="status__circle" />
 
   {#if showText}
-    <span class="status__text">{gameflowLocale.get(statusCode)}</span>
+    <span class="status__text">{$_(`gameflow.${statusCode}`)}</span>
   {/if}
 </span>

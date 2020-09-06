@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
   import { isExists } from '@guilds-shared/helpers/typeguards';
 
   import GuildPlaceGraphAxis from './GuildPlaceGraphAxis.svelte';
@@ -70,7 +71,7 @@
     on:click={prevSegment}>
     <img
       src="./images/icons/arrow-left.svg"
-      alt="Назад"
+      alt={$_('utils.prev')}
       class="guild-graph__nav__img" />
   </button>
   <div class="guild-graph__figure">
@@ -88,7 +89,7 @@
     on:click={nextSegment}>
     <img
       src="./images/icons/arrow-right.svg"
-      alt="Вперед"
+      alt={$_('utils.next')}
       class="guild-graph__nav__img" />
   </button>
 </div>

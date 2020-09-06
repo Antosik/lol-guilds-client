@@ -1,5 +1,6 @@
 <script lang="typescript">
   import { onMount } from 'svelte';
+  import { _ } from 'svelte-i18n';
   import { location } from 'svelte-spa-router';
   import { isExists, isEmpty, isNotEmpty } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '@guilds-web/data/rpc';
@@ -154,7 +155,7 @@
       }
     }
 
-    return 'Нет рейтинга';
+    return $_('not-found.rating');
   }
 
   onMount(async () => {
@@ -183,20 +184,19 @@
 </style>
 
 {#await seasonLoadingPromise}
-  <Loading>Получаем данные...</Loading>
+  <Loading>{$_('loading.season')}</Loading>
 {:then season}
   {#if isExists(season)}
     <div class="guild-rating">
-      <h3>Текущая позиция в рейтинге</h3>
+      <h3>{$_('main.rating-position')}</h3>
       {#await guildRatingLoadingPromise}
-        <Loading>Загружаем информацию...</Loading>
+        <Loading>{$_('loading.rating')}</Loading>
       {:then guild}
         {#if isExists(guild)}
           <div class="guild-rating__rank">
             {#if guild.current_position.rank === 0}
-              <p>Не участвуем ({guild.current_position.points}pt)</p>
-              <p>
-                Для участия необходимо еще {1000 - guild.current_position.points}pt
+              <p>{$_('guild-path.not-participating.status', { values: { points: guild.current_position.points }})}</p>
+              <p>{$_('guild-path.not-participating.needed', { values: { points: 1000 - guild.current_position.points }})}
               </p>
             {:else}
               <p>
@@ -208,19 +208,19 @@
             segments={guild.segments}
             current={guild.current_position} />
         {:else}
-          <p>Нет данных</p>
+          <p>{$_('not-found.data')}</p>
         {/if}
       {/await}
     </div>
 
     <div class="top-members horizontal-scroll">
-      <h3>Рейтинг членов гильдии</h3>
+      <h3>{$_('main.guild-members-rating')}</h3>
       {#await topMembersLoadingPromise}
-        <Loading>Загружаем список...</Loading>
+        <Loading>{$_('loading.members')}</Loading>
       {:then topMembers}
         {#if isNotEmpty(topMembers)}
           <p>
-            Личный рейтинг - {findSummonerRating(summoner_name, topMembers)}
+            {$_('main.my-rating')} - {findSummonerRating(summoner_name, topMembers)}
           </p>
           <ul class="horizontal-scroll__scrollable">
             {#each topMembers as member, i (member.summoner.id)}
@@ -233,13 +233,13 @@
             {/each}
           </ul>
         {:else}
-          <p>Нет данных</p>
+          <p>{$_('not-found.data')}</p>
         {/if}
       {/await}
     </div>
 
     <div class="last-games horizontal-scroll">
-      <h3>Мои последние игры с гильдией</h3>
+      <h3>{$_('main.my-last-games')}</h3>
       {#if isNotEmpty(lastGames)}
         <ul class="horizontal-scroll__scrollable">
           {#each lastGames as game, i (game.id)}
@@ -249,14 +249,14 @@
           {/each}
         </ul>
       {:else if initialGamesLoading}
-        <Loading>Загружаем список игр...</Loading>
+        <Loading>{$_('loading.games')}</Loading>
       {:else}
-        <p>Нет данных</p>
+        <p>{$_('not-found.data')}</p>
       {/if}
     </div>
   {:else}
-    <p>Нет активного сезона!</p>
+    <p>{$_('not-found.active-season')}</p>
   {/if}
 {:catch error}
-  <p>Что-то пошло не так: {error.message}</p>
+  <p>{$_('error.something', { values: { message: error.message } })}</p>
 {/await}

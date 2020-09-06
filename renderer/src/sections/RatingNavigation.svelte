@@ -1,4 +1,5 @@
 <script lang="typescript">
+  import { _, locale } from 'svelte-i18n';
   import { link, push } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
   import { isExists } from '@guilds-shared/helpers/typeguards';
@@ -73,7 +74,7 @@
 <div class="season-selector">
 
   <div class="season-selector__info">
-    <h2 class="season-selector__heading">Сезон:</h2>
+    <h2 class="season-selector__heading">{$_('main.season')}:</h2>
 
     <select class="season-selector__select" on:blur={onSeasonChange}>
       {#each seasons as season (season.id)}
@@ -83,13 +84,13 @@
 
     <div class="season-selector__schedule">
       {#if isExists(stage_info)}
-        <h3>Этап {stage_info.number}</h3>
+        <h3>{$_('main.stage')} {stage_info.number}</h3>
         <p>
-          {formatDate(stage_info.start_date)} - {formatDate(stage_info.end_date)}
+          {formatDate(stage_info.start_date, $locale)} - {formatDate(stage_info.end_date, $locale)}
         </p>
       {:else if isExists(season_info)}
         <p>
-          {formatDate(season_info.start_date)} - {formatDate(season_info.end_date)}
+          {formatDate(season_info.start_date, $locale)} - {formatDate(season_info.end_date, $locale)}
         </p>
       {/if}
     </div>
@@ -99,7 +100,7 @@
     {#if isExists(selectedStage)}
       <li class="season-selector__stages-list-item">
         <a href={`/client/rating/season/${selectedSeason}`} use:link>
-          К сезону
+          {$_('main.to-season')}
         </a>
       </li>
     {/if}
@@ -113,10 +114,10 @@
               class="use-active"
               use:link
               use:active>
-              Этап {stage.number}
+              {$_('main.stage')} {stage.number}
             </a>
           {:else}
-            <span class="stage-not-active">Этап {stage.number}</span>
+            <span class="stage-not-active">{$_('main.stage')} {stage.number}</span>
           {/if}
         </li>
       {/each}

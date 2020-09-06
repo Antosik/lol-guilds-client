@@ -1,5 +1,6 @@
 <script lang="typescript">
   import { onMount, onDestroy } from 'svelte';
+  import { _ } from 'svelte-i18n';
   import Router, { replace, location } from 'svelte-spa-router';
   import { isNotExists, isExists } from '@guilds-shared/helpers/typeguards';
   import { rpc } from '../data/rpc';
@@ -65,14 +66,11 @@
     {/if}
     <main class="subpages">
       {#if guild === undefined}
-        <Loading>Подключаемся к системе гильдий...</Loading>
+        <Loading>{$_('loading.into-system')}</Loading>
       {:else if guild === null}
         <div class="guilds_not-participating flex-center">
-          <h2>Вы не участвуете в программе "Гильдий".</h2>
-          <p>
-            Выбрать Гильдию можно в клиенте Лиги на главной странице во вкладке
-            Гильдии
-          </p>
+          <h2>{$_('guilds-program.not-participating')}</h2>
+          <p>{$_('guilds-program.select-guild')}</p>
         </div>
       {:else}
         <Router

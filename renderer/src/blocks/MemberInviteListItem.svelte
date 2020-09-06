@@ -1,9 +1,10 @@
 <script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
+  import { createEventDispatcher } from "svelte";
+  import { _ } from "svelte-i18n";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
 
-  import GuildMemberStatus from '../components/GuildMemberStatus.svelte';
-  import Tooltip from '../components/Tooltip.svelte';
+  import GuildMemberStatus from "../components/GuildMemberStatus.svelte";
+  import Tooltip from "../components/Tooltip.svelte";
 
   export let allowInvite: boolean = true;
   export let member: IInternalGuildMember | undefined = undefined;
@@ -11,17 +12,17 @@
   const dispatch = createEventDispatcher();
   const sendFriendRequest = () => {
     if (isExists(member)) {
-      dispatch('friend-request', member.name);
+      dispatch("friend-request", member.name);
     }
   };
   const inviteToParty = () => {
     if (isExists(member)) {
-      dispatch('member-invite', member.name);
+      dispatch("member-invite", member.name);
     }
   };
   const openChatWith = () => {
     if (isExists(member)) {
-      dispatch('open-chat', member.name);
+      dispatch("open-chat", member.name);
     }
   };
 </script>
@@ -66,7 +67,7 @@
       <GuildMemberStatus statusCode={member.status} gameName={member.game} />
       {#if isExists(member) && member.note}
         <span class="note__tooltip">
-          <Tooltip text={member.note} label="Заметка" icon="note" />
+          <Tooltip text={member.note} label={$_('utils.note')} icon="note" />
         </span>
       {/if}
     </div>
@@ -76,14 +77,14 @@
           class="guild-member__friend flex-center"
           type="button"
           on:click={sendFriendRequest}>
-          <img src="./images/icons/user.svg" alt="Отправить заявку в друзья" />
+          <img src="./images/icons/user.svg" alt={$_('send.friend-request')} />
         </button>
       {:else if isExists(member) && member.status !== 'banned'}
         <button
           class="guild-member__chat flex-center"
           type="button"
           on:click={openChatWith}>
-          <img src="./images/icons/chat.svg" alt="Отправить сообщение" />
+          <img src="./images/icons/chat.svg" alt={$_('send.message')} />
         </button>
       {/if}
       {#if isExists(member) && allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown') && member.game === 'League of Legends'}
@@ -93,7 +94,7 @@
           on:click={inviteToParty}>
           <img
             src="./images/icons/plus.svg"
-            alt="Отправить приглашение в лобби" />
+            alt={$_('send.lobby-invite')} />
         </button>
       {/if}
     </div>

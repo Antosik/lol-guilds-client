@@ -1,5 +1,6 @@
 <script lang="typescript">
   import { onMount } from 'svelte';
+  import { _, locale } from 'svelte-i18n';
   import { link } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
   import { isExists } from '@guilds-shared/helpers/typeguards';
@@ -19,21 +20,21 @@
     const endDate = new Date(end);
 
     if (time > endDate) {
-      const distance = formatDateDistanceTo(endDate, time);
-      return `Закончился ${distance}`;
+      const distance = formatDateDistanceTo(endDate, time, $locale);
+      return `${$_('timings.ended-at')} ${distance}`;
     } else if (time > startDate) {
-      const distance = formatDateDistanceTo(endDate, time);
-      return `Закончится ${distance}`;
+      const distance = formatDateDistanceTo(endDate, time, $locale);
+      return `${$_('timings.will-end-in')} ${distance}`;
     } else {
-      const distance = formatDateDistanceTo(startDate, time);
-      return `Начнется ${distance}`;
+      const distance = formatDateDistanceTo(startDate, time, $locale);
+      return `${$_('timings.starts-in')} ${distance}`;
     }
   };
 
   onMount(() => {
     const interval = setInterval(() => {
       now = new Date();
-    }, 1000);
+    }, 5000);
 
     return () => {
       clearInterval(interval);
@@ -79,15 +80,15 @@
 <div class="season-selector">
 
   <div class="season-selector__info">
-    <h2 class="season-selector__heading">Сезон: {season.title}</h2>
+    <h2 class="season-selector__heading">{$_('main.season')}: {season.title}</h2>
 
     <div class="season-selector__schedule">
       {#if isExists(stage)}
-        <h3>Этап {stage.number}</h3>
-        <p>{formatDate(stage.start_date)} - {formatDate(stage.end_date)}</p>
+        <h3>{$_('main.stage')} {stage.number}</h3>
+        <p>{formatDate(stage.start_date, $locale)} - {formatDate(stage.end_date, $locale)}</p>
         <p>{formatDateDistance(now, stage.start_date, stage.end_date)}</p>
       {:else}
-        <p>{formatDate(season.start_date)} - {formatDate(season.end_date)}</p>
+        <p>{formatDate(season.start_date, $locale)} - {formatDate(season.end_date, $locale)}</p>
         <p>{formatDateDistance(now, season.start_date, season.end_date)}</p>
       {/if}
     </div>
@@ -96,7 +97,7 @@
   <ul class="season-selector__stages-list">
     {#if isExists(stage)}
       <li class="season-selector__stages-list-item">
-        <a href={`/client/current-season/`} use:link>К сезону</a>
+        <a href={`/client/current-season/`} use:link>{$_('main.to-season')}</a>
       </li>
     {/if}
 
@@ -108,10 +109,10 @@
             class="use-active"
             use:link
             use:active>
-            Этап {stage.number}
+            {$_('main.stage')} {stage.number}
           </a>
         {:else}
-          <span class="stage-not-active">Этап {stage.number}</span>
+          <span class="stage-not-active">{$_('main.stage')} {stage.number}</span>
         {/if}
       </li>
     {/each}

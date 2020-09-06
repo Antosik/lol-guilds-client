@@ -25,32 +25,36 @@ export class ClientRPC extends EventEmitter {
 
 
   // #region Main
-  public send(event: string, data: unknown = undefined): void {
+  public send(event: RPCHandlerEventType, data: unknown = undefined): void {
     ipcRenderer.send(this.#id, { event, data });
   }
 
+  public sendSync<T = unknown>(event: RPCHandlerEventType, data: unknown = undefined): T | undefined {
+    const response = ipcRenderer.sendSync(this.#id, { event, data }) as Result<T>;
+    return this.handleResult(response);
+  }
+
   public async invoke<T = unknown>(event: RPCHandlerEventType, ...data: unknown[]): Promise<T | undefined> {
-
     const response = await ipcRenderer.invoke(this.#id, { event, data }) as Result<T>;
-
-    if (isExists(response?.notification)) {
-      appStore.addNotification(response.notification);
-    }
-
-    if (response?.status === "error") {
-      appStore.addNotification(
-        isExists(response?.error)
-          ? response.error.toString()
-          : "Внутренняя ошибка приложения"
-      );
-    }
-
-    return response?.data;
+    return this.handleResult(response);
   }
 
   public destroy(): void {
     this.removeAllListeners();
     ipcRenderer.removeListener(this.#id, this.handleFlow);
+  }
+
+  private handleResult<T>(result: Result<T>): T | undefined {
+
+    if (isExists(result?.notification)) {
+      appStore.addNotification(result.notification);
+    }
+
+    if (result?.status === "error") {
+      appStore.addNotification(result?.error?.toString() ?? "Error");
+    }
+
+    return result?.data;
   }
   // #endregion
 

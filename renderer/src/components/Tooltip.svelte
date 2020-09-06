@@ -1,6 +1,8 @@
 <script lang="typescript">
+  import { _ } from 'svelte-i18n';
+
   export let icon: string = 'i';
-  export let label: string = 'Информация';
+  export let label: string = $_('utils.information');
   export let text: string = '';
 </script>
 

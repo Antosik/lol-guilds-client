@@ -130,14 +130,14 @@
       {#await versionCheckPromise}
         <LoadingSpinner />
       {:then}
-        Проверить наличие обновлений
+        {$_('update.check')}
       {/await}
     </button>
   </div>
 
   <div class="info__contacts">
     <a href={ISSUES_URL} target="_blank" class="info__contacts__bug-report">
-      Сообщить об ошибке
+      {$_('settings.bugreport')}
     </a>
     <div class="info__contacts__credits">Made with ♥ by Ariastel Team</div>
   </div>

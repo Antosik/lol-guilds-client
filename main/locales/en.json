@@ -151,7 +151,8 @@
   "update": {
     "downloading": "Downloading an update",
     "install": "Install update",
-    "download": "Download update"
+    "download": "Download update",
+    "check": "Check for updates"
   },
   "settings": {
     "bugreport": "Report a bug",

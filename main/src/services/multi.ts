@@ -1,7 +1,9 @@
 import { GuildsService } from "./guilds";
 import { LCUService } from "./lcu";
+import { i18n } from "@guilds-main/utils/i18n";
 import { EGuildMemberStatus } from "@guilds-shared/helpers/gameflow";
-import { isNotExists } from "@guilds-shared/helpers/typeguards";
+import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
+import { wait } from "@guilds-shared/helpers/functions";
 
 
 export class MultiService {
@@ -61,5 +63,45 @@ export class MultiService {
       ...invite,
       isFriend: friendNames.includes(invite.displayName)
     }));
+  }
+
+  public static async createGuildGroupInClient(club_id: number, moveFromAnotherGroups: boolean, guildsService: GuildsService, lcuService: LCUService): Promise<void> {
+
+    if (isNotExists(club_id) || isNotExists(guildsService) || isNotExists(lcuService)) { return; }
+
+    let friendsList = await lcuService.getFriendsList();
+    const [availableGuilds, guildMembers] = await Promise.all([
+      guildsService.getSummonerClubsList(),
+      guildsService.getGuildMembers(club_id)
+    ]);
+
+    const clubData = availableGuilds.find(club => club.id === club_id);
+    if (isNotExists(clubData)) {
+      throw new Error(i18n.t("not-found.guild"));
+    }
+
+    const groupName = `LGC: ${clubData.club_name}`;
+    const group = await lcuService.createFriendGroup(groupName);
+    if (isNotExists(group)) {
+      throw new Error(i18n.t("social.league-group.failure"));
+    }
+    await wait(500);
+
+    friendsList = moveFromAnotherGroups
+      ? friendsList.filter((friend) => friend.groupId !== group.id)
+      : friendsList.filter((friend) => friend.groupId === 0);
+
+    const friendNameToDataMap = new Map<string, ILCUAPIFriendCoreResponse>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
+
+    for (const member of guildMembers) {
+      const friend = friendNameToDataMap.get(member.summoner.summoner_name.toLowerCase());
+
+      if (isExists(friend)) {
+        await lcuService.updateGroupOfFriend(friend?.id, group.id);
+        await wait(100);
+      }
+    }
+
+    await wait(2500);
   }
 }

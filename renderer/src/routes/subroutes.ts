@@ -4,7 +4,7 @@ import NotFoundPage from "../pages/NotFound.svelte";
 import InviteMembers from "../pages/subpages/InviteMembers.svelte";
 import GuildInfoWrapper from "../pages/subpages/GuildInfoWrapper.svelte";
 import GuildInfoInvites from "../pages/subpages/GuildInfoInvites.svelte";
-import GuildInfoMembers from "../pages/subpages/GuildInfoMembers.svelte";
+import GuildInfoFunctions from "../pages/subpages/GuildInfoFunctions.svelte";
 import GuildsRatingWrapper from "../pages/subpages/GuildsRatingWrapper.svelte";
 import GuildsRatingPage from "../pages/subpages/GuildsRatingPage.svelte";
 import SeasonPageWrapper from "../pages/subpages/SeasonPageWrapper.svelte";
@@ -39,6 +39,6 @@ export const season_subroutes = {
 
 export const guild_subprefix = subprefix + "/guild";
 export const guild_subroutes = {
-  "/": GuildInfoMembers,
+  "/": GuildInfoFunctions,
   "/invites": GuildInfoInvites,
 };

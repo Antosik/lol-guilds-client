@@ -181,5 +181,20 @@ export class LCUService implements IService {
     if (isNotExists(invitation_id)) { throw new Error(i18n.t("social.lobby-decline.failure")); }
     return this.#lcuApi.declineReceivedInvitation(invitation_id);
   }
+
+  public async createFriendGroup(groupName: string): Promise<ILCUAPIFriendGroupResponse | undefined> {
+
+    const oldGroup = await this.#lcuApi.getFriendGroupByName(groupName);
+    if (isExists(oldGroup)) {
+      return oldGroup;
+    }
+
+    await this.#lcuApi.createFriendGroup(groupName);
+    return this.#lcuApi.getFriendGroupByName(groupName);
+  }
+
+  public async updateGroupOfFriend(id: string, groupId: number): Promise<void> {
+    await this.#lcuApi.updateGroupOfFriend(id, groupId);
+  }
   // #endregion Main
 }

@@ -41,6 +41,7 @@ declare interface ILCUAPIFriendCoreResponse extends ILCUAPISocialCoreResponse {
   availability: ELCUAPIFriendStatus;
   productName: string;
   note: string;
+  groupId: number;
 }
 
 declare interface ILCUAPIFriendResponse extends ILCUAPIFriendCoreResponse {
@@ -68,6 +69,15 @@ declare interface ILCUAPIFriendResponse extends ILCUAPIFriendCoreResponse {
   statusMessage: string;
   summary: string;
   time: number;
+}
+
+declare interface ILCUAPIFriendGroupResponse {
+  collapsed: boolean;
+  id: number;
+  isLocalized: boolean;
+  isMetaGroup: boolean;
+  name: string;
+  priority: number;
 }
 // #endregion Friend Request & Responses
 

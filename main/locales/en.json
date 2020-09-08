@@ -19,6 +19,9 @@
     },
     "open-chat": {
       "failure": "Couldn't open the chat room"
+    },
+    "league-group": {
+      "failure": "Failed to create a group"
     }
   },
   "guild-api": {
@@ -77,14 +80,17 @@
     "seasons": "Loading the list of seasons",
     "season": "Receiving data about the season",
     "games": "Loading the list of games",
-    "summoner": "Loading information about the summoner"
+    "summoner": "Loading information about the summoner",
+    "group-creation": "Creating a group"
   },
   "not-found": {
     "invites": "No applications",
     "data": "No data",
     "rating": "No rating",
     "active-season": "No active season",
-    "page": "Page not found"
+    "page": "Page not found",
+    "guild": "Guild not found",
+    "group": "Group not found"
   },
   "error": {
     "unexpected": "An unexpected error has occurred!",
@@ -117,7 +123,16 @@
       "opened": "Guild recruitment open",
       "closed": "Guild recruitment closed"
     },
-    "invites": "Applications to the guild"
+    "invites": "Applications to the guild",
+    "functions": {
+      "head": "Functions",
+      "create-group": {
+        "head": "Create a group in League Client",
+        "description": "Using this feature, you can create a group in a League Client and move your friends from the guild there",
+        "button": "Create a group",
+        "checkbox": "Move friends from other groups"
+      }
+    }
   },
   "guilds-rating": {
     "head": "Rating of guilds",
@@ -199,6 +214,5 @@
     "6": "Master",
     "7": "Grandmaster",
     "8": "Challenger"
-  },
-  "temp": "tempen"
+  }
 }

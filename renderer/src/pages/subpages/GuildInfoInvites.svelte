@@ -112,6 +112,6 @@
       <span class="with-loading-ellipses">{$_('loading.invites')}</span>
     </Loading>
   {:else}
-    <p>{$_('notfound.invites')}</p>
+    <p>{$_('not-found.invites')}</p>
   {/if}
 </div>

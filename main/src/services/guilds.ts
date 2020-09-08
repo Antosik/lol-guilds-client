@@ -28,6 +28,10 @@ export class GuildsService implements IService {
     return club;
   }
 
+  public async getSummonerClubsList(): Promise<IGuildAPIClubResponse[]> {
+    return this.#guildsApi.getSummonerClubsList();
+  }
+
   public async getGuildMembers(club_id: number): Promise<IGuildAPIMemberResponse[]> {
     if (isNotExists(club_id)) { return []; }
     return this.#guildsApi.getGuildMembers(club_id);

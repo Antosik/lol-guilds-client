@@ -1,3 +1,7 @@
+<script lang="typescript">
+  export let small: boolean = false;
+</script>
+
 <style>
   .loading-spinner {
     content: "";
@@ -29,6 +33,13 @@
     animation-delay: -0.15s;
   }
 
+  .loading-spinner.loading-spinner--small {
+    width: 15px;
+    height: 15px;
+
+    --border-width: 2px;
+  }
+
   @keyframes loading {
     0% {
       transform: rotate(0deg);
@@ -39,7 +50,7 @@
   }
 </style>
 
-<div class="loading-spinner">
+<div class="loading-spinner" class:loading-spinner--small={small}>
   <div />
   <div />
   <div />

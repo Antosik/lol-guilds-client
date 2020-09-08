@@ -86,8 +86,8 @@ export class LCUAPI {
   public async getFriendsList(): Promise<ILCUAPIFriendCoreResponse[]> {
     const friendsRaw = await this.request("/lol-chat/v1/friends") as ILCUAPIFriendResponse[];
     return friendsRaw.map(
-      ({ availability, id, name, summonerId, productName, note }) =>
-        ({ availability, id, name, summonerId, productName: productName.trim(), note: note.trim() })
+      ({ availability, id, name, summonerId, productName, note, groupId }) =>
+        ({ availability, id, name, summonerId, productName: productName.trim(), note: note.trim(), groupId })
     );
   }
 
@@ -143,6 +143,44 @@ export class LCUAPI {
         pid: `${summoner.puuid}@ru1.pvp.net`
       }
     });
+  }
+
+  public async updateGroupOfFriend(id: string, groupId: number): Promise<unknown> {
+
+    return this.request(`/lol-chat/v1/friends/${id}`, {
+      method: "PUT",
+      body: {
+        groupId
+      }
+    });
+  }
+
+  public async getFriendGroups(): Promise<ILCUAPIFriendGroupResponse[]> {
+    return this.request("/lol-chat/v1/friend-groups") as Promise<ILCUAPIFriendGroupResponse[]>;
+  }
+
+  public async getFriendGroup(id: number): Promise<ILCUAPIFriendGroupResponse> {
+    return this.request(`/lol-chat/v1/friend-groups/${id}`) as Promise<ILCUAPIFriendGroupResponse>;
+  }
+
+  public async getFriendGroupByName(groupName: string): Promise<ILCUAPIFriendGroupResponse | undefined> {
+    const groups = await this.getFriendGroups();
+    return groups.find(g => g.name === groupName);
+  }
+
+  public async createFriendGroup(groupName: string): Promise<unknown> {
+
+    return this.request("/lol-chat/v1/friend-groups", {
+      method: "POST",
+      body: {
+        collapsed: false,
+        name: groupName
+      }
+    });
+  }
+
+  public async deleteFriendGroup(id: number): Promise<unknown> {
+    return this.request(`/lol-chat/v1/friend-groups/${id}`, { method: "DELETE" });
   }
   // #endregion /lol-chat/ calls
 
@@ -214,7 +252,7 @@ export class LCUAPI {
     if (isExists(result.errorCode)) {
       logError(`"[LCUAPI] (${retryIndex}/${LCUAPI.RETRY_COUNT}): "${opts.method} ${path}" ${response.status} "${(opts.body && JSON.stringify(opts.body)) ?? ""}" --- ${JSON.stringify(result)}`);
       // TODO: BetterError
-      throw new Error(String(result));
+      throw new Error(JSON.stringify(result));
     }
 
     return result;

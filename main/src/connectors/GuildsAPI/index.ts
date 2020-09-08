@@ -22,6 +22,10 @@ export class GuildsAPI {
 
 
   // #region Club API
+  public async getSummonerClubsList(): Promise<IGuildAPIClubResponse[]> {
+    return this.request("accounts/clubs", { method: "GET", version: 2 }) as Promise<IGuildAPIClubResponse[]>;
+  }
+
   public async getCurrentSummoner(): Promise<IGuildAPICurrentSummonerResponse> {
     return this.request("contest/summoner", { method: "GET", version: 2 }) as Promise<IGuildAPICurrentSummonerResponse>;
   }

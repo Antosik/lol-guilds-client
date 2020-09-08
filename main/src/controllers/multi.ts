@@ -84,6 +84,10 @@ export class MultiController implements IController, IDestroyable {
   private _handleInvitesList(club_id: number, options: IGuildAPIPagedRequest) {
     return Result.resolve(MultiService.getInvitesWithFriendStatus(club_id, options, this.#guildsService, this.#lcuService));
   }
+
+  private _handleGroupCreate(club_id: number, moveFromAnotherGroups: boolean) {
+    return Promise.resolve(MultiService.createGuildGroupInClient(club_id, moveFromAnotherGroups, this.#guildsService, this.#lcuService));
+  }
   // #endregion RPC Events Handling (Outer)
 
 
@@ -104,7 +108,8 @@ export class MultiController implements IController, IDestroyable {
     this.#rpc
       .setHandler("guilds:members", this._handleGetMembers)
       .setHandler("guilds:member-status:subscribe", this._handleSubscribeToMembersStatus)
-      .setHandler("guilds:invites:list", this._handleInvitesList);
+      .setHandler("guilds:invites:list", this._handleInvitesList)
+      .setHandler("guilds:group:create", this._handleGroupCreate);
 
     return this;
   }
@@ -125,7 +130,8 @@ export class MultiController implements IController, IDestroyable {
     this.#rpc
       .removeHandler("guilds:members")
       .removeHandler("guilds:member-status:subscribe")
-      .removeHandler("guilds:invites:list");
+      .removeHandler("guilds:invites:list")
+      .removeHandler("guilds:group:create");
 
     return this;
   }
@@ -137,6 +143,7 @@ export class MultiController implements IController, IDestroyable {
     this._handleGetMembers = this._handleGetMembers.bind(this);
     this._handleSubscribeToMembersStatus = this._handleSubscribeToMembersStatus.bind(this);
     this._handleInvitesList = this._handleInvitesList.bind(this);
+    this._handleGroupCreate = this._handleGroupCreate.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
   // #endregion Utility

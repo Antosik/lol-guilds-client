@@ -13,7 +13,7 @@ const i18n = i18next.use(Backend);
 
 export async function initI18N(): Promise<void> {
   await i18n.init({
-    debug: true,
+    debug: isDev,
     fallbackLng: ["en", "ru"],
     lng: settingsStore.get("language") ?? app.getLocale(),
     preload: ["en", "ru"],

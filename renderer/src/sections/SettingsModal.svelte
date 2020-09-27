@@ -112,6 +112,8 @@
     {:then status}
       {#if isNotBlank(status)}
         {$_('settings.status.success')}. {$_('settings.please-reload')}
+      {:else}
+        {$_('settings.status.error')}
       {/if}
     {:catch __}
       {$_('settings.status.error')}

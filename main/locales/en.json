@@ -60,7 +60,8 @@
     "season": "Season",
     "client-not-launched": "League of Legends client is not launched!",
     "to-season": "To the season",
-    "to-main-page": "Go home"
+    "to-main-page": "Go home",
+    "search": "Search"
   },
   "send": {
     "friend-request": "Send a friend request",
@@ -81,7 +82,9 @@
     "season": "Receiving data about the season",
     "games": "Loading the list of games",
     "summoner": "Loading information about the summoner",
-    "group-creation": "Creating a group"
+    "group-creation": "Creating a group",
+    "static-groups": "Loading the list of static groups",
+    "friends": "Loading the list of friends"
   },
   "not-found": {
     "invites": "No applications",
@@ -90,7 +93,9 @@
     "active-season": "No active season",
     "page": "Page not found",
     "guild": "Guild not found",
-    "group": "Group not found"
+    "group": "Group not found",
+    "static-groups": "Static groups not found",
+    "friends": "Friends not found"
   },
   "error": {
     "unexpected": "An unexpected error has occurred!",
@@ -178,6 +183,16 @@
         "error": "An error occurred while saving"
     },
     "please-reload": "Please reload the page"
+  },
+  "static-groups": {
+    "head": "Static groups",
+    "create": "Create new",
+    "member-from-guild": "From guild",
+    "change-members": "Regroup",
+    "delete": "Delete group",
+    "add-friends": "Add friends to static group",
+    "friends-in-group": "Friends in group",
+    "friends-not-in-group": "Friends not in group"
   },
   "gameflow": {
     "None": "In the main menu",

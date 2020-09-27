@@ -20,6 +20,9 @@ export class LCUService implements IService {
     this.#lcuApiSocket = lcuApiSocket;
   }
 
+  public get api(): LCUAPI {
+    return this.#lcuApi;
+  }
 
   // #region Events
   public addListener(event: string, callback: TAnyFunc): this {

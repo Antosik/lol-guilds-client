@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n";
   import { isExists } from "@guilds-shared/helpers/typeguards";
 
-  import GuildMemberStatus from "../components/GuildMemberStatus.svelte";
+  import PlayerStatus from "../components/PlayerStatus.svelte";
   import Tooltip from "../components/Tooltip.svelte";
 </script>
 
@@ -67,7 +67,7 @@
 
     <div class="guild-member__info">
       <div>{member.name}</div>
-      <GuildMemberStatus statusCode={member.status} gameName={member.game} />
+      <PlayerStatus statusCode={member.status} gameName={member.game} />
       {#if isExists(member) && member.note}
         <span class="note__tooltip">
           <Tooltip text={member.note} label={$_('utils.note')} icon="note" />

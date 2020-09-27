@@ -17,14 +17,14 @@
 </script>
 
 <style>
-  .guild-member-status {
+  .player-status {
     --status-color-light: var(--status-active-light);
     --status-color-normal: var(--status-active-normal);
   }
-  .guild-member-status .status__text {
+  .player-status .status__text {
     color: var(--status-color-light);
   }
-  .guild-member-status .status__circle {
+  .player-status .status__circle {
     display: inline-block;
     background: var(--status-color-normal);
     border: 2px solid var(--status-color-light);
@@ -34,15 +34,15 @@
     margin-right: 4px;
     margin-bottom: 1px;
   }
-  .guild-member-status.in-game {
+  .player-status.in-game {
     --status-color-light: var(--status-game-light);
     --status-color-normal: var(--status-game-normal);
   }
-  .guild-member-status.away {
+  .player-status.away {
     --status-color-light: var(--status-away);
     --status-color-normal: transparent;
   }
-  .guild-member-status.offline {
+  .player-status.offline {
     --status-color-light: var(--status-unknown);
     --status-color-normal: transparent;
   }
@@ -54,7 +54,7 @@
 </style>
 
 <span
-  class="guild-member-status"
+  class="player-status"
   class:in-game={statusCode === 'dnd'}
   class:away={statusCode === 'away'}
   class:offline={statusCode === 'offline' || statusCode === 'unknown' || statusCode === 'mobile' || statusCode === 'banned'}>

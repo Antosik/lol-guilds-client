@@ -15,6 +15,7 @@ import { GuildsService } from "./services/guilds";
 import { LCUService } from "./services/lcu";
 import { VersionService } from "./services/version";
 import { MainRPC } from "./utils/rpc";
+import { StaticGroupModule } from "./features/static-groups/module";
 
 
 export class LeagueGuildsClient implements IDestroyable {
@@ -38,6 +39,8 @@ export class LeagueGuildsClient implements IDestroyable {
 
   #multiController: MultiController;
   #appController: AppController;
+
+  #staticGroupsModule: StaticGroupModule;
 
   public static mount(window: Window): LeagueGuildsClient {
     return new this(window);
@@ -65,6 +68,9 @@ export class LeagueGuildsClient implements IDestroyable {
     this.#multiController = new MultiController(this.#rpc, this.#guildsService, this.#lcuService);
 
     this.#appController = new AppController(this.#rpc);
+
+    this.#staticGroupsModule = new StaticGroupModule(this.#rpc, this.#lcuService, this.#guildsService);
+    this.#staticGroupsModule.mount();
 
     this.#rpc.addListener("lcu:connected", async () => {
       const token = await this.#lcuApi.getIdToken();

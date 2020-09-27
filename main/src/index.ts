@@ -31,10 +31,9 @@ if (!gotTheLock) {
 function onAppReady() {
 
   loadingWindow = new LoadingWindow();
-  loadingWindow.webContents.once("did-finish-load", async () => {
+  loadingWindow.on("ready-to-show", () => {
     loadingWindow.show();
-
-    await onLoadingWindowReady();
+    void onLoadingWindowReady();
   });
 }
 
@@ -58,10 +57,10 @@ async function onLoadingWindowReady() {
 
   LeagueGuildsClient.mount(window);
 
-  window.once("ready-to-show", () => {
+  window.webContents.on("did-finish-load", () => {
     setTimeout(() => {
-      loadingWindow.close();
       window.show();
+      loadingWindow.close();
     }, 1000);
   });
 }

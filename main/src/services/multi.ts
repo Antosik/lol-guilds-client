@@ -1,7 +1,7 @@
 import { GuildsService } from "./guilds";
 import { LCUService } from "./lcu";
 import { i18n } from "@guilds-main/utils/i18n";
-import { EGuildMemberStatus } from "@guilds-shared/helpers/gameflow";
+import { EPlayerStatus } from "@guilds-shared/helpers/gameflow";
 import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
 import { wait } from "@guilds-shared/helpers/functions";
 
@@ -24,7 +24,7 @@ export class MultiService {
         puuid: friend?.id,
         name: member.summoner.summoner_name,
         role: member.role,
-        status: friend?.availability ?? EGuildMemberStatus.Unknown,
+        status: friend?.availability ?? EPlayerStatus.Unknown,
         game: friend?.productName,
         note: friend?.note
       };
@@ -43,7 +43,7 @@ export class MultiService {
     return guildMembers.map(member => ({
       ...member,
       status: bannedPlayersNames.includes(member.name)
-        ? EGuildMemberStatus.Banned
+        ? EPlayerStatus.Banned
         : member.status
     }));
   }

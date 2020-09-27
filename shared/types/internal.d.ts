@@ -69,6 +69,13 @@ declare interface IInternalGuildMembersStageRatingWithSummoner {
   summoner: IGuildAPISummonerResponse;
 }
 
+declare type IInternalStaticGroupMember = ILCUAPIFriendCoreResponse & { fromGuild: boolean };
+declare type IInternalStaticGroup = {
+  id: string;
+  name: string;
+  members: IInternalStaticGroupMember[];
+};
+
 type GuildsEventSeasonsType = "guilds:seasons" | "guilds:season" | "guilds:season:live" | "guilds:season:prev";
 type GuildsEventMembersType = "guilds:members" | "guilds:members:season" | "guilds:members:stage" | "guilds:member-status:subscribe";
 type GuildsEventRatingType = "guilds:rating:season" | "guilds:rating:stage";
@@ -80,10 +87,11 @@ type GuildsEventMiscType = "guilds:club" | "guilds:role" | "guilds:group:create"
 declare type GuildsEventType = GuildsEventSeasonsType | GuildsEventMembersType | GuildsEventRatingType | GuildsEventStatsType | GuildsEventGamesType | GuildsEventPathType | GuildsEventInviteType | GuildsEventMiscType;
 declare type LCUEventType = "lcu:connect" | "lcu:disconnect" | "lcu:lobby-invite" | "lcu:lobby-invite-all" | "lcu:friend-request" | "lcu:invitation:accept" | "lcu:invitation:decline" | "lcu:open-chat";
 declare type VersionEventType = "version:get" | "version:check" | "version:install";
+declare type StaticGroupEventType = "app:static-groups:get" | "app:static-groups:get-friends" | "app:static-groups:create" | "app:static-groups:change-name" | "app:static-groups:invite" | "app:static-groups:delete" | "app:static-groups:change-members";
 type AppWindowEventType = "app:window:isMaximized" | "app:window:minimize" | "app:window:maximize" | "app:window:unmaximize" | "app:window:close";
 type AppI18NWindowType = "app:i18n:set-locale" | "app:i18n:locale" | "app:i18n:load";
 declare type AppEventType = AppWindowEventType | AppI18NWindowType;
-declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType | AppEventType;
+declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType | AppEventType | StaticGroupEventType;
 
 declare type IKeyValue = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 declare type NotExisting = void | undefined | null;

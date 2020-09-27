@@ -25,7 +25,7 @@ export const gameflowGameMap = new Map<string, string>([
   ["Legends of Runeterra", "LoR"],
 ]);
 
-export const enum EGuildMemberStatus {
+export const enum EPlayerStatus {
   Away = "away",
   Online = "chat",
   InGame = "dnd",
@@ -35,12 +35,12 @@ export const enum EGuildMemberStatus {
   Banned = "banned"
 }
 
-export const guildMemberStatusSortOrder = new Map<EGuildMemberStatus | string, number>([
-  [EGuildMemberStatus.Online, 0],
-  [EGuildMemberStatus.Away, 1],
-  [EGuildMemberStatus.Unknown, 2],
-  [EGuildMemberStatus.InGame, 3],
-  [EGuildMemberStatus.Mobile, 4],
-  [EGuildMemberStatus.Offline, 5],
-  [EGuildMemberStatus.Banned, 6],
+export const guildMemberStatusSortOrder = new Map<EPlayerStatus | string, number>([
+  [EPlayerStatus.Online, 0],
+  [EPlayerStatus.Away, 1],
+  [EPlayerStatus.Unknown, 2],
+  [EPlayerStatus.InGame, 3],
+  [EPlayerStatus.Mobile, 4],
+  [EPlayerStatus.Offline, 5],
+  [EPlayerStatus.Banned, 6],
 ]);

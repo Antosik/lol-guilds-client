@@ -6,6 +6,7 @@
 
 <script lang="typescript">
   export let isOpen: boolean = false;
+  export let name: string = "normal";
 
   const dispatch = createEventDispatcher();
 
@@ -29,8 +30,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;
+    max-height: 90%;
     border: 1px solid var(--main-secondary);
     background-color: var(--main-background);
+    display: flex;
+    flex-direction: column;
   }
   @media all and (min-width: 765px) {
     .modal {
@@ -60,6 +64,9 @@
     border-bottom: 1px solid var(--main-secondary);
     background-color: var(--main-background-transparent-dark);
   }
+  .modal__content {
+    overflow: auto;
+  }
 </style>
 
 {#if isOpen}
@@ -68,13 +75,14 @@
     transition:fade={{ duration: 200 }}
     on:click={onClose} />
 
-  <div class="modal" transition:fade={{ duration: 200 }}>
+  <div class={`modal modal--${name}`} transition:fade={{ duration: 200 }}>
     <button class="flex-center modal__close-button" on:click={onClose}>
       <img src="./images/icons/close.svg" alt={$_('utils.close')} />
     </button>
     <div class="modal__heading">
       <slot name="heading" />
     </div>
+    <slot name="before-content" />
     <div class="modal__content">
       <slot />
     </div>

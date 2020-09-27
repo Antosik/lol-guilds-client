@@ -24,7 +24,7 @@
   <ul class="flex-center">
 
     <li>
-      <a href="/client/" class="flex-center use-active" use:link use:active>
+      <a href="/client/" class="flex-center use-active" use:link use:active={'/client/(static-groups)?'}>
         {$_('navigation.main')}
       </a>
     </li>
@@ -62,6 +62,5 @@
         </a>
       </li>
     {/await}
-
   </ul>
 </nav>

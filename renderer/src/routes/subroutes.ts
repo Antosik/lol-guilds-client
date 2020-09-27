@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import NotFoundPage from "../pages/NotFound.svelte";
 
+import MainPageWrapper from "../pages/subpages/MainPageWrapper.svelte";
 import InviteMembers from "../pages/subpages/InviteMembers.svelte";
+import StaticGroupsPage from "../pages/subpages/StaticGroupsPage.svelte";
 import GuildInfoWrapper from "../pages/subpages/GuildInfoWrapper.svelte";
 import GuildInfoInvites from "../pages/subpages/GuildInfoInvites.svelte";
 import GuildInfoFunctions from "../pages/subpages/GuildInfoFunctions.svelte";
@@ -13,7 +15,8 @@ import SeasonPage from "../pages/subpages/SeasonPage.svelte";
 
 export const subprefix = "/client";
 export const subroutes = {
-  "/": InviteMembers,
+  "/": MainPageWrapper,
+  "/static-groups": MainPageWrapper,
   "/guild": GuildInfoWrapper,
   "/guild/:page_id": GuildInfoWrapper,
   "/rating": GuildsRatingWrapper,
@@ -23,6 +26,12 @@ export const subroutes = {
   "/current-season/stage/:stage_id": SeasonPageWrapper,
 
   "*": NotFoundPage
+};
+
+export const main_subprefix = subprefix;
+export const main_subroutes = {
+  "/": InviteMembers,
+  "/static-groups": StaticGroupsPage,
 };
 
 export const rating_subprefix = subprefix + "/rating";

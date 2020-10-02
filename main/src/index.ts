@@ -6,6 +6,7 @@ import { app } from "electron";
 import { BrowserWindow as LoadingWindow } from "./ui/loading";
 import { logError } from "./utils/log";
 import "./utils/security";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -60,7 +61,9 @@ async function onLoadingWindowReady() {
   window.webContents.on("did-finish-load", () => {
     setTimeout(() => {
       window.show();
-      loadingWindow.close();
+      if (isExists(loadingWindow) && loadingWindow.isClosable()) {
+        loadingWindow.close();
+      }
     }, 1000);
   });
 }

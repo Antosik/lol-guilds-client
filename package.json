@@ -31,6 +31,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.4",
     "@types/copy-webpack-plugin": "^6.0.0",
+    "@types/discord-rpc": "^3.0.4",
     "@types/i18next-fs-backend": "^1.0.0",
     "@types/markdown-it": "^10.0.2",
     "@types/mini-css-extract-plugin": "^0.9.1",
@@ -80,6 +81,7 @@
   "license": "MIT",
   "dependencies": {
     "date-fns": "^2.16.0",
+    "discord-rpc": "^3.1.4",
     "electron-is-dev": "^1.2.0",
     "electron-log": "^4.2.4",
     "electron-store": "^6.0.0",

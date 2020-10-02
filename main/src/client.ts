@@ -3,30 +3,37 @@ import type { BrowserWindow as Window } from "./ui/window";
 
 import { autoUpdater } from "electron-updater";
 
+import { DiscordRPC } from "./connectors/DiscordRPC";
 import { GuildsAPI } from "./connectors/GuildsAPI";
 import { LCUAPI } from "./connectors/LCUAPI";
 import { LCUAPISocket } from "./connectors/LCUAPI/socket";
+
 import { AppController } from "./controllers/app";
 import { GuildsController } from "./controllers/guilds";
 import { LCUController } from "./controllers/lcu";
 import { MultiController } from "./controllers/multi";
 import { VersionController } from "./controllers/version";
+
 import { GuildsService } from "./services/guilds";
 import { LCUService } from "./services/lcu";
 import { VersionService } from "./services/version";
+
 import { MainRPC } from "./utils/rpc";
+
 import { StaticGroupModule } from "./features/static-groups/module";
+import { DiscordRPCModule } from "./features/discord-rpc/module";
 
 
 export class LeagueGuildsClient implements IDestroyable {
 
   #lcuApi: LCUAPI;
   #lcuApiSocket: LCUAPISocket;
+  #guildsApi: GuildsAPI;
+  #discordRPC: DiscordRPC;
   #appUpdater: AppUpdater;
 
   #window: Window;
   #rpc: MainRPC;
-  #guildsApi: GuildsAPI;
 
   #versionService: VersionService;
   #versionController: VersionController;
@@ -41,6 +48,7 @@ export class LeagueGuildsClient implements IDestroyable {
   #appController: AppController;
 
   #staticGroupsModule: StaticGroupModule;
+  #discordRPCModule: DiscordRPCModule;
 
   public static mount(window: Window): LeagueGuildsClient {
     return new this(window);
@@ -54,6 +62,7 @@ export class LeagueGuildsClient implements IDestroyable {
     this.#lcuApi = new LCUAPI();
     this.#lcuApiSocket = new LCUAPISocket();
     this.#guildsApi = new GuildsAPI();
+    this.#discordRPC = new DiscordRPC();
     this.#appUpdater = autoUpdater;
 
     this.#versionService = new VersionService(this.#appUpdater);
@@ -72,7 +81,11 @@ export class LeagueGuildsClient implements IDestroyable {
     this.#staticGroupsModule = new StaticGroupModule(this.#rpc, this.#lcuService, this.#guildsService);
     this.#staticGroupsModule.mount();
 
+    this.#discordRPCModule = new DiscordRPCModule(this.#rpc, this.#discordRPC, this.#lcuService);
+
     this.#rpc.addListener("lcu:connected", async () => {
+      await this.#discordRPCModule.mount();
+
       const token = await this.#lcuApi.getIdToken();
       this.#guildsApi.setToken(token);
       this.#rpc.send("guilds:connected");
@@ -83,11 +96,14 @@ export class LeagueGuildsClient implements IDestroyable {
 
     this.#rpc.destroy();
     this.#lcuApiSocket.destroy();
+    void this.#discordRPC.destroy();
 
     this.#versionController.destroy();
     this.#lcuController.destroy();
     this.#guildsController.destroy();
     this.#multiController.destroy();
     this.#appController.destroy();
+
+    this.#discordRPCModule.destroy();
   }
 }

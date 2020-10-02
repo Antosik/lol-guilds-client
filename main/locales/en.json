@@ -182,7 +182,8 @@
         "success": "Setting successfully saved",
         "error": "An error occurred while saving"
     },
-    "please-reload": "Please reload the page"
+    "please-reload": "Please reload the page",
+    "discord": "Discord Integration"
   },
   "static-groups": {
     "head": "Static groups",

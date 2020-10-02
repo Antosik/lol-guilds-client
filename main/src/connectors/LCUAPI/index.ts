@@ -186,6 +186,10 @@ export class LCUAPI {
 
 
   // #region /lol-lobby/ calls
+  public async getLobby(): Promise<TLobbyResponse> {
+    return await this.request("/lol-lobby/v2/lobby") as TLobbyResponse;
+  }
+
   public async createLobby(type: ELCUAPIQueueId = 400): Promise<boolean> {
     return this.request("/lol-lobby/v2/lobby", {
       body: { queueId: type },
@@ -193,6 +197,10 @@ export class LCUAPI {
     })
       .then(() => true)
       .catch(() => false);
+  }
+
+  public async connectToLobby(lobbyId: string): Promise<void> {
+    await this.request(`/lol-lobby/v2/party/${lobbyId}/join`, { method: "POST" });
   }
 
   public async sendLobbyInvitation(summoners: ILCUAPISummonerCoreResponse[]): Promise<boolean> {

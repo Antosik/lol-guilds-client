@@ -142,6 +142,28 @@ declare type ELCUAPIQueueId = 400 | 420 | 430 | 440 | 450 | 1090 | 1100;
 declare interface ILCUAPILobbyCore {
   queueId: ELCUAPIQueueId;
 }
+
+declare type TLobbyConfig = {
+  isLobbyFull: boolean;
+  maxLobbySize: number;
+};
+
+declare type TLobbyMemberResponse = {
+  firstPositionPreference: string;
+  secondPositionPreference: string;
+  puuid: string;
+  ready: boolean;
+  accountId: number;
+  summonerId: number;
+  summonerName: string;
+};
+
+declare type TLobbyResponse = {
+  partyId: string;
+  partyType: "open" | "closed";
+  gameConfig: TLobbyConfig;
+  members: TLobbyMemberResponse[];
+};
 // #region Lobby Requests & Responses
 
 

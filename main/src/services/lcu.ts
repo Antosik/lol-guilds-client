@@ -199,5 +199,17 @@ export class LCUService implements IService {
   public async updateGroupOfFriend(id: string, groupId: number): Promise<void> {
     await this.#lcuApi.updateGroupOfFriend(id, groupId);
   }
+
+  public async getLobby(): Promise<TLobbyResponse | undefined> {
+    try {
+      return this.#lcuApi.getLobby();
+    } catch {
+      return undefined;
+    }
+  }
+
+  public async connectToLobby(lobbyId: string): Promise<void> {
+    return this.#lcuApi.connectToLobby(lobbyId);
+  }
   // #endregion Main
 }

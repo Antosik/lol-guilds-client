@@ -66,6 +66,10 @@ export class AppController implements IController, IDestroyable {
     return Result.resolve(i18n.changeLanguage(locale).then(() => "ok"));
   }
 
+  private _onFeaturesGet() {
+    return Result.create(settingsStore.get("features"));
+  }
+
 
   // #region Utility
   _addEventHandlers(): void {
@@ -82,7 +86,8 @@ export class AppController implements IController, IDestroyable {
       .addListener("app:window:close", this._onWindowClose)
       .addListener("app:i18n:load", this._onI18NLoad)
       .addListener("app:i18n:locale", this._onI18NLocale)
-      .setHandler("app:i18n:set-locale", this._onI18NSetLocale);
+      .setHandler("app:i18n:set-locale", this._onI18NSetLocale)
+      .setHandler("app:features:get", this._onFeaturesGet);
 
     return this;
   }
@@ -101,7 +106,8 @@ export class AppController implements IController, IDestroyable {
       .removeListener("app:window:close", this._onWindowClose)
       .removeListener("app:i18n:load", this._onI18NLoad)
       .removeListener("app:i18n:locale", this._onI18NLocale)
-      .removeHandler("app:i18n:set-locale");
+      .removeHandler("app:i18n:set-locale")
+      .removeHandler("app:features:get");
 
     return this;
   }
@@ -117,6 +123,7 @@ export class AppController implements IController, IDestroyable {
     this._onI18NLoad = this._onI18NLoad.bind(this);
     this._onI18NLocale = this._onI18NLocale.bind(this);
     this._onI18NSetLocale = this._onI18NSetLocale.bind(this);
+    this._onFeaturesGet = this._onFeaturesGet.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
   // #endregion Utility

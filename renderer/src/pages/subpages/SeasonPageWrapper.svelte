@@ -26,10 +26,7 @@
         : rpc.invoke<IGuildAPISeasonResponse>("guilds:season:prev")
     );
 
-  let stage_id: number | undefined;
   $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
-
-  let stage: IGuildAPIStageResponse | undefined;
   $: stage =
     stage_id && isExists(season)
       ? season.stages.find((stage) => stage.id === stage_id)

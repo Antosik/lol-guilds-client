@@ -12,7 +12,6 @@
   export let isCurrent: boolean = false;
   export let isTop: boolean = false;
 
-  let currentProgress: number;
   $: currentProgress = calculateProgress(isCurrent, progress, currentPoint, {
     points,
     isTop,

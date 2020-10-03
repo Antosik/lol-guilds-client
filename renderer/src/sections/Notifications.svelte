@@ -1,7 +1,6 @@
 <script context="module" lang="typescript">
   import { createEventDispatcher } from "svelte";
-
-  import Notification from "../components/Notification.svelte";
+  import Notification from "@guilds-web/components/Notification.svelte";
 </script>
 
 <script lang="typescript">

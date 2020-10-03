@@ -33,27 +33,16 @@
   let lastGamesPage: number = 1;
   let initialGamesLoading = true;
 
-  let season_id: number | undefined;
   $: season_id = isExists(season) ? Number(season.id) : undefined;
-  let stage_id: number | undefined;
   $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
 
-  let guildRatingLoadingPromise: Promise<IInternalGuildPath | undefined>;
   $: guildRatingLoadingPromise = !season_id
     ? Promise.resolve(undefined)
     : !stage_id
     ? rpc.invoke<IInternalGuildPath>("guilds:path:season", season_id)
     : rpc.invoke<IInternalGuildPath>("guilds:path:stage", season_id, stage_id);
 
-  let topMembersLoadingPromise: Promise<Array<{
-    summoner: IGuildAPISummonerResponse;
-    results:
-      | IInternalGuildMembersSeasonRating
-      | IInternalGuildMembersStageRating;
-  }>>;
   $: topMembersLoadingPromise = loadMembers(season_id, stage_id);
-
-  let summoner_name: string;
   $: summoner_name = $summonerStore.summoner?.displayName ?? "???";
 
   $: afterNavigation($location);

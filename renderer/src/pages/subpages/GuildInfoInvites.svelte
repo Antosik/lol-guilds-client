@@ -32,7 +32,6 @@
   let finished: boolean = false;
   let sortKey: string = "+id";
 
-  let sortedInvites: IInternalInvite[];
   $: sortedInvites = sortInvites(invites, sortKey);
   $: loadInvites(currentPage);
 

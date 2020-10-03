@@ -1,11 +1,11 @@
 <script context="module" lang="typescript">
   import { _, locale, locales } from "svelte-i18n";
+  import { rpc } from "@guilds-web/data/rpc";
   import { isNotBlank, isExists } from "@guilds-shared/helpers/typeguards";
 
   import LoadingSpinner from "@guilds-web/components/LoadingSpinner.svelte";
   import Setting from "@guilds-web/blocks/Setting.svelte";
   import AppInfo from "@guilds-web/sections/AppInfo.svelte";
-  import { rpc } from "../data/rpc";
 </script>
 
 <script lang="typescript">

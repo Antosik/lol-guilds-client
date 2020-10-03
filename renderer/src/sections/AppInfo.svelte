@@ -1,9 +1,9 @@
 <script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
+  import { rpc } from "@guilds-web/data/rpc";
   import { ISSUES_URL } from "@guilds-shared/env";
   
   import LoadingSpinner from "@guilds-web/components/LoadingSpinner.svelte";
-  import { rpc } from "../data/rpc";
 </script>
 
 <script lang="typescript">

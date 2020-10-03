@@ -13,7 +13,6 @@
 
   export let position: number = -1;
 
-  let positionStyle: string;
   $: positionStyle = position === -1 ? "" : `left: ${position}%`;
 </script>
 

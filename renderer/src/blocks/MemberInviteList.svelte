@@ -1,4 +1,5 @@
 <script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
   import { isExists } from "@guilds-shared/helpers/typeguards";
   import { guildMemberStatusSortOrder } from "@guilds-shared/helpers/gameflow";
 
@@ -15,8 +16,6 @@
 </script>
 
 <script lang="typescript">
-  import { createEventDispatcher } from "svelte";
-
   export let allowInvite: boolean = true;
   export let members: IInternalGuildMember[] = [];
 

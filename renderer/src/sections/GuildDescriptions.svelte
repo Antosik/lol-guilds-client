@@ -1,15 +1,13 @@
 <script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
+  import { markdown } from "@guilds-web/utils/markdown";
   import { isNotBlank } from "@guilds-shared/helpers/typeguards";
-  import { markdown } from "../utils/markdown";
 </script>
 
 <script lang="typescript">
   export let guild: IGuildAPIClubResponse | null | undefined;
 
-  let short_description: string | undefined;
   $: short_description = guild?.short_description;
-  let long_description: string | undefined;
   $: long_description = guild?.short_description;
 </script>
 

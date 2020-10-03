@@ -17,11 +17,9 @@
 <script lang="typescript">
   export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
-  let season_id: number | undefined;
   $: season_id = isExists(params.season_id)
     ? Number(params.season_id)
     : undefined;
-  let stage_id: number | undefined;
   $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
 
   let seasons: IGuildAPISeasonResponse[] = [];

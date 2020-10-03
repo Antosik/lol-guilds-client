@@ -10,6 +10,7 @@
 <script lang="typescript">
   let moveFromAnotherGroups = false;
   let createGroupPromise = Promise.resolve();
+
   const onCreateGroupClick = () => {
     if (isExists($guildStore.guild?.id)) {
       createGroupPromise = rpc.invoke(
@@ -36,7 +37,9 @@
 <ul class="guild-info__functions">
   <li class="guild-function guild-function--group">
     <h4>{$_('guild-info.functions.create-group.head')}</h4>
-    <p class="guild-function__description">{$_('guild-info.functions.create-group.description')}</p>
+    <p class="guild-function__description">
+      {$_('guild-info.functions.create-group.description')}
+    </p>
     {#await createGroupPromise}
       <Loading small>
         <span class="with-loading-ellipsis">
@@ -44,7 +47,9 @@
         </span>
       </Loading>
     {:then}
-      <button class="guild-function__button" on:click={onCreateGroupClick}>{$_('guild-info.functions.create-group.button')}</button>
+      <button class="guild-function__button" on:click={onCreateGroupClick}>
+        {$_('guild-info.functions.create-group.button')}
+      </button>
       <label class="guild-function__label">
         <input type="checkbox" bind:checked={moveFromAnotherGroups} />
         {$_('guild-info.functions.create-group.checkbox')}
@@ -52,5 +57,5 @@
     {:catch}
       <h4>{$_('error.unexpected')}</h4>
     {/await}
-    </li>
-  </ul>
+  </li>
+</ul>

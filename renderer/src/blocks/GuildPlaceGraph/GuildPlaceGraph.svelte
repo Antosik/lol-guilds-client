@@ -1,22 +1,25 @@
 <script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
-  import { isExists } from "@guilds-shared/helpers/typeguards";
 
   import GuildPlaceGraphAxis from "./GuildPlaceGraphAxis.svelte";
   import GuildPlaceGraphTrack from "./GuildPlaceGraphTrack.svelte";
   import IconButton from "@guilds-web/components/IconButton.svelte";
+
+  function getCurrentSegmentIndex(segments: IInternalGuildPathSegment[]): number {
+    for (let i = 0, len = segments.length; i < len; i++) {
+      if (segments[i].isCurrent) {
+        return i;
+      }
+    }
+    return 0;
+  }
 </script>
 
 <script lang="typescript">
   export let current: IInternalGuildPathPoint = { points: 0, rank: 0 };
   export let segments: IInternalGuildPathSegment[] = [];
 
-  const currentSegment = segments.find((segment) => segment.isCurrent);
-  let selectedSegmentIndex = isExists(currentSegment)
-    ? segments.indexOf(currentSegment)
-    : 0;
-
-  let selectedSegment: IInternalGuildPathSegment;
+  let selectedSegmentIndex = getCurrentSegmentIndex(segments);
   $: selectedSegment = segments[selectedSegmentIndex];
 
   const prevSegment = () => (selectedSegmentIndex = selectedSegmentIndex - 1);
@@ -56,7 +59,6 @@
 </style>
 
 <div class="guild-graph">
-
   <IconButton
     icon="arrow-left"
     alt={$_('utils.prev')}
@@ -81,5 +83,4 @@
     rounded
     disabled={selectedSegmentIndex === segments.length - 1}
     on:click={nextSegment} />
-
 </div>

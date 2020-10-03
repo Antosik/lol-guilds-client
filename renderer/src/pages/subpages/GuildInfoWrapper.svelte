@@ -15,7 +15,6 @@
 </script>
 
 <script lang="typescript">
-  let guild_name: string;
   $: guild_name = $guildStore.guild?.club_name ?? "???";
 </script>
 

@@ -25,7 +25,6 @@
 </script>
 
 <script lang="typescript">
-  let guild: IGuildAPIClubResponse | undefined | null;
   $: guild = $guildStore.guild;
 
   let scrollY: number = 0;

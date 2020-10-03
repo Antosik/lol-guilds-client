@@ -1,7 +1,6 @@
 <script context="module" lang="typescript">
   import { createEventDispatcher } from "svelte";
-
-  import Invitation from "../components/Invitation.svelte";
+  import Invitation from "@guilds-web/components/Invitation.svelte";
 </script>
 
 <script lang="typescript">

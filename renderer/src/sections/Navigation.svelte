@@ -2,8 +2,8 @@
   import { _ } from "svelte-i18n";
   import { link } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
+  import { rpc } from "@guilds-web/data/rpc";
   import { isExists } from "@guilds-shared/helpers/typeguards";
-  import { rpc } from "../data/rpc";
 </script>
 
 <script lang="typescript">

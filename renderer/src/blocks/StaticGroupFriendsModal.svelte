@@ -48,7 +48,6 @@
   export let friendsList: ILCUAPIFriendCoreResponse[] = [];
   export let activeGroup: IInternalStaticGroup | undefined;
 
-  let groupMemberNames: string[] = [];
   $: groupMemberNames = isExists(activeGroup)
     ? activeGroup.members.map((member) => member.name)
     : [];
@@ -75,7 +74,7 @@
     const updatedGroupMembers = friendsInGroup.map(member => member.name);
     if (
       isExists(activeGroup) &&
-      updatedGroupMembers.length !== activeGroup.members.length
+      updatedGroupMembers.join(",") !== activeGroup.members.join(",")
     ) {
       dispatch("select", updatedGroupMembers);
     }

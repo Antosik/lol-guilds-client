@@ -45,6 +45,8 @@ export class DiscordRPCService {
   // #region ActivityChange
   public async setLobbyActivity(forceReload = false): Promise<void> {
 
+    if (!this.#discordRPC.isConnected) return;
+
     const lobbyData = await this.#lcuService.getLobby();
     if (isNotExists(lobbyData)) {
       return this.#discordRPC.removeActivity();
@@ -54,6 +56,8 @@ export class DiscordRPCService {
   }
 
   public async setLobbyActivityByData(lobbyData: TLobbyResponse, forceReload = false): Promise<void> {
+
+    if (!this.#discordRPC.isConnected) return;
 
     if (!this.isInvalidationNeeded(this.#currentLobbyData, lobbyData) && !forceReload) {
       return;

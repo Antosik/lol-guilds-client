@@ -103,13 +103,13 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
     logDebug("[DiscordRPC]: \"connected\"");
   }
 
-  private async _onDisconnect() {
+  private async _onDisconnect(errored = false) {
 
     if (!this.isConnected) return;
 
     this._setReconnectTimer("on");
 
-    if (isExists(this.#client)) {
+    if (isExists(this.#client) && !errored) {
       await this.#client.destroy();
     }
     this.#client = undefined;
@@ -120,7 +120,7 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
   }
 
   private async _onConnectionClose() {
-    await this._onDisconnect();
+    await this._onDisconnect(true);
   }
   // #endregion Connect handlers
 
@@ -140,7 +140,7 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
 
   private async _onError(error: Error): Promise<void> {
     logError("[DiscordRPC]:", error);
-    await this._onDisconnect();
+    await this._onDisconnect(true);
   }
   // #endregion Event handlers
 

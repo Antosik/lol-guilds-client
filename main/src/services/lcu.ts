@@ -201,11 +201,7 @@ export class LCUService implements IService {
   }
 
   public async getLobby(): Promise<TLobbyResponse | undefined> {
-    try {
-      return this.#lcuApi.getLobby();
-    } catch {
-      return undefined;
-    }
+    return this.#lcuApi.getLobby();
   }
 
   public async connectToLobby(lobbyId: string): Promise<void> {

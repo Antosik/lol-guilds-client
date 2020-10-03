@@ -186,8 +186,8 @@ export class LCUAPI {
 
 
   // #region /lol-lobby/ calls
-  public async getLobby(): Promise<TLobbyResponse> {
-    return await this.request("/lol-lobby/v2/lobby") as TLobbyResponse;
+  public async getLobby(): Promise<TLobbyResponse | undefined> {
+    return this.request("/lol-lobby/v2/lobby").catch(() => undefined) as Promise<TLobbyResponse | undefined>;
   }
 
   public async createLobby(type: ELCUAPIQueueId = 400): Promise<boolean> {

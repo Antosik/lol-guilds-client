@@ -171,7 +171,7 @@ export class LCUController implements IController, IDestroyable {
   private _removeRPCEventHandlers(): this {
 
     this.#rpc
-      .removeHandler("lcu:connect")
+      .removeListener("lcu:connect", this._handleLCUConnect)
       .removeHandler("lcu:disconnect")
       .removeHandler("lcu:lobby-invite")
       .removeHandler("lcu:lobby-invite-all")

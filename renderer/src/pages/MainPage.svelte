@@ -21,7 +21,7 @@
     }
   };
 
-  const LCUReconnect = () => rpc.invoke("lcu:connect");
+  const LCUReconnect = () => rpc.send("lcu:connect");
 </script>
 
 <script lang="typescript">

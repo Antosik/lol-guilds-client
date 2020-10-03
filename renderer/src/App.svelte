@@ -79,7 +79,12 @@
     } else if (auth && isNotExists(summoner)) {
       replace("/summoner-loading/");
     } else {
-      replace($appStore.currentPage);
+      const pageToRoute =
+        $appStore.currentPage === "/not-launched/" ||
+        $appStore.currentPage === "/summoner-loading/"
+          ? "/client/"
+          : $appStore.currentPage;
+      replace(pageToRoute);
     }
   };
 

@@ -1,24 +1,24 @@
 {
   "compilerOptions": {
+
     "module": "commonjs",
-    "target": "ES2018",
+    "target": "ES2019",
+
     "sourceMap": true,
+
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": false,
     "pretty": true,
     "newLine": "lf",
-    "alwaysStrict": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
+
+    "strict": true,
     "noImplicitReturns": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
+
     "baseUrl": ".",
     "outDir": "./dist/",
     "paths": {

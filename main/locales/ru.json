@@ -193,7 +193,9 @@
     "delete": "Удалить группу",
     "add-friends": "Добавить друзей в статик-группу",
     "friends-in-group": "Друзья в группе",
-    "friends-not-in-group": "Друзья не в группе"
+    "friends-not-in-group": "Друзья не в группе",
+    "add-friend": "Добавить в статик-группу",
+    "remove-friend": "Убрать из статик-группы"
   },
   "gameflow": {
     "None": "В главном меню",

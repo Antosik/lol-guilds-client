@@ -1,6 +1,7 @@
 <script context="module" lang="typescript">
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
+  import IconButton from "@guilds-web/components/IconButton.svelte";
 </script>
 
 <script lang="typescript">
@@ -9,20 +10,19 @@
 </script>
 
 <style>
-  button {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+  :global(.scroll-to-top) {
+    width: 30px !important;
+    height: 30px !important;
 
     position: fixed;
     right: 0;
     bottom: 40px;
   }
-  img {
-    max-width: 50%;
-  }
 </style>
 
-<button type="button" class="flex-center mini-block" on:click={onClick}>
-  <img src="./images/icons/top.svg" alt={$_('utils.to-the-top')} />
-</button>
+<IconButton
+  icon="top"
+  alt={$_('utils.to-the-top')}
+  className="scroll-to-top"
+  rounded
+  on:click={onClick} />

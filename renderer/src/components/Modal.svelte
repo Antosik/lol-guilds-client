@@ -2,6 +2,8 @@
   import { createEventDispatcher } from "svelte";
   import { fade } from "svelte/transition";
   import { _ } from "svelte-i18n";
+
+  import IconButton from "@guilds-web/components/IconButton.svelte";
 </script>
 
 <script lang="typescript">
@@ -46,15 +48,12 @@
       width: 50%;
     }
   }
-  .modal__close-button {
-    width: 28px;
-    height: 28px;
+  :global(.modal__close-button) {
+    width: 28px !important;
+    height: 28px !important;
     position: absolute;
     top: -1px;
     right: -1px;
-  }
-  .modal__close-button img {
-    width: 12px;
   }
   .modal__heading,
   .modal__content {
@@ -76,9 +75,12 @@
     on:click={onClose} />
 
   <div class={`modal modal--${name}`} transition:fade={{ duration: 200 }}>
-    <button class="flex-center modal__close-button" on:click={onClose}>
-      <img src="./images/icons/close.svg" alt={$_('utils.close')} />
-    </button>
+
+    <IconButton
+      icon="close"
+      alt={$_('utils.close')}
+      className="modal__close-button"
+      on:click={onClose} />
     <div class="modal__heading">
       <slot name="heading" />
     </div>

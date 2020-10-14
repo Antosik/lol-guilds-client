@@ -2,7 +2,7 @@ import type { GuildsAPI } from "../connector";
 
 import { i18n } from "@guilds-main/utils/i18n";
 import { calculateRelativeProgress } from "@guilds-shared/helpers/points";
-import { isExists, isNotEmpty } from "@guilds-shared/helpers/typeguards";
+import { isExists, isNotEmpty, isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
 const guildRatingToPoint = (club?: IGuildAPIClubRatingResponse): IInternalGuildPathPoint => ({ rank: club?.rank, points: club?.points ?? 0, absolute: false });
@@ -47,13 +47,17 @@ function constructSegments(guildPoint: IInternalGuildPathPoint, points: IInterna
   return segments;
 }
 
-export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number): Promise<IInternalGuildPath> {
+export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number): Promise<IInternalGuildPath | undefined> {
 
   let absolutePoints: IInternalGuildPathPoint[] = [
     { points: 0, absolute: true }, { description: i18n.t("guild-path.start"), points: 1000, absolute: true }
   ];
 
   const season_data = await guildsApi.getSeasonRatingForMyClub(season_id);
+  if (isNotExists(season_data)) {
+    return undefined;
+  }
+
   let { points } = season_data;
   const { games, rank, rank_reward } = season_data;
 
@@ -82,13 +86,18 @@ export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number
   };
 }
 
-export async function getGuildStagePath(guildsApi: GuildsAPI, season_id: number, stage_id: number): Promise<IInternalGuildPath> {
+export async function getGuildStagePath(guildsApi: GuildsAPI, season_id: number, stage_id: number): Promise<IInternalGuildPath | undefined> {
 
   let absolutePoints: IInternalGuildPathPoint[] = [
     { points: 0, absolute: true }, { description: i18n.t("guild-path.start"), points: 1000, absolute: true }
   ];
 
-  const { games, points, rank, rank_reward } = await guildsApi.getStageRatingForMyClub(stage_id, season_id);
+  const stage_data = await guildsApi.getStageRatingForMyClub(stage_id, season_id);
+  if (isNotExists(stage_data)) {
+    return undefined;
+  }
+
+  const { games, points, rank, rank_reward } = stage_data;
   const currentPosition: IInternalGuildCurrentPosition = { games, points, rank, rank_reward: rank_reward?.reward_value ?? 0, absolute: false };
 
   if (points < 1000) {

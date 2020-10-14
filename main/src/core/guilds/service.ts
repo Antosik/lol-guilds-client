@@ -1,7 +1,7 @@
-import type { GuildsAPI } from "@guilds-main/connectors/GuildsAPI";
+import type { GuildsAPI } from "./connector";
 
-import { i18n } from "@guilds-main/utils/i18n";
 import { getGuildSeasonPath, getGuildStagePath } from "./utils/guildPath";
+import { i18n } from "@guilds-main/utils/i18n";
 import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
@@ -9,11 +9,10 @@ export class GuildsService implements IService {
 
   #guildsApi: GuildsAPI;
 
-  constructor(
-    guildsApi: GuildsAPI,
-  ) {
+  constructor(guildsApi: GuildsAPI) {
     this.#guildsApi = guildsApi;
   }
+
 
   public async getCurrentClub(): Promise<IGuildAPIClubResponse> {
 

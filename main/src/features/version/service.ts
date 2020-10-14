@@ -7,8 +7,6 @@ export class VersionService implements IService {
 
   constructor(appUpdater: AppUpdater) {
     this.#appUpdater = appUpdater;
-
-    void appUpdater.checkForUpdatesAndNotify();
   }
 
 

@@ -1,20 +1,23 @@
-import type { DiscordRPC } from "@guilds-main/connectors/DiscordRPC";
-import type { LCUService } from "@guilds-main/services/lcu";
-import { i18n } from "@guilds-main/utils/i18n";
+import type { Presence } from "discord-rpc";
+import type { DiscordRPC } from "./connector";
+import type { LCUService } from "@guilds-main/core/lcu/service";
 
+import { i18n } from "@guilds-main/utils/i18n";
 import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
-export class DiscordRPCService {
+export class DiscordRPCService implements IService {
 
   #discordRPC: DiscordRPC;
   #lcuService: LCUService;
   #currentLobbyData?: TLobbyResponse;
 
+
   constructor(discordRPC: DiscordRPC, lcuService: LCUService) {
     this.#discordRPC = discordRPC;
     this.#lcuService = lcuService;
   }
+
 
   // #region Events
   public addListener(event: string, callback: TAnyFunc): this {
@@ -34,7 +37,9 @@ export class DiscordRPCService {
 
   // #region RPC Control
   public async enable(): Promise<void> {
-    await this.#discordRPC.connect();
+    if (!this.#discordRPC.isConnected) {
+      await this.#discordRPC.connect();
+    }
   }
   public async disable(): Promise<void> {
     await this.#discordRPC.destroy();
@@ -58,7 +63,6 @@ export class DiscordRPCService {
   public async setLobbyActivityByData(lobbyData: TLobbyResponse, forceReload = false): Promise<void> {
 
     if (!this.#discordRPC.isConnected) return;
-
     if (!this.isInvalidationNeeded(this.#currentLobbyData, lobbyData) && !forceReload) {
       return;
     }
@@ -84,7 +88,7 @@ export class DiscordRPCService {
       partyId,
       joinSecret: Buffer.from(partyId).toString("base64"),
       instance: true,
-    } as any);
+    } as Presence);
   }
 
   private isInvalidationNeeded(previousData?: TLobbyResponse, currentData?: TLobbyResponse): boolean {

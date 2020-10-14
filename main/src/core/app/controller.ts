@@ -2,83 +2,75 @@
 import type { IpcMainEvent } from "electron/main";
 import type { MainRPC } from "@guilds-main/utils/rpc";
 
-import { BrowserWindow } from "electron";
-
-import { settingsStore } from "@guilds-main/store/settings";
-import { i18n } from "@guilds-main/utils/i18n";
+import { Controller } from "@guilds-main/utils/abstract/Controller";
 import { Result } from "@guilds-shared/helpers/result";
 
+import { AppService } from "./service";
 
-export class AppController implements IController, IDestroyable {
 
-  #rpc: MainRPC;
+export class AppController extends Controller {
 
-  constructor(rpc: MainRPC) {
-    this.#rpc = rpc;
+  #service: AppService;
 
-    this._bindMethods();
-    this._addEventHandlers();
+  constructor(rpc: MainRPC, service: AppService) {
+    super(rpc);
+    this.#service = service;
   }
 
-  public destroy(): void {
-    this._removeEventHandlers();
-  }
 
+  // #region Window Controls
   private _handleWindowIsMaximized(): Result<boolean> {
-    const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
-    return Result.create(isMaximized, "success");
+    return Result.create(this.#service.isAppWindowMaximized(), "success");
   }
 
   private _onWindowMinimize(): void {
-    return BrowserWindow.getFocusedWindow()?.minimize();
+    return this.#service.minimizeAppWindow();
   }
 
   private _onWindowMaximize(): void {
-    return BrowserWindow.getFocusedWindow()?.maximize();
+    return this.#service.maximizeAppWindow();
   }
 
   private _onWindowUnmaximize(): void {
-    return BrowserWindow.getFocusedWindow()?.unmaximize();
+    return this.#service.unmaximizeAppWindow();
   }
 
   private _onWindowClose(): void {
-    return BrowserWindow.getFocusedWindow()?.close();
+    return this.#service.closeAppWindow();
   }
+  // #endregion Window Controls
 
+
+  // #region I18N
   private _onI18NLoad(_: unknown, event: IpcMainEvent): void {
-
-    const data: Record<string, IKeyValue | undefined> = {};
-
-    for (const language of i18n.languages) {
-      data[language] = i18n.getDataByLanguage(language)?.translation;
-    }
-
-    event.returnValue = Result.create(data); // eslint-disable-line @typescript-eslint/no-unsafe-member-access
+    event.returnValue = Result.create(this.#service.getLocalization());
   }
 
   private _onI18NLocale(_: unknown, event: IpcMainEvent): void {
-
-    event.returnValue = Result.create(i18n.language); // eslint-disable-line @typescript-eslint/no-unsafe-member-access
+    event.returnValue = Result.create(this.#service.getCurrentLanguage());
   }
 
   private _onI18NSetLocale(locale: string) {
-    settingsStore.set("language", locale);
-    return Result.resolve(i18n.changeLanguage(locale).then(() => "ok"));
+    return Result.resolve(this.#service.setLocalization(locale).then(() => "ok"));
   }
+  // #endregion I18N
 
+
+  // #region Features
   private _onFeaturesGet() {
-    return Result.create(settingsStore.get("features"));
+    return Result.create(this.#service.getFeatures());
   }
+  // #endregion Features
 
 
-  // #region Utility
-  _addEventHandlers(): void {
-    this._addRPCEventHandlers();
+  // #region IController implementation
+  _addEventHandlers(): this {
+    return this._addRPCEventHandlers();
   }
 
   private _addRPCEventHandlers(): this {
 
-    this.#rpc
+    this.rpc
       .setHandler("app:window:isMaximized", this._handleWindowIsMaximized)
       .addListener("app:window:minimize", this._onWindowMinimize)
       .addListener("app:window:maximize", this._onWindowMaximize)
@@ -87,18 +79,19 @@ export class AppController implements IController, IDestroyable {
       .addListener("app:i18n:load", this._onI18NLoad)
       .addListener("app:i18n:locale", this._onI18NLocale)
       .setHandler("app:i18n:set-locale", this._onI18NSetLocale)
-      .setHandler("app:features:get", this._onFeaturesGet);
+      .setHandler("app:features:get", this._onFeaturesGet)
+      .setHandler("app:features:set", this._onFeaturesGet);
 
     return this;
   }
 
-  _removeEventHandlers(): void {
-    this._removeRPCEventHandlers();
+  _removeEventHandlers(): this {
+    return this._removeRPCEventHandlers();
   }
 
   private _removeRPCEventHandlers(): this {
 
-    this.#rpc
+    this.rpc
       .removeHandler("app:window:isMaximized")
       .removeListener("app:window:minimize", this._onWindowMinimize)
       .removeListener("app:window:maximize", this._onWindowMaximize)
@@ -107,12 +100,13 @@ export class AppController implements IController, IDestroyable {
       .removeListener("app:i18n:load", this._onI18NLoad)
       .removeListener("app:i18n:locale", this._onI18NLocale)
       .removeHandler("app:i18n:set-locale")
-      .removeHandler("app:features:get");
+      .removeHandler("app:features:get")
+      .removeHandler("app:features:set");
 
     return this;
   }
 
-  private _bindMethods() {
+  _bindMethods(): void {
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this._handleWindowIsMaximized = this._handleWindowIsMaximized.bind(this);
@@ -126,5 +120,5 @@ export class AppController implements IController, IDestroyable {
     this._onFeaturesGet = this._onFeaturesGet.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
-  // #endregion Utility
+  // #endregion IController implementation
 }

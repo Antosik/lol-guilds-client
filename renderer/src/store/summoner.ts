@@ -10,7 +10,7 @@ function createSummonerStore() {
 
   const setAuth = (auth: boolean): void => update(() => ({ ...getInitialStore(), auth }));
 
-  const setSummoner = (summoner?: ILCUAPISummonerResponse | null): void => update(store => ({ ...store, summoner, status }));
+  const setSummoner = (summoner?: ILCUAPISummonerCoreResponse | null): void => update(store => ({ ...store, summoner, status }));
 
   const setStatus = (status?: string): void => update(store => ({ ...store, status }));
 

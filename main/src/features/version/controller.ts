@@ -1,62 +1,52 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { UpdateInfo } from "electron-updater";
 import type { MainRPC } from "@guilds-main/utils/rpc";
-import type { VersionService } from "@guilds-main/services/version";
+import type { VersionService } from "./service";
 
+import { Controller } from "@guilds-main/utils/abstract/Controller";
 import { Result } from "@guilds-shared/helpers/result";
 
 
-export class VersionController implements IController, IDestroyable {
+export class VersionController extends Controller {
 
-  #rpc: MainRPC;
   #versionService: VersionService;
 
-  public constructor(
-    rpc: MainRPC,
-    versionService: VersionService
-  ) {
-    this.#rpc = rpc;
+  constructor(rpc: MainRPC, versionService: VersionService) {
+    super(rpc);
     this.#versionService = versionService;
-
-    this._bindMethods();
-    this._addEventHandlers();
-  }
-
-  public destroy(): void {
-    this._removeEventHandlers();
   }
 
 
   // #region VersionUpdater Events Handling (Inner)
   private _onVersionUpdaterError() {
-    this.#rpc.send("version:update:error");
+    this.rpc.send("version:update:error");
   }
 
   private _onVersionUpdaterUpdateChecking() {
-    this.#rpc.send("version:update:process");
+    this.rpc.send("version:update:process");
   }
 
   private _onVersionUpdaterUpdateAvailable(info: UpdateInfo) {
-    this.#rpc.send("version:update:available", info.version);
+    this.rpc.send("version:update:available", info.version);
   }
 
   private _onVersionUpdaterUpdateNotAvailable() {
-    this.#rpc.send("version:update:not-available");
+    this.rpc.send("version:update:not-available");
   }
 
   private _onVersionUpdaterUpdateDownloading(e: unknown) {
     const { percent } = e as { percent: number };
-    this.#rpc.send("version:update:downloading", percent.toFixed(2));
+    this.rpc.send("version:update:downloading", percent.toFixed(2));
   }
 
   private _onVersionUpdaterUpdateDownloaded(info: UpdateInfo) {
 
     if ("PORTABLE_EXECUTABLE_APP_FILENAME" in process.env) {
 
-      this.#rpc.send("version:update:portable", info.version);
+      this.rpc.send("version:update:portable", info.version);
     } else {
 
-      this.#rpc.send("version:update:ready");
+      this.rpc.send("version:update:ready");
     }
   }
   // #endregion VersionUpdater Events Handling (Inner)
@@ -77,7 +67,22 @@ export class VersionController implements IController, IDestroyable {
   // #endregion RPC Events Handling (Outer)
 
 
-  // #region Utility
+  // #region IController implementation
+  _bindMethods(): void {
+
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    this._onVersionUpdaterError = this._onVersionUpdaterError.bind(this);
+    this._onVersionUpdaterUpdateChecking = this._onVersionUpdaterUpdateChecking.bind(this);
+    this._onVersionUpdaterUpdateAvailable = this._onVersionUpdaterUpdateAvailable.bind(this);
+    this._onVersionUpdaterUpdateNotAvailable = this._onVersionUpdaterUpdateNotAvailable.bind(this);
+    this._onVersionUpdaterUpdateDownloading = this._onVersionUpdaterUpdateDownloading.bind(this);
+    this._onVersionUpdaterUpdateDownloaded = this._onVersionUpdaterUpdateDownloaded.bind(this);
+    this._handleVersionGet = this._handleVersionGet.bind(this);
+    this._handleVersionCheck = this._handleVersionCheck.bind(this);
+    this._handleVersionInstall = this._handleVersionInstall.bind(this);
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+  }
+
   _addEventHandlers(): this {
     return this
       ._addVersionUpdaterEventHandlers()
@@ -99,7 +104,7 @@ export class VersionController implements IController, IDestroyable {
 
   private _addRPCEventHandlers(): this {
 
-    this.#rpc
+    this.rpc
       .setHandler("version:get", this._handleVersionGet)
       .setHandler("version:check", this._handleVersionCheck)
       .setHandler("version:install", this._handleVersionInstall);
@@ -128,7 +133,7 @@ export class VersionController implements IController, IDestroyable {
 
   private _removeRPCEventHandlers(): this {
 
-    this.#rpc
+    this.rpc
       .removeHandler("error")
       .removeHandler("checking-for-update")
       .removeHandler("update-available")
@@ -138,20 +143,5 @@ export class VersionController implements IController, IDestroyable {
 
     return this;
   }
-
-  private _bindMethods() {
-
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-    this._onVersionUpdaterError = this._onVersionUpdaterError.bind(this);
-    this._onVersionUpdaterUpdateChecking = this._onVersionUpdaterUpdateChecking.bind(this);
-    this._onVersionUpdaterUpdateAvailable = this._onVersionUpdaterUpdateAvailable.bind(this);
-    this._onVersionUpdaterUpdateNotAvailable = this._onVersionUpdaterUpdateNotAvailable.bind(this);
-    this._onVersionUpdaterUpdateDownloading = this._onVersionUpdaterUpdateDownloading.bind(this);
-    this._onVersionUpdaterUpdateDownloaded = this._onVersionUpdaterUpdateDownloaded.bind(this);
-    this._handleVersionGet = this._handleVersionGet.bind(this);
-    this._handleVersionCheck = this._handleVersionCheck.bind(this);
-    this._handleVersionInstall = this._handleVersionInstall.bind(this);
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
-  }
-  // #endregion Utility
+  // #endregion IController implementation
 }

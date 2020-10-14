@@ -1,7 +1,6 @@
-import type { GuildsAPI } from "@guilds-main/connectors/GuildsAPI";
+import type { GuildsAPI } from "../connector";
 
 import { i18n } from "@guilds-main/utils/i18n";
-
 import { calculateRelativeProgress } from "@guilds-shared/helpers/points";
 import { isExists, isNotEmpty } from "@guilds-shared/helpers/typeguards";
 

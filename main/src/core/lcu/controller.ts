@@ -1,37 +1,28 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
-import type { LCUService } from "@guilds-main/services/lcu";
+import type { LCUService } from "@guilds-main/core/lcu/service";
 
+import { Controller } from "@guilds-main/utils/abstract/Controller";
 import { i18n } from "@guilds-main/utils/i18n";
 import { Result } from "@guilds-shared/helpers/result";
 import { isNotBlank, isNotEmpty } from "@guilds-shared/helpers/typeguards";
 
 
-export class LCUController implements IController, IDestroyable {
+export class LCUController extends Controller {
 
-  #rpc: MainRPC;
   #lcuService: LCUService;
 
-  public constructor(
-    rpc: MainRPC,
-    lcuService: LCUService
-  ) {
-    this.#rpc = rpc;
+  public constructor(rpc: MainRPC, lcuService: LCUService) {
+    super(rpc);
     this.#lcuService = lcuService;
-
-    this._bindMethods();
-    this._addEventHandlers();
-  }
-
-  destroy(): void {
-    this._removeEventHandlers();
   }
 
 
   // #region LCU Events Handling (Inner)
   private async _onLCUConnect() {
-    this.#rpc.send("lcu:connected");
+
+    this.rpc.send("lcu:connected");
 
     const [summoner, gameflow, invitations] = await Promise.all([
       this.#lcuService.getCurrentSummoner(),
@@ -39,17 +30,17 @@ export class LCUController implements IController, IDestroyable {
       this.#lcuService.getReceivedInvitations()
     ]);
 
-    this.#rpc.send("lcu:summoner", Result.create(summoner, "success"));
-    this.#rpc.send("lcu:gameflow-phase", Result.create(gameflow, "success"));
-    this.#rpc.send("lcu:invitations", Result.create(invitations, "success"));
+    this.rpc.send("lcu:summoner", Result.create(summoner, "success"));
+    this.rpc.send("lcu:gameflow-phase", Result.create(gameflow, "success"));
+    this.rpc.send("lcu:invitations", Result.create(invitations, "success"));
   }
 
   private _onLCUDisconnect() {
-    this.#rpc.send("lcu:disconnected");
+    this.rpc.send("lcu:disconnected");
   }
 
   private _onLCUGameflowChange(event: EGameflowStatus) {
-    this.#rpc.send("lcu:gameflow-phase", Result.create(event, "success"));
+    this.rpc.send("lcu:gameflow-phase", Result.create(event, "success"));
   }
 
   private _onLCUProcessChange(event: ILCUAPIProcessControlResponse) {
@@ -70,6 +61,7 @@ export class LCUController implements IController, IDestroyable {
   }
 
   private async _handleSendFriendRequest(nickname: string) {
+
     const requestStatus = await this.#lcuService.sendFriendRequestByNickname(nickname);
 
     if (!requestStatus.status) {
@@ -89,6 +81,7 @@ export class LCUController implements IController, IDestroyable {
   }
 
   private async _handleSendLobbyInvite(nicknames: string | string[]) {
+
     if (!Array.isArray(nicknames)) { nicknames = [nicknames]; }
 
     const { notfound } = await this.#lcuService.sendLobbyInviteByNickname(nicknames);
@@ -138,7 +131,7 @@ export class LCUController implements IController, IDestroyable {
 
   private _addRPCEventHandlers(): this {
 
-    this.#rpc
+    this.rpc
       .addListener("lcu:connect", this._handleLCUConnect)
       .setHandler("lcu:disconnect", this._handleLCUDisconnect)
       .setHandler("lcu:lobby-invite", this._handleSendLobbyInvite)
@@ -170,7 +163,7 @@ export class LCUController implements IController, IDestroyable {
 
   private _removeRPCEventHandlers(): this {
 
-    this.#rpc
+    this.rpc
       .removeListener("lcu:connect", this._handleLCUConnect)
       .removeHandler("lcu:disconnect")
       .removeHandler("lcu:lobby-invite")
@@ -183,7 +176,7 @@ export class LCUController implements IController, IDestroyable {
     return this;
   }
 
-  private _bindMethods() {
+  _bindMethods(): void {
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this._handleLCUConnect = this._handleLCUConnect.bind(this);

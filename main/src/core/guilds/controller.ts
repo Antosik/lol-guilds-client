@@ -1,28 +1,18 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { MainRPC } from "@guilds-main/utils/rpc";
-import type { GuildsService } from "@guilds-main/services/guilds";
+import type { GuildsService } from "@guilds-main/core/guilds/service";
 
+import { Controller } from "@guilds-main/utils/abstract/Controller";
 import { Result } from "@guilds-shared/helpers/result";
 
 
-export class GuildsController implements IController, IDestroyable {
+export class GuildsController extends Controller {
 
-  #rpc: MainRPC;
   #guildsService: GuildsService;
 
-  constructor(
-    rpc: MainRPC,
-    guildsService: GuildsService
-  ) {
-    this.#rpc = rpc;
+  constructor(rpc: MainRPC, guildsService: GuildsService) {
+    super(rpc);
     this.#guildsService = guildsService;
-
-    this._bindMethods();
-    this._addEventHandlers();
-  }
-
-  destroy(): void {
-    this._removeEventHandlers();
   }
 
 
@@ -84,14 +74,14 @@ export class GuildsController implements IController, IDestroyable {
   // #endregion RPC Events Handling (Outer)
 
 
-  // #region Utility
+  // #region IController implementation
   _addEventHandlers(): this {
     return this._addRPCEventHandlers();
   }
 
   private _addRPCEventHandlers(): this {
 
-    this.#rpc
+    this.rpc
       .setHandler("guilds:club", this._handleClubGet)
       .setHandler("guilds:role", this._handleGuildRole)
       .setHandler("guilds:invites:accept", this._handleAcceptInvite)
@@ -120,7 +110,7 @@ export class GuildsController implements IController, IDestroyable {
 
   private _removeRPCEventHandlers(): this {
 
-    this.#rpc
+    this.rpc
       .removeHandler("guilds:club")
       .removeHandler("guilds:role")
       .removeHandler("guilds:invites:accept")
@@ -143,7 +133,7 @@ export class GuildsController implements IController, IDestroyable {
     return this;
   }
 
-  private _bindMethods() {
+  _bindMethods(): void {
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this._handleClubGet = this._handleClubGet.bind(this);
@@ -166,5 +156,5 @@ export class GuildsController implements IController, IDestroyable {
     this._handleDeclineInvite = this._handleDeclineInvite.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
-  // #endregion Utility
+  // #endregion IController implementation
 }

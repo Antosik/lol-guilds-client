@@ -1,57 +1,39 @@
-import type { AppUpdater } from "electron-updater";
 import type { BrowserWindow as Window } from "./ui/window";
 
-import { autoUpdater } from "electron-updater";
 
-import { DiscordRPC } from "./connectors/DiscordRPC";
-import { GuildsAPI } from "./connectors/GuildsAPI";
-import { LCUAPI } from "./connectors/LCUAPI";
-import { LCUAPISocket } from "./connectors/LCUAPI/socket";
+import { AppModule } from "./core/app/module";
+import { LCUModule } from "./core/lcu/module";
+import { GuildsModule } from "./core/guilds/module";
 
-import { AppController } from "./controllers/app";
-import { GuildsController } from "./controllers/guilds";
-import { LCUController } from "./controllers/lcu";
-import { MultiController } from "./controllers/multi";
-import { VersionController } from "./controllers/version";
-
-import { GuildsService } from "./services/guilds";
-import { LCUService } from "./services/lcu";
-import { VersionService } from "./services/version";
+import { DiscordRPCModule } from "./features/discord-rpc/module";
+import { GuildGroupModule } from "./features/guild-group/module";
+import { LobbyInvitationsModule } from "./features/lobby-invitations/module";
+import { StaticGroupModule } from "./features/static-groups/module";
+import { VersionModule } from "./features/version/module";
 
 import { MainRPC } from "./utils/rpc";
-
-import { StaticGroupModule } from "./features/static-groups/module";
-import { DiscordRPCModule } from "./features/discord-rpc/module";
 
 
 export class LeagueGuildsClient implements IDestroyable {
 
-  #lcuApi: LCUAPI;
-  #lcuApiSocket: LCUAPISocket;
-  #guildsApi: GuildsAPI;
-  #discordRPC: DiscordRPC;
-  #appUpdater: AppUpdater;
-
   #window: Window;
   #rpc: MainRPC;
 
-  #versionService: VersionService;
-  #versionController: VersionController;
+  #appModule: AppModule;
+  #lcuModule: LCUModule;
+  #guildsModule: GuildsModule;
 
-  #lcuService: LCUService;
-  #lcuController: LCUController;
-
-  #guildsService: GuildsService;
-  #guildsController: GuildsController;
-
-  #multiController: MultiController;
-  #appController: AppController;
-
-  #staticGroupsModule: StaticGroupModule;
   #discordRPCModule: DiscordRPCModule;
+  #guildGroupModule: GuildGroupModule;
+  #lobbyInvitationsModule: LobbyInvitationsModule;
+  #staticGroupsModule: StaticGroupModule;
+  #versionModule: VersionModule;
+
 
   public static mount(window: Window): LeagueGuildsClient {
-    return new this(window);
+    const client = new this(window);
+    client.mount();
+    return client;
   }
 
   constructor(window: Window) {
@@ -59,51 +41,68 @@ export class LeagueGuildsClient implements IDestroyable {
     this.#window = window;
     this.#rpc = new MainRPC(window);
 
-    this.#lcuApi = new LCUAPI();
-    this.#lcuApiSocket = new LCUAPISocket();
-    this.#guildsApi = new GuildsAPI();
-    this.#discordRPC = new DiscordRPC();
-    this.#appUpdater = autoUpdater;
+    this.#appModule = new AppModule(this.#rpc, this.#window);
+    this.#lcuModule = new LCUModule(this.#rpc);
+    this.#guildsModule = new GuildsModule(this.#rpc);
 
-    this.#versionService = new VersionService(this.#appUpdater);
-    this.#versionController = new VersionController(this.#rpc, this.#versionService);
+    this.#discordRPCModule = new DiscordRPCModule(this.#rpc, this.#lcuModule.service);
+    this.#guildGroupModule = new GuildGroupModule(this.#rpc, this.#lcuModule.service, this.#guildsModule.service);
+    this.#lobbyInvitationsModule = new LobbyInvitationsModule(this.#rpc, this.#lcuModule.service, this.#guildsModule.service);
+    this.#staticGroupsModule = new StaticGroupModule(this.#rpc, this.#lcuModule.service, this.#guildsModule.service);
+    this.#versionModule = new VersionModule(this.#rpc);
 
-    this.#lcuService = new LCUService(this.#lcuApi, this.#lcuApiSocket);
-    this.#lcuController = new LCUController(this.#rpc, this.#lcuService);
-
-    this.#guildsService = new GuildsService(this.#guildsApi);
-    this.#guildsController = new GuildsController(this.#rpc, this.#guildsService);
-
-    this.#multiController = new MultiController(this.#rpc, this.#guildsService, this.#lcuService);
-
-    this.#appController = new AppController(this.#rpc);
-
-    this.#staticGroupsModule = new StaticGroupModule(this.#rpc, this.#lcuService, this.#guildsService);
-    this.#staticGroupsModule.mount();
-
-    this.#discordRPCModule = new DiscordRPCModule(this.#rpc, this.#discordRPC, this.#lcuService);
-
-    this.#rpc.addListener("lcu:connected", async () => {
-      await this.#discordRPCModule.mount();
-
-      const token = await this.#lcuApi.getIdToken();
-      this.#guildsApi.setToken(token);
-      this.#rpc.send("guilds:connected");
-    });
+    this._onLCUConnected = this._onLCUConnected.bind(this);
+    this._onLCUDisconnected = this._onLCUDisconnected.bind(this);
+    this.#rpc.addListener("lcu:connected", this._onLCUConnected); // eslint-disable-line @typescript-eslint/unbound-method
+    this.#rpc.addListener("lcu:disconnected", this._onLCUDisconnected); // eslint-disable-line @typescript-eslint/unbound-method
   }
 
-  public destroy(): void {
+  private async _onLCUConnected(): Promise<void> {
+
+    const token = await this.#lcuModule.api.getIdToken();
+    this.#guildsModule.api.setToken(token);
+    this.#rpc.send("guilds:connected");
+
+    await Promise.all([
+      this.#discordRPCModule.mount(),
+      this.#guildGroupModule.mount(),
+      this.#lobbyInvitationsModule.mount(),
+      this.#staticGroupsModule.mount(),
+    ]);
+  }
+
+  private async _onLCUDisconnected(): Promise<void> {
+    await Promise.all([
+      this.#discordRPCModule.unmount(),
+      this.#guildGroupModule.unmount(),
+      this.#lobbyInvitationsModule.unmount(),
+      this.#staticGroupsModule.unmount(),
+    ]);
+  }
+
+  public mount(): void {
+
+    this.#appModule.mount();
+    this.#versionModule.mount();
+
+    this.#lcuModule.mount();
+    this.#guildsModule.mount();
+  }
+
+  public async destroy(): Promise<void> {
 
     this.#rpc.destroy();
-    this.#lcuApiSocket.destroy();
-    void this.#discordRPC.destroy();
 
-    this.#versionController.destroy();
-    this.#lcuController.destroy();
-    this.#guildsController.destroy();
-    this.#multiController.destroy();
-    this.#appController.destroy();
+    await Promise.all([
+      this.#discordRPCModule.destroy(),
+      this.#guildGroupModule.destroy(),
+      this.#lobbyInvitationsModule.destroy(),
+      this.#staticGroupsModule.destroy(),
+      this.#versionModule.destroy(),
+    ]);
 
-    this.#discordRPCModule.destroy();
+    this.#appModule.destroy();
+    this.#lcuModule.destroy();
+    this.#guildsModule.destroy();
   }
 }

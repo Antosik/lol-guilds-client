@@ -100,15 +100,15 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
 
     if (this.isConnected && this.#isInited) return;
 
-    if (isExists(this.#socket)) {
-      this.#socket.unsubscribe("/process-control/v1/process");
-      this.#socket.subscribe<ILCUAPIProcessControlResponse>("/process-control/v1/process", this._onProcessStateChange);
-
-      this.#socket.unsubscribe("/lol-chat/v1/session");
-      this.#socket.subscribe<ILCUAPISessionResponse>("/lol-chat/v1/session", this._onSessionStateChange);
-    } else {
+    if (isNotExists(this.#socket)) {
       return this.disconnect();
     }
+
+    this.#socket.unsubscribe("/process-control/v1/process");
+    this.#socket.subscribe<ILCUAPIProcessControlResponse>("/process-control/v1/process", this._onProcessStateChange);
+
+    this.#socket.unsubscribe("/lol-chat/v1/session");
+    this.#socket.subscribe<ILCUAPISessionResponse>("/lol-chat/v1/session", this._onSessionStateChange);
 
     this.#socket.addListener("message", this._socketListener);
 
@@ -135,6 +135,7 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
     logDebug("[LCUAPISocket]: \"disconnected\"");
   }
   // #endregion
+
 
   // #region Utils
   private async _pingSessionState(retry = LCUAPISocket.SESSION_PING_RETRY): Promise<void> {
@@ -175,7 +176,7 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
 
     if (data?.sessionState === "loaded") {
       this.#isInited = true;
-      this.emit("lcu:connect");
+      this.emit("lcu:connected");
     } else if (data?.sessionState === "disconnected") {
       return this.disconnect();
     }

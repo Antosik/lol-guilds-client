@@ -18,6 +18,6 @@ declare interface IGuildStore {
 
 declare interface ISummonerStore {
   auth: boolean;
-  summoner?: ILCUAPISummonerResponse | null;
+  summoner?: ILCUAPISummonerCoreResponse | null;
   status?: string;
 }

@@ -1,7 +1,7 @@
 import Store from "electron-store";
 
 interface IAuthStorePrototype {
-  summoner?: ILCUAPISummonerResponse;
+  summoner?: ILCUAPISummonerCoreResponse;
   token?: ILCUAPIIdToken;
 }
 

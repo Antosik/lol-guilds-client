@@ -1,5 +1,5 @@
-import type { GuildsService } from "@guilds-main/services/guilds";
-import type { LCUService } from "@guilds-main/services/lcu";
+import type { GuildsService } from "@guilds-main/core/guilds/service";
+import type { LCUService } from "@guilds-main/core/lcu/service";
 import type { StaticGroupsStore } from "./store";
 
 import { isEmpty } from "@guilds-shared/helpers/typeguards";
@@ -18,6 +18,8 @@ export class StaticGroupService {
     this.#guildsService = guildsService;
   }
 
+
+  // #region Main
   public async getFriendsList(): Promise<ILCUAPIFriendCoreResponse[]> {
     const friends = await this.#lcuService.getFriendsList();
     return friends.sort((a, b) => a.name.localeCompare(b.name));
@@ -106,7 +108,7 @@ export class StaticGroupService {
     }
 
     const group = this.#store.get(id);
-
     return this.#lcuService.sendLobbyInviteByNickname(group.members);
   }
+  // #endregion Main
 }

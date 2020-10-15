@@ -1,4 +1,6 @@
-import type { AppUpdater, UpdateCheckResult } from "electron-updater";
+import type { AppUpdater, UpdateCheckResult, UpdateInfo } from "electron-updater";
+
+import { isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class VersionService implements IService {
@@ -24,12 +26,25 @@ export class VersionService implements IService {
 
 
   // #region Main
+  public compareVersion(updateInfo?: UpdateInfo): -1 | 0 | 1 {
+    return isNotExists(updateInfo)
+      ? 0
+      : this.#appUpdater.currentVersion.compare(updateInfo.version);
+  }
+
   public getVersion(): string {
     return this.#appUpdater.currentVersion.version;
   }
 
   public async checkForUpdates(): Promise<UpdateCheckResult> {
     return this.#appUpdater.checkForUpdates();
+  }
+
+  public async checkForUpdatesAndDownload(): Promise<void> {
+    const update = await this.checkForUpdates();
+    if (this.compareVersion(update.updateInfo) === -1) {
+      await this.#appUpdater.downloadUpdate();
+    }
   }
 
   public runUpdateInstall(): void {

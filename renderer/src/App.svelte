@@ -21,6 +21,7 @@
   import Invitations from "./sections/Invitations.svelte";
   import Notifications from "./sections/Notifications.svelte";
   import SettingsModal from "./sections/SettingsModal.svelte";
+  import Version from "./sections/Version.svelte";
 
   if (
     isExists(window.LGC) &&
@@ -73,7 +74,7 @@
 <script lang="typescript">
   const handleRouting = (
     auth: boolean,
-    summoner?: ILCUAPISummonerResponse | null
+    summoner?: ILCUAPISummonerCoreResponse | null
   ) => {
     if (!auth) {
       replace("/not-launched/");
@@ -201,3 +202,5 @@
     on:invite-accept={onInvitationAccept}
     on:invite-decline={onInvitationDecline} />
 </div>
+
+<Version />

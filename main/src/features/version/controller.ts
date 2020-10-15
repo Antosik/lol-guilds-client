@@ -5,6 +5,7 @@ import type { VersionService } from "./service";
 
 import { Controller } from "@guilds-main/utils/abstract/Controller";
 import { Result } from "@guilds-shared/helpers/result";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class VersionController extends Controller {
@@ -18,8 +19,13 @@ export class VersionController extends Controller {
 
 
   // #region VersionUpdater Events Handling (Inner)
-  private _onVersionUpdaterError() {
-    this.rpc.send("version:update:error");
+  private async _onVersionUpdaterError() {
+    const update = await this.#versionService.checkForUpdates().catch(() => undefined);
+    if (isExists(update) && this.#versionService.compareVersion(update.updateInfo) === -1) {
+      this.rpc.send("version:update:manual", update.updateInfo.version);
+    } else {
+      this.rpc.send("version:update:error");
+    }
   }
 
   private _onVersionUpdaterUpdateChecking() {
@@ -27,7 +33,11 @@ export class VersionController extends Controller {
   }
 
   private _onVersionUpdaterUpdateAvailable(info: UpdateInfo) {
-    this.rpc.send("version:update:available", info.version);
+    if ("PORTABLE_EXECUTABLE_APP_FILENAME" in process.env) {
+      this.rpc.send("version:update:manual", info.version);
+    } else {
+      this.rpc.send("version:update:available", info.version);
+    }
   }
 
   private _onVersionUpdaterUpdateNotAvailable() {
@@ -40,12 +50,9 @@ export class VersionController extends Controller {
   }
 
   private _onVersionUpdaterUpdateDownloaded(info: UpdateInfo) {
-
     if ("PORTABLE_EXECUTABLE_APP_FILENAME" in process.env) {
-
-      this.rpc.send("version:update:portable", info.version);
+      this.rpc.send("version:update:manual", info.version);
     } else {
-
       this.rpc.send("version:update:ready");
     }
   }
@@ -58,7 +65,7 @@ export class VersionController extends Controller {
   }
 
   private async _handleVersionCheck() {
-    await this.#versionService.checkForUpdates();
+    await this.#versionService.checkForUpdatesAndDownload();
   }
 
   private _handleVersionInstall() {

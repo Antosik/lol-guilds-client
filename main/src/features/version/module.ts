@@ -32,7 +32,7 @@ export class VersionModule extends Module {
   // #region IMountable implementation
   public mount(): void {
     super.mount();
-    void this.#appUpdater.checkForUpdates();
+    void this.#service.checkForUpdatesAndDownload();
   }
   // #endregion IMountable implementation
 

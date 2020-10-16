@@ -79,8 +79,7 @@ export class AppController extends Controller {
       .addListener("app:i18n:load", this._onI18NLoad)
       .addListener("app:i18n:locale", this._onI18NLocale)
       .setHandler("app:i18n:set-locale", this._onI18NSetLocale)
-      .setHandler("app:features:get", this._onFeaturesGet)
-      .setHandler("app:features:set", this._onFeaturesGet);
+      .setHandler("app:features:get", this._onFeaturesGet);
 
     return this;
   }
@@ -100,8 +99,7 @@ export class AppController extends Controller {
       .removeListener("app:i18n:load", this._onI18NLoad)
       .removeListener("app:i18n:locale", this._onI18NLocale)
       .removeHandler("app:i18n:set-locale")
-      .removeHandler("app:features:get")
-      .removeHandler("app:features:set");
+      .removeHandler("app:features:get");
 
     return this;
   }

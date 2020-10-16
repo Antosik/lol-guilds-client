@@ -108,7 +108,19 @@ export class StaticGroupService {
     }
 
     const group = this.#store.get(id);
-    return this.#lcuService.sendLobbyInviteByNickname(group.members);
+    const toInvite: string[] = [];
+
+    const friends = await this.#lcuService.getFriendsList();
+    for (const friend of friends) {
+      if (
+        group.members.includes(friend.name)
+        && (String(friend.availability) === "chat" || String(friend.availability) === "away")
+      ) {
+        toInvite.push(friend.name);
+      }
+    }
+
+    return this.#lcuService.sendLobbyInviteByNickname(toInvite);
   }
   // #endregion Main
 }

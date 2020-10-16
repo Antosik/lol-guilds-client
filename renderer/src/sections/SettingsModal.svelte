@@ -72,7 +72,7 @@
           <span slot="label">{$_(`settings.${featureName}`)}</span>
     
           <input
-            on:change={(e) => onFeatureEnabledChange(featureName, e.target.checked)}
+            on:change={(e) => onFeatureEnabledChange(featureName, e.currentTarget.checked)}
             checked={features[featureName]}
             type="checkbox"
             slot="input"

@@ -1,7 +1,8 @@
 <script lang="typescript" context="module">
   import { onMount, onDestroy } from "svelte";
   import { _, init, addMessages } from "svelte-i18n";
-  import Router, { replace } from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
+  import { replace } from "svelte-spa-router";
 
   import { Result } from "@guilds-shared/helpers/result";
   import {

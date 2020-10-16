@@ -4,8 +4,8 @@
 
 <script lang="typescript">
   export let description: string = "";
-  export let rank: number;
-  export let points: number;
+  export let rank: number | undefined = undefined;
+  export let points: number | undefined = undefined;
 
   export let isCurrent: boolean = false;
   export let isStart: boolean = false;

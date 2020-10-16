@@ -9,7 +9,7 @@
 </script>
 
 <script lang="typescript">
-  export let summoner: ILCUAPISummonerResponse | NotExisting = undefined;
+  export let summoner: ILCUAPISummonerCoreResponse | NotExisting = undefined;
   export let guild: IGuildAPIClubResponse | NotExisting = undefined;
   export let status: string = "None";
   export let style: string = "normal";

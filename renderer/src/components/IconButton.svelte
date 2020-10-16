@@ -6,7 +6,7 @@
 <script lang="typescript">
   export let icon: string;
   export let alt: string;
-  export let className: string;
+  export let className: string | undefined = undefined;
   export let rounded: boolean = false;
   export let disabled: boolean = false;
 

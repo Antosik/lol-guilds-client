@@ -1,6 +1,6 @@
 <script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
-  import Router from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
   import { isExists } from "@guilds-shared/helpers/typeguards";
   import { appStore } from "@guilds-web/store/app";
   import { guildStore } from "@guilds-web/store/guild";

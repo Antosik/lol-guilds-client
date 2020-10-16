@@ -1,7 +1,8 @@
 <script context="module" lang="typescript">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import Router, { push } from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
+  import { push } from "svelte-spa-router";
   import { isExists } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
   import { appStore } from "@guilds-web/store/app";

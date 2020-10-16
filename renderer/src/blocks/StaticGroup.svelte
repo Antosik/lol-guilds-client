@@ -1,8 +1,10 @@
 <script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { debounce } from "@guilds-shared/helpers/functions";
   import { isNotEmpty } from "@guilds-shared/helpers/typeguards";
-  import { createEventDispatcher } from "svelte";
+
+  import IconButton from "@guilds-web/components/IconButton.svelte";
   import StaticGroupMember from "@guilds-web/components/StaticGroupMember.svelte";
 </script>
 
@@ -44,19 +46,6 @@
   .static-group__invite {
     height: 24px;
   }
-  .static-group__add,
-  .static-group__delete {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    padding: 0;
-    margin: 4px;
-  }
-  .static-group__add img,
-  .static-group__delete img {
-    width: 16px;
-    height: 16px;
-  }
   .static-group__members {
     display: grid;
     grid-template-columns: 1fr;
@@ -86,12 +75,16 @@
     <button on:click={onMembersInvite} class="static-group__invite">
       {$_('invite.all')}
     </button>
-    <button on:click={onMembersUpdate} class="static-group__add flex-center" title={$_('static-groups.change-members')}>
-      <img src="./images/icons/users.svg" alt={$_('static-groups.change-members')} />
-    </button>
-    <button on:click={onGroupDelete} class="static-group__delete flex-center" title={$_('static-groups.delete')}>
-      <img src="./images/icons/delete.svg" alt={$_('static-groups.delete')} />
-    </button>
+    <IconButton
+      icon="users"
+      alt={$_('static-groups.change-members')}
+      rounded
+      on:click={onMembersUpdate} />
+    <IconButton
+      icon="delete"
+      alt={$_('static-groups.delete')}
+      rounded
+      on:click={onGroupDelete} />
   </div>
 
   <ul class="static-group__members">

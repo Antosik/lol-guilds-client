@@ -15,12 +15,9 @@
   export let selectedSeason: number | undefined;
   export let selectedStage: number | undefined;
 
-  let season_info: IGuildAPISeasonResponse | undefined;
   $: season_info = selectedSeason
     ? seasons.find((season) => season.id === selectedSeason)
     : undefined;
-
-  let stage_info: IGuildAPIStageResponse | undefined;
   $: stage_info =
     isExists(selectedStage) && isExists(season_info)
       ? season_info.stages.find(

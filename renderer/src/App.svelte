@@ -1,7 +1,8 @@
 <script lang="typescript" context="module">
   import { onMount, onDestroy } from "svelte";
   import { _, init, addMessages } from "svelte-i18n";
-  import Router, { replace } from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
+  import { replace } from "svelte-spa-router";
 
   import { Result } from "@guilds-shared/helpers/result";
   import {
@@ -16,10 +17,12 @@
   import { guildStore } from "./store/guild";
   import { routes } from "./routes";
 
+  import IconButton from "./components/IconButton.svelte";
   import Modal from "./components/Modal.svelte";
   import Invitations from "./sections/Invitations.svelte";
   import Notifications from "./sections/Notifications.svelte";
   import SettingsModal from "./sections/SettingsModal.svelte";
+  import Version from "./sections/Version.svelte";
 
   if (
     isExists(window.LGC) &&
@@ -72,14 +75,19 @@
 <script lang="typescript">
   const handleRouting = (
     auth: boolean,
-    summoner?: ILCUAPISummonerResponse | null
+    summoner?: ILCUAPISummonerCoreResponse | null
   ) => {
     if (!auth) {
       replace("/not-launched/");
     } else if (auth && isNotExists(summoner)) {
       replace("/summoner-loading/");
     } else {
-      replace($appStore.currentPage);
+      const pageToRoute =
+        $appStore.currentPage === "/not-launched/" ||
+        $appStore.currentPage === "/summoner-loading/"
+          ? "/client/"
+          : $appStore.currentPage;
+      replace(pageToRoute);
     }
   };
 
@@ -164,31 +172,22 @@
     min-width: 200px;
   }
 
-  .settings-button {
-    width: 30px;
-    height: 30px;
+  :global(.settings-button) {
+    width: 30px !important;
+    height: 30px !important;
     position: fixed;
     bottom: 0;
     right: 0;
-    padding: 0.25rem;
-  }
-
-  .settings-button__img {
-    max-width: 100%;
   }
 </style>
 
 <Router {routes} />
 
-<button
-  type="button"
-  class="flex-center settings-button"
-  on:click={onSettingsModalOpen}>
-  <img
-    src="./images/icons/settings.svg"
-    alt={$_('settings.head')}
-    class="settings-button__img" />
-</button>
+<IconButton
+  className="settings-button"
+  icon="settings"
+  alt={$_('settings.head')}
+  on:click={onSettingsModalOpen} />
 
 <Modal isOpen={isSettingsModalOpen} on:close={onSettingsModalClose}>
   <h2 slot="heading">{$_('settings.head')}</h2>
@@ -204,3 +203,5 @@
     on:invite-accept={onInvitationAccept}
     on:invite-decline={onInvitationDecline} />
 </div>
+
+<Version />

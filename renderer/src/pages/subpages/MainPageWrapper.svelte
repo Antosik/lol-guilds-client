@@ -1,5 +1,5 @@
 <script context="module" lang="typescript">
-  import Router from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
   import { appStore } from "@guilds-web/store/app";
   import MainPageNavigation from "@guilds-web/sections/MainPageNavigation.svelte";
   import {

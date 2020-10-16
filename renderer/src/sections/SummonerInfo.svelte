@@ -2,13 +2,14 @@
   import { _ } from "svelte-i18n";
   import { location } from "svelte-spa-router";
   import { isExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
-  import { appStore } from "../store/app";
+  import { appStore } from "@guilds-web/store/app";
 
-  import SummonerStatus from "../components/SummonerStatus.svelte";
+  import SummonerStatus from "@guilds-web/components/SummonerStatus.svelte";
+  import IconButton from "@guilds-web/components/IconButton.svelte";
 </script>
 
 <script lang="typescript">
-  export let summoner: ILCUAPISummonerResponse | NotExisting = undefined;
+  export let summoner: ILCUAPISummonerCoreResponse | NotExisting = undefined;
   export let guild: IGuildAPIClubResponse | NotExisting = undefined;
   export let status: string = "None";
   export let style: string = "normal";
@@ -53,18 +54,13 @@
     line-height: 24px;
   }
 
-  .refresh {
+  :global(.refresh) {
     position: absolute;
     top: 50%;
     right: 20px;
-    width: 30px;
-    height: 30px;
     transform: translateY(-50%);
-    padding: 0.1em;
-  }
-
-  .refresh img {
-    max-width: 100%;
+    width: 30px !important;
+    height: 30px !important;
   }
 </style>
 
@@ -83,8 +79,10 @@
     </div>
   {/if}
 
-  <button type="button" class="refresh flex-center" on:click={pageReload}>
-    <img src="./images/icons/refresh.svg" alt={$_('utils.reload')} />
-  </button>
+  <IconButton
+    icon="refresh"
+    alt={$_('utils.reload')}
+    className="refresh"
+    on:click={pageReload} />
 
 </header>

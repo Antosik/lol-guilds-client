@@ -2,8 +2,10 @@
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { isNotBlank } from "@guilds-shared/helpers/typeguards";
-  import PlayerStatus from "./PlayerStatus.svelte";
-  import Tooltip from "./Tooltip.svelte";
+
+  import IconButton from "@guilds-web/components/IconButton.svelte";
+  import PlayerStatus from "@guilds-web/components/PlayerStatus.svelte";
+  import Tooltip from "@guilds-web/components/Tooltip.svelte";
 </script>
 
 <script lang="typescript">
@@ -30,14 +32,10 @@
   .friend__status {
     grid-area: status;
   }
-  .friend__action {
+  :global(.friend__action) {
     grid-area: button;
     justify-self: flex-end;
     align-self: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    padding: 0;
     margin: 4px;
   }
   .friend__note {
@@ -62,9 +60,19 @@
   </div>
 
   {#if isInGroup}
-    <button class="friend__action" on:click={onRemove}>-</button>
+    <IconButton
+      icon="minus"
+      alt={$_('static-groups.remove-friend')}
+      className="friend__action"
+      rounded
+      on:click={onRemove} />
   {:else if canAdd}
-    <button class="friend__action" on:click={onAdd}>+</button>
+    <IconButton
+      icon="plus"
+      alt={$_('static-groups.add-friend')}
+      className="friend__action"
+      rounded
+      on:click={onAdd} />
   {/if}
 
 </div>

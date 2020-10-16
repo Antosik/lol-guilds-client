@@ -61,7 +61,7 @@ async function onLoadingWindowReady() {
   window.webContents.on("did-finish-load", () => {
     setTimeout(() => {
       window.show();
-      if (isExists(loadingWindow) && loadingWindow.isClosable()) {
+      if (isExists(loadingWindow) && !loadingWindow.isDestroyed() && loadingWindow.isClosable()) {
         loadingWindow.close();
       }
     }, 1000);

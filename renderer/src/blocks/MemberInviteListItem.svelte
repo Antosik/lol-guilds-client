@@ -3,8 +3,9 @@
   import { _ } from "svelte-i18n";
   import { isExists } from "@guilds-shared/helpers/typeguards";
 
-  import PlayerStatus from "../components/PlayerStatus.svelte";
-  import Tooltip from "../components/Tooltip.svelte";
+  import IconButton from "@guilds-web/components/IconButton.svelte";
+  import PlayerStatus from "@guilds-web/components/PlayerStatus.svelte";
+  import Tooltip from "@guilds-web/components/Tooltip.svelte";
 </script>
 
 <script lang="typescript">
@@ -40,22 +41,7 @@
   }
   .guild-member__buttons {
     display: flex;
-  }
-  button {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    padding: 0;
-    margin: 4px;
-  }
-  button img {
-    max-width: 75%;
-    pointer-events: none;
-  }
-  .guild-member__invite img,
-  .guild-member__chat img {
-    width: 12px;
-    height: 12px;
+    gap: 4px;
   }
   .guild-member__info .note__tooltip {
     margin-left: 4px;
@@ -78,28 +64,25 @@
     <div class="guild-member__buttons">
 
       {#if isExists(member) && member.status === 'unknown'}
-        <button
-          class="guild-member__friend flex-center"
-          type="button"
-          on:click={sendFriendRequest}>
-          <img src="./images/icons/user.svg" alt={$_('send.friend-request')} />
-        </button>
+        <IconButton
+          icon="invite-user"
+          alt={$_('send.friend-request')}
+          rounded
+          on:click={sendFriendRequest} />
       {:else if isExists(member) && member.status !== 'banned'}
-        <button
-          class="guild-member__chat flex-center"
-          type="button"
-          on:click={openChatWith}>
-          <img src="./images/icons/chat.svg" alt={$_('send.message')} />
-        </button>
+        <IconButton
+          icon="chat"
+          alt={$_('send.message')}
+          rounded
+          on:click={openChatWith} />
       {/if}
 
       {#if isExists(member) && allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown') && member.game === 'League of Legends'}
-        <button
-          class="guild-member__invite flex-center"
-          type="button"
-          on:click={inviteToParty}>
-          <img src="./images/icons/plus.svg" alt={$_('send.lobby-invite')} />
-        </button>
+        <IconButton
+          icon="plus"
+          alt={$_('send.lobby-invite')}
+          rounded
+          on:click={inviteToParty} />
       {/if}
 
     </div>

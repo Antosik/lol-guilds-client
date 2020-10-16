@@ -1,7 +1,8 @@
 <script context="module" lang="typescript">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import Router, { push } from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
+  import { push } from "svelte-spa-router";
   import { isExists } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
   import { appStore } from "@guilds-web/store/app";
@@ -17,11 +18,9 @@
 <script lang="typescript">
   export let params: Partial<{ season_id: string; stage_id: string }> = {};
 
-  let season_id: number | undefined;
   $: season_id = isExists(params.season_id)
     ? Number(params.season_id)
     : undefined;
-  let stage_id: number | undefined;
   $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
 
   let seasons: IGuildAPISeasonResponse[] = [];

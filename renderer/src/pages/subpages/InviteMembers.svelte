@@ -27,13 +27,10 @@
 <script lang="typescript">
   let inviteState: "friends" | "all" = "friends";
 
-  let guildMembersToInvite: IInternalGuildMember[];
   $: guildMembersToInvite = $guildStore.members.filter(
     ({ name }) =>
       name.toLowerCase() !== $summonerStore.summoner?.displayName.toLowerCase()
   );
-
-  let allowInvite: boolean;
   $: allowInvite =
     $summonerStore.status === "None" || $summonerStore.status === "Lobby";
 

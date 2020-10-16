@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n";
   import { gameflowGameMap } from "@guilds-shared/helpers/gameflow";
 
-  import Tooltip from "../components/Tooltip.svelte";
+  import Tooltip from "@guilds-web/components/Tooltip.svelte";
 </script>
 
 <script lang="typescript">
@@ -10,7 +10,6 @@
   export let gameName: string = "League of Legends";
   export let showText: boolean = true;
 
-  let gameShortName: string;
   $: gameShortName = gameflowGameMap.has(gameName)
     ? gameflowGameMap.get(gameName) ?? "???"
     : gameName;

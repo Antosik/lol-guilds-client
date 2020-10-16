@@ -24,15 +24,18 @@ export class LCUAPI {
 
 
   // #region /lol-summoner/ calls
-  public async getCurrentSummoner(): Promise<ILCUAPISummonerResponse> {
+  public async getCurrentSummoner(): Promise<ILCUAPISummonerCoreResponse> {
 
     const summonerFromStore = authStore.get("summoner");
     if (isExists(summonerFromStore)) {
       return summonerFromStore;
     }
 
-    const summoner = await this.request("/lol-summoner/v1/current-summoner") as ILCUAPISummonerResponse;
-    authStore.set("summoner", summoner);
+    const summoner = await this.request("/lol-summoner/v1/current-summoner") as ILCUAPISummonerCoreResponse;
+    authStore.set(
+      "summoner",
+      { accountId: summoner.accountId, displayName: summoner.displayName, puuid: summoner.puuid, summonerId: summoner.summonerId } as ILCUAPISummonerCoreResponse
+    );
 
     return summoner;
   }
@@ -186,8 +189,8 @@ export class LCUAPI {
 
 
   // #region /lol-lobby/ calls
-  public async getLobby(): Promise<TLobbyResponse> {
-    return await this.request("/lol-lobby/v2/lobby") as TLobbyResponse;
+  public async getLobby(): Promise<TLobbyResponse | undefined> {
+    return this.request("/lol-lobby/v2/lobby").catch(() => undefined) as Promise<TLobbyResponse | undefined>;
   }
 
   public async createLobby(type: ELCUAPIQueueId = 400): Promise<boolean> {

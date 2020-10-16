@@ -98,7 +98,8 @@ declare type VersionEventType = "version:get" | "version:check" | "version:insta
 declare type StaticGroupEventType = "app:static-groups:get" | "app:static-groups:get-friends" | "app:static-groups:create" | "app:static-groups:change-name" | "app:static-groups:invite" | "app:static-groups:delete" | "app:static-groups:change-members";
 type AppWindowEventType = "app:window:isMaximized" | "app:window:minimize" | "app:window:maximize" | "app:window:unmaximize" | "app:window:close";
 type AppI18NWindowType = "app:i18n:set-locale" | "app:i18n:locale" | "app:i18n:load";
-declare type AppEventType = AppWindowEventType | AppI18NWindowType;
+type AppFeatureType = "app:features:get" | string;
+declare type AppEventType = AppWindowEventType | AppI18NWindowType | AppFeatureType;
 declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType | AppEventType | StaticGroupEventType;
 
 declare type IKeyValue = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any

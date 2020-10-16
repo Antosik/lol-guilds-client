@@ -2,54 +2,32 @@
 import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { StaticGroupService } from "./service";
 
+import { Controller } from "@guilds-main/utils/abstract/Controller";
 import { i18n } from "@guilds-main/utils/i18n";
 import { Result } from "@guilds-shared/helpers/result";
 import { isNotEmpty } from "@guilds-shared/helpers/typeguards";
 
 
-export class StaticGroupController implements IController, IDestroyable {
+export class StaticGroupController extends Controller {
 
-  #isMounted: boolean;
-
-  #rpc: MainRPC;
   #service: StaticGroupService;
 
   constructor(rpc: MainRPC, service: StaticGroupService) {
-
-    this.#rpc = rpc;
+    super(rpc);
     this.#service = service;
-    this.#isMounted = false;
-
-    this._bindMethods();
   }
 
-  public isMounted(): boolean {
-    return this.#isMounted;
-  }
-
-  mount(): void {
-    try {
-      this._addEventHandlers();
-      this.#isMounted = true;
-    } catch (e) {
-      this.#isMounted = false;
-    }
-  }
-
-  destroy(): void {
-    this._removeEventHandlers();
-  }
 
   // #region Event Handlers
-  handleGet(club_id: number): Promise<Result<IInternalStaticGroup[]>> {
+  private async _handleGet(club_id: number): Promise<Result<IInternalStaticGroup[]>> {
     return Result.resolve(this.#service.getGroups(club_id));
   }
 
-  handleGetFriendsList(): Promise<Result<ILCUAPIFriendCoreResponse[]>> {
+  private async _handleGetFriendsList(): Promise<Result<ILCUAPIFriendCoreResponse[]>> {
     return Result.resolve(this.#service.getFriendsList());
   }
 
-  async handleInvite(id: string): Promise<Result> {
+  private async _handleInvite(id: string): Promise<Result> {
 
     const { notfound } = await this.#service.inviteGroup(id);
 
@@ -64,56 +42,60 @@ export class StaticGroupController implements IController, IDestroyable {
       .setStatus("success");
   }
 
-  handleCreateNewGroup(): Result {
+  private _handleCreateNewGroup(): Result {
     return Result.create(this.#service.createNewGroup(), "success");
   }
 
-  handleGroupNameChange(id: string, newName: string): Result {
+  private _handleGroupNameChange(id: string, newName: string): Result {
     return Result.create(this.#service.updateGroupName(id, newName), "success");
   }
 
-  handleGroupMembersChange(id: string, members: string[]): Result {
+  private _handleGroupMembersChange(id: string, members: string[]): Result {
     return Result.create(this.#service.updateGroupMembers(id, members), "success");
   }
 
-  handleDeleteGroup(id: string): Result {
+  private _handleDeleteGroup(id: string): Result {
     return Result.create(this.#service.deleteGroup(id), "success");
   }
   // #endregion Event Handlers
 
 
-  // #region System methods
-  private _bindMethods() {
+  // #region IController implementation
+  _bindMethods(): void {
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-    this.handleGet = this.handleGet.bind(this);
-    this.handleGetFriendsList = this.handleGetFriendsList.bind(this);
-    this.handleInvite = this.handleInvite.bind(this);
-    this.handleCreateNewGroup = this.handleCreateNewGroup.bind(this);
-    this.handleGroupNameChange = this.handleGroupNameChange.bind(this);
-    this.handleGroupMembersChange = this.handleGroupMembersChange.bind(this);
-    this.handleDeleteGroup = this.handleDeleteGroup.bind(this);
+    this._handleGet = this._handleGet.bind(this);
+    this._handleGetFriendsList = this._handleGetFriendsList.bind(this);
+    this._handleInvite = this._handleInvite.bind(this);
+    this._handleCreateNewGroup = this._handleCreateNewGroup.bind(this);
+    this._handleGroupNameChange = this._handleGroupNameChange.bind(this);
+    this._handleGroupMembersChange = this._handleGroupMembersChange.bind(this);
+    this._handleDeleteGroup = this._handleDeleteGroup.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
 
-  _addEventHandlers(): void {
-    this.#rpc.setHandler("app:static-groups:get", this.handleGet);
-    this.#rpc.setHandler("app:static-groups:get-friends", this.handleGetFriendsList);
-    this.#rpc.setHandler("app:static-groups:invite", this.handleInvite);
-    this.#rpc.setHandler("app:static-groups:create", this.handleCreateNewGroup);
-    this.#rpc.setHandler("app:static-groups:change-name", this.handleGroupNameChange);
-    this.#rpc.setHandler("app:static-groups:change-members", this.handleGroupMembersChange);
-    this.#rpc.setHandler("app:static-groups:delete", this.handleDeleteGroup);
+  _addEventHandlers(): this {
+    this.rpc
+      .setHandler("app:static-groups:get", this._handleGet)
+      .setHandler("app:static-groups:get-friends", this._handleGetFriendsList)
+      .setHandler("app:static-groups:invite", this._handleInvite)
+      .setHandler("app:static-groups:create", this._handleCreateNewGroup)
+      .setHandler("app:static-groups:change-name", this._handleGroupNameChange)
+      .setHandler("app:static-groups:change-members", this._handleGroupMembersChange)
+      .setHandler("app:static-groups:delete", this._handleDeleteGroup);
+    return this;
   }
 
-  _removeEventHandlers(): void {
-    this.#rpc.removeHandler("app:static-groups:get");
-    this.#rpc.removeHandler("app:static-groups:get-friends");
-    this.#rpc.removeHandler("app:static-groups:invite");
-    this.#rpc.removeHandler("app:static-groups:create");
-    this.#rpc.removeHandler("app:static-groups:change-name");
-    this.#rpc.removeHandler("app:static-groups:change-members");
-    this.#rpc.removeHandler("app:static-groups:delete");
+  _removeEventHandlers(): this {
+    this.rpc
+      .removeHandler("app:static-groups:get")
+      .removeHandler("app:static-groups:get-friends")
+      .removeHandler("app:static-groups:invite")
+      .removeHandler("app:static-groups:create")
+      .removeHandler("app:static-groups:change-name")
+      .removeHandler("app:static-groups:change-members")
+      .removeHandler("app:static-groups:delete");
+    return this;
   }
-  // #endregion System methods
+  // #endregion IController implementation
 }

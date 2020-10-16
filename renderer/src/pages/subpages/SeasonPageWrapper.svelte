@@ -1,7 +1,7 @@
 <script context="module" lang="typescript">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import Router from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
   import { isExists } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
   import { appStore } from "@guilds-web/store/app";
@@ -26,10 +26,7 @@
         : rpc.invoke<IGuildAPISeasonResponse>("guilds:season:prev")
     );
 
-  let stage_id: number | undefined;
   $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
-
-  let stage: IGuildAPIStageResponse | undefined;
   $: stage =
     stage_id && isExists(season)
       ? season.stages.find((stage) => stage.id === stage_id)

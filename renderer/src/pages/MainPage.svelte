@@ -1,7 +1,8 @@
 <script context="module" lang="typescript">
   import { onMount, onDestroy } from "svelte";
   import { _ } from "svelte-i18n";
-  import Router, { replace, location } from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
+  import { replace, location } from "svelte-spa-router";
   import { isNotExists, isExists } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "../data/rpc";
   import { appStore } from "../store/app";
@@ -21,11 +22,10 @@
     }
   };
 
-  const LCUReconnect = () => rpc.invoke("lcu:connect");
+  const LCUReconnect = () => rpc.send("lcu:connect");
 </script>
 
 <script lang="typescript">
-  let guild: IGuildAPIClubResponse | undefined | null;
   $: guild = $guildStore.guild;
 
   let scrollY: number = 0;

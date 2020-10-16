@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import type { Presence } from "discord-rpc";
+import type { Presence, Subscription } from "discord-rpc";
 
 import { Client as DiscordRPClient } from "discord-rpc";
 import { EventEmitter } from "events";
-import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
+
+import { isExists, isNotEmpty, isNotExists } from "@guilds-shared/helpers/typeguards";
 import { logDebug, logError } from "@guilds-main/utils/log";
+import { wait } from "@guilds-shared/helpers/functions";
 
 
 export class DiscordRPC extends EventEmitter implements IDestroyable {
@@ -12,8 +14,11 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
   private static RECONNECT_INTERVAL = 3000;
   private static CLIENT_ID = "747450684340699237";
 
+  #tryReconnect: boolean;
   #reconnectTimer?: NodeJS.Timer;
+  #isInited: boolean;
   #isConnected: boolean;
+  #subscriptions: Subscription[];
   #client?: DiscordRPClient;
 
   public get isConnected(): boolean {
@@ -23,11 +28,16 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
   constructor() {
     super();
 
+    this.#tryReconnect = false;
+    this.#isInited = false;
     this.#isConnected = false;
+    this.#subscriptions = [];
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this.connect = this.connect.bind(this);
+    this.disconnect = this.disconnect.bind(this);
     this._onConnect = this._onConnect.bind(this);
+    this._onDisconnect = this._onDisconnect.bind(this);
     this._onConnectionClose = this._onConnectionClose.bind(this);
     this._onActivitySpectate = this._onActivitySpectate.bind(this);
     this._onActivityJoinRequest = this._onActivityJoinRequest.bind(this);
@@ -39,6 +49,7 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
   public async connect(): Promise<boolean> {
 
     try {
+      this.#tryReconnect = true;
       this.#client = new DiscordRPClient({ transport: "ipc" });
 
       this.#client.addListener("ready", this._onConnect);
@@ -58,7 +69,7 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
   }
 
   public async disconnect(): Promise<void> {
-    await this._onDisconnect();
+    await this._onDisconnect(false);
   }
 
   public async setActivity(activity: Presence): Promise<void> {
@@ -84,43 +95,76 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
 
   private async _onConnect(): Promise<void> {
 
-    if (this.isConnected) return;
-
     this._setReconnectTimer("off");
+
+    if (this.isConnected && this.#isInited) return;
 
     if (isNotExists(this.#client)) {
       return this.disconnect();
     }
 
-    await Promise.all([
-      this.#client.subscribe("ACTIVITY_SPECTATE", this._onActivitySpectate),
-      this.#client.subscribe("ACTIVITY_JOIN_REQUEST", this._onActivityJoinRequest),
-      this.#client.subscribe("ACTIVITY_JOIN", this._onActivityJoin)
-    ]).catch(this._onError);
+    try {
 
+      this.#subscriptions.push(
+        await this.#client.subscribe("ACTIVITY_JOIN_REQUEST", this._onActivityJoinRequest)
+      );
+      await wait(1e3);
+
+      this.#subscriptions.push(
+        await this.#client.subscribe("ACTIVITY_JOIN", this._onActivityJoin)
+      );
+      await wait(1e3);
+
+    } catch (e) {
+      return this._onError(e);
+    }
+
+    this.#isInited = true;
     this.#isConnected = true;
+
     this.emit("discord:connected");
     logDebug("[DiscordRPC]: \"connected\"");
   }
 
-  private async _onDisconnect() {
+  private async _onDisconnect(errored = false) {
 
-    if (!this.isConnected) return;
+    if (this.#tryReconnect) {
+      this._setReconnectTimer("on");
+    }
 
-    this._setReconnectTimer("on");
+    if (!this.isConnected && this.#isInited) return;
+    this.#isInited = false;
 
-    if (isExists(this.#client)) {
+    if (isNotEmpty(this.#subscriptions) && !errored) {
+      try {
+        for (const subscription of this.#subscriptions) {
+          await subscription.unsubscribe();
+          await wait(0.5e3);
+        }
+
+      } catch (error) {
+        logError("[DiscordRPC]: On unSub - ", error);
+      }
+    }
+    this.#subscriptions = [];
+
+
+    if (isExists(this.#client) && !errored) {
       await this.#client.destroy();
     }
-    this.#client = undefined;
 
+    this.#client = undefined;
     this.#isConnected = false;
+
     this.emit("discord:disconnected");
     logDebug("[DiscordRPC]: \"disconnected\"");
   }
 
   private async _onConnectionClose() {
-    await this._onDisconnect();
+    if (this.#tryReconnect) {
+      return this._onDisconnect(true);
+    }
+    return;
   }
   // #endregion Connect handlers
 
@@ -139,14 +183,15 @@ export class DiscordRPC extends EventEmitter implements IDestroyable {
   }
 
   private async _onError(error: Error): Promise<void> {
-    logError("[DiscordRPC]:", error);
-    await this._onDisconnect();
+    logError("[DiscordRPC]: onError - ", error);
+    this.#tryReconnect = true;
+    return this._onDisconnect(true);
   }
   // #endregion Event handlers
 
 
   async destroy(): Promise<void> {
+    this.#tryReconnect = false;
     await this.disconnect();
-    this._setReconnectTimer("off");
   }
 }

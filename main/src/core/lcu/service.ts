@@ -1,5 +1,5 @@
-import type { LCUAPI } from "@guilds-main/connectors/LCUAPI";
-import type { LCUAPISocket } from "@guilds-main/connectors/LCUAPI/socket";
+import type { LCUAPI } from "@guilds-main/core/lcu/connector";
+import type { LCUAPISocket } from "@guilds-main/core/lcu/connector/socket";
 
 import { authStore } from "@guilds-main/store/auth";
 import { i18n } from "@guilds-main/utils/i18n";
@@ -12,17 +12,11 @@ export class LCUService implements IService {
   #lcuApi: LCUAPI;
   #lcuApiSocket: LCUAPISocket;
 
-  constructor(
-    lcuApi: LCUAPI,
-    lcuApiSocket: LCUAPISocket
-  ) {
+  constructor(lcuApi: LCUAPI, lcuApiSocket: LCUAPISocket) {
     this.#lcuApi = lcuApi;
     this.#lcuApiSocket = lcuApiSocket;
   }
 
-  public get api(): LCUAPI {
-    return this.#lcuApi;
-  }
 
   // #region Events
   public addListener(event: string, callback: TAnyFunc): this {
@@ -201,11 +195,7 @@ export class LCUService implements IService {
   }
 
   public async getLobby(): Promise<TLobbyResponse | undefined> {
-    try {
-      return this.#lcuApi.getLobby();
-    } catch {
-      return undefined;
-    }
+    return this.#lcuApi.getLobby();
   }
 
   public async connectToLobby(lobbyId: string): Promise<void> {

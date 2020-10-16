@@ -33,11 +33,9 @@
   const SEASON_CLUBS_COUNT = 500;
   const STAGE_CLUBS_COUNT = 25;
 
-  let season_id: number | undefined;
   $: season_id = isExists(params.season_id)
     ? Number(params.season_id)
     : undefined;
-  let stage_id: number | undefined;
   $: stage_id = isExists(params.season_id)
     ? Number(params.stage_id)
     : undefined;
@@ -45,7 +43,6 @@
   $: afterNavigation($location);
   $: loadRating($location, currentPage);
 
-  let guild: IGuildAPIClubResponse;
   $: guild = $guildStore.guild!;
 
   function afterNavigation(_: string) {

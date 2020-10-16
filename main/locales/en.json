@@ -193,7 +193,9 @@
     "delete": "Delete group",
     "add-friends": "Add friends to static group",
     "friends-in-group": "Friends in group",
-    "friends-not-in-group": "Friends not in group"
+    "friends-not-in-group": "Friends not in group",
+    "add-friend": "Add to static group",
+    "remove-friend": "Remove from static group"
   },
   "gameflow": {
     "None": "In the main menu",

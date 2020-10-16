@@ -10,12 +10,12 @@ export class Result<T = unknown> implements IResult<T> {
   public data?: T;
   public error?: Error;
 
-  public static create<T>(data?: T, status?: TResultStatus): Result<T> {
-    return new this(data, status);
+  public static create<K>(data?: K, status?: TResultStatus): Result<K> {
+    return new this<K>(data, status);
   }
 
-  public static resolve<T>(promise: Promise<T>): Promise<Result<T>> {
-    const result = new this<T>();
+  public static resolve<K>(promise: Promise<K>): Promise<Result<K>> {
+    const result = new this<K>();
 
     return promise
       .then((data) => result.setData(data).setStatus("success"))

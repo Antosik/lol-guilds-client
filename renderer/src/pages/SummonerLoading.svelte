@@ -1,11 +1,10 @@
 <script context="module" lang="typescript">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
+  import { rpc } from "@guilds-web/data/rpc";
 
-  import { rpc } from "../data/rpc";
-
-  async function LCUReconnect() {
-    await rpc.invoke("lcu:connect");
+  function LCUReconnect() {
+    rpc.send("lcu:connect");
   }
 </script>
 

@@ -1,9 +1,9 @@
 <script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
-  import { rpc } from "../data/rpc";
+  import { rpc } from "@guilds-web/data/rpc";
 
-  async function LCUReconnect() {
-    await rpc.invoke("lcu:connect");
+  function LCUReconnect() {
+    rpc.send("lcu:connect");
   }
 </script>
 

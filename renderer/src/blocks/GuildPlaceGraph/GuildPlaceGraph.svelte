@@ -1,21 +1,25 @@
 <script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
-  import { isExists } from "@guilds-shared/helpers/typeguards";
 
   import GuildPlaceGraphAxis from "./GuildPlaceGraphAxis.svelte";
   import GuildPlaceGraphTrack from "./GuildPlaceGraphTrack.svelte";
+  import IconButton from "@guilds-web/components/IconButton.svelte";
+
+  function getCurrentSegmentIndex(segments: IInternalGuildPathSegment[]): number {
+    for (let i = 0, len = segments.length; i < len; i++) {
+      if (segments[i].isCurrent) {
+        return i;
+      }
+    }
+    return 0;
+  }
 </script>
 
 <script lang="typescript">
   export let current: IInternalGuildPathPoint = { points: 0, rank: 0 };
   export let segments: IInternalGuildPathSegment[] = [];
 
-  const currentSegment = segments.find((segment) => segment.isCurrent);
-  let selectedSegmentIndex = isExists(currentSegment)
-    ? segments.indexOf(currentSegment)
-    : 0;
-
-  let selectedSegment: IInternalGuildPathSegment;
+  let selectedSegmentIndex = getCurrentSegmentIndex(segments);
   $: selectedSegment = segments[selectedSegmentIndex];
 
   const prevSegment = () => (selectedSegmentIndex = selectedSegmentIndex - 1);
@@ -26,24 +30,13 @@
   .guild-graph {
     display: flex;
     align-items: center;
+    gap: 8px;
   }
 
-  .guild-graph__nav {
-    border-radius: 50%;
+  :global(.guild-graph__nav) {
     flex-shrink: 0;
     flex-grow: 0;
-    width: 24px;
-    height: 24px;
     margin-top: -2px;
-  }
-  .guild-graph__nav--prev {
-    margin-right: 8px;
-  }
-  .guild-graph__nav--next {
-    margin-left: 8px;
-  }
-  .guild-graph__nav__img {
-    max-width: 80%;
   }
 
   .guild-graph__figure {
@@ -66,17 +59,13 @@
 </style>
 
 <div class="guild-graph">
-
-  <button
-    class="guild-graph__nav guild-graph__nav--prev flex-center"
-    type="button"
+  <IconButton
+    icon="arrow-left"
+    alt={$_('utils.prev')}
+    className="guild-graph__nav guild-graph__nav--prev"
+    rounded
     disabled={selectedSegmentIndex === 0}
-    on:click={prevSegment}>
-    <img
-      src="./images/icons/arrow-left.svg"
-      alt={$_('utils.prev')}
-      class="guild-graph__nav__img" />
-  </button>
+    on:click={prevSegment} />
 
   <div class="guild-graph__figure">
     <div class="guild-graph__track">
@@ -87,15 +76,11 @@
     </div>
   </div>
 
-  <button
-    class="guild-graph__nav guild-graph__nav--next flex-center"
-    type="button"
+  <IconButton
+    icon="arrow-right"
+    alt={$_('utils.next')}
+    className="guild-graph__nav guild-graph__nav--next"
+    rounded
     disabled={selectedSegmentIndex === segments.length - 1}
-    on:click={nextSegment}>
-    <img
-      src="./images/icons/arrow-right.svg"
-      alt={$_('utils.next')}
-      class="guild-graph__nav__img" />
-  </button>
-
+    on:click={nextSegment} />
 </div>

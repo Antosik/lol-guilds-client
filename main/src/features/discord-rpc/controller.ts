@@ -1,44 +1,20 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { MainRPC } from "@guilds-main/utils/rpc";
-import type { LCUService } from "@guilds-main/services/lcu";
+import type { LCUService } from "@guilds-main/core/lcu/service";
 import type { DiscordRPCService } from "./service";
 
-import { settingsStore } from "@guilds-main/store/settings";
+import { Controller } from "@guilds-main/utils/abstract/Controller";
 
 
-export class DiscordRPCController implements IController, IDestroyable {
+export class DiscordRPCController extends Controller {
 
-  #isMounted: boolean;
-
-  #rpc: MainRPC;
   #service: DiscordRPCService;
   #lcuService: LCUService;
 
   constructor(rpc: MainRPC, service: DiscordRPCService, lcuService: LCUService) {
-
-    this.#rpc = rpc;
+    super(rpc);
     this.#service = service;
     this.#lcuService = lcuService;
-    this.#isMounted = false;
-
-    this._bindMethods();
-  }
-
-  public isMounted(): boolean {
-    return this.#isMounted;
-  }
-
-  public mount(): void {
-    try {
-      this._addEventHandlers();
-      this.#isMounted = true;
-    } catch (e) {
-      this.#isMounted = false;
-    }
-  }
-
-  public destroy(): void {
-    this._removeEventHandlers();
   }
 
 
@@ -54,43 +30,33 @@ export class DiscordRPCController implements IController, IDestroyable {
   private async _onDiscordActivityJoin(secret: string) {
     await this.#service.connectToLobby(secret);
   }
-
-  private async _onFeatureToggle(isEnabled: boolean) {
-    settingsStore.set("features.discord", isEnabled);
-    if (isEnabled) {
-      await this.#service.enable();
-    } else {
-      await this.#service.disable();
-    }
-  }
   // #endregion Event Handlers
 
 
-  // #region System methods
-  private _bindMethods() {
+  // #region IController implementation
+  _bindMethods(): void {
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this._onLobbyUpdate = this._onLobbyUpdate.bind(this);
     this._onRPCConnected = this._onRPCConnected.bind(this);
     this._onDiscordActivityJoin = this._onDiscordActivityJoin.bind(this);
-    this._onFeatureToggle = this._onFeatureToggle.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
 
-  _addEventHandlers(): void {
-    this.#rpc.addListener("lcu:connected", this._onRPCConnected);
-    this.#rpc.setHandler("app:feature:discord", this._onFeatureToggle);
-    this.#service.addListener("discord:connected", this._onRPCConnected);
+  _addEventHandlers(): this {
+    this.#service
+      .addListener("discord:connected", this._onRPCConnected)
+      .addListener("discord:join", this._onDiscordActivityJoin);
     this.#lcuService.addListener("lcu:lol-lobby.v2.lobby", this._onLobbyUpdate);
-    this.#service.addListener("discord:join", this._onDiscordActivityJoin);
+    return this;
   }
 
-  _removeEventHandlers(): void {
-    this.#rpc.removeListener("lcu:connected", this._onRPCConnected);
-    this.#rpc.removeHandler("app:feature:discord");
-    this.#service.removeListener("discord:connected", this._onRPCConnected);
+  _removeEventHandlers(): this {
+    this.#service
+      .removeListener("discord:connected", this._onRPCConnected)
+      .removeListener("discord:join", this._onDiscordActivityJoin);
     this.#lcuService.removeListener("lcu:lol-lobby.v2.lobby", this._onLobbyUpdate);
-    this.#service.removeListener("discord:join", this._onDiscordActivityJoin);
+    return this;
   }
-  // #endregion System methods
+  // #endregion IController implementation
 }

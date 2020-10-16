@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
   import { isEmpty, isExists } from "@guilds-shared/helpers/typeguards";
+  import IconButton from "@guilds-web/components/IconButton.svelte";
 </script>
 
 <script lang="typescript">
@@ -63,18 +64,11 @@
   tbody tr:hover {
     background: rgba(245, 240, 223, 0.1);
   }
-  .invite-action {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    padding: 0;
-    margin: 4px;
+  .invite-actions {
+    display: flex;
+    gap: 4px;
   }
-  .invite-action img {
-    max-width: 50%;
-    pointer-events: none;
-  }
-  .invite-action:disabled.selected {
+  :global(.invite-action:disabled.selected) {
     background: var(--main-background);
   }
 </style>
@@ -129,41 +123,33 @@
           <td>{$_(`ranked.${invite.rank}`)}</td>
           <td>{invite.points}pt</td>
           <td>
-            <ul>
+            <ul class="invite-actions">
               <li>
-                <button
-                  class="invite-action flex-center"
-                  class:selected={invite.status === 1}
-                  type="button"
-                  on:click={() => acceptInvite(invite.id)}
-                  disabled={isExists(invite) && invite.status !== 0}>
-                  <img
-                    src="./images/icons/ok.svg"
-                    alt={$_('guild-invites.accept-invite')} />
-                </button>
+                <IconButton
+                  icon="ok"
+                  alt={$_('guild-invites.accept-invite')}
+                  rounded
+                  className={invite.status === 1 ? "invite-action selected" : "invite-action"}
+                  disabled={isExists(invite.status) && invite.status !== 0}
+                  on:click={() => acceptInvite(invite.id)} />
               </li>
               <li>
-                <button
-                  class="invite-action flex-center"
-                  class:selected={invite.status === 2}
-                  type="button"
-                  on:click={() => declineInvite(invite.id)}
-                  disabled={isExists(invite.status) && invite.status !== 0}>
-                  <img
-                    src="./images/icons/close.svg"
-                    alt={$_('guild-invites.decline-invite')} />
-                </button>
+                <IconButton
+                  icon="close"
+                  alt={$_('guild-invites.decline-invite')}
+                  rounded
+                  className={invite.status === 2 ? "invite-action selected" : "invite-action"}
+                  disabled={isExists(invite.status) && invite.status !== 0}
+                  on:click={() => declineInvite(invite.id)} />
               </li>
               {#if !invite.isFriend}
                 <li>
-                  <button
-                    class="invite-action flex-center"
-                    type="button"
-                    on:click={() => sendFriendRequest(invite.displayName)}>
-                    <img
-                      src="./images/icons/user.svg"
-                      alt={$_('send.friend-request')} />
-                  </button>
+                  <IconButton
+                    icon="invite-user"
+                    alt={$_('send.friend-request')}
+                    rounded
+                    disabled={isExists(invite.status) && invite.status !== 0}
+                    on:click={() => sendFriendRequest(invite.displayName)} />
                 </li>
               {/if}
             </ul>

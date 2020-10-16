@@ -7,7 +7,6 @@
   export let statusCode: string = "None";
   export let showText: boolean = true;
 
-  let isBusy: boolean;
   $: isBusy = !gameflowNotBusyStatusCode.includes(statusCode);
 </script>
 

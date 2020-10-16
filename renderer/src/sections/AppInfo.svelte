@@ -1,19 +1,40 @@
 <script context="module" lang="typescript">
+  import { onDestroy, onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { ISSUES_URL } from "@guilds-shared/env";
-  
+  import { rpc } from "@guilds-web/data/rpc";
+  import { ISSUES_URL, RELEASES_URL } from "@guilds-shared/env";
+
   import LoadingSpinner from "@guilds-web/components/LoadingSpinner.svelte";
-  import { rpc } from "../data/rpc";
+  import { installUpdate, states } from "@guilds-web/sections/Version.svelte";
 </script>
 
 <script lang="typescript">
-  const versionGetPromise = rpc.invoke("version:get");
+  let updateCheckState: string;
   let versionCheckPromise = Promise.resolve();
+  let nextVersion: any;
+
+  const versionGetPromise = rpc.invoke("version:get");
   const checkForUpdate = async (e: Event) => {
     e.stopPropagation();
     e.preventDefault();
     versionCheckPromise = rpc.invoke("version:check");
   };
+
+  onMount(async () => {
+    states.forEach((state) =>
+      rpc.addListener(`version:update:${state}`, (e) => {
+        updateCheckState = state;
+        nextVersion =
+          state === "available" || state === "manual" ? e : undefined;
+      })
+    );
+  });
+
+  onDestroy(async () => {
+    states.forEach((state) =>
+      rpc.removeAllListeners(`version:update:${state}`)
+    );
+  });
 </script>
 
 <style>
@@ -60,13 +81,30 @@
     <span class="info__version__current">
       {#await versionGetPromise then version}v{version}{/await}
     </span>
-    <button class="info__version__check" on:click={checkForUpdate}>
-      {#await versionCheckPromise}
-        <LoadingSpinner />
-      {:then}
-        {$_('update.check')}
-      {/await}
-    </button>
+    {#await versionCheckPromise}
+      <LoadingSpinner small />
+    {:then}
+      {#if updateCheckState === 'available' || updateCheckState === 'downloading'}
+        <div class="info__version__check">
+          <span class="with-loading-ellipsis">{$_('update.downloading')}</span>
+        </div>
+      {:else if updateCheckState === 'ready'}
+        <button class="info__version__check" on:click={installUpdate}>
+          {$_('update.install')}
+        </button>
+      {:else if updateCheckState === 'manual'}
+        <a
+          href={RELEASES_URL.replace('{}', nextVersion)}
+          target="_blank"
+          class="info__version__check">
+          {$_('update.download')}
+        </a>
+      {:else}
+        <button class="info__version__check" on:click={checkForUpdate}>
+          {$_('update.check')}
+        </button>
+      {/if}
+    {/await}
   </div>
 
   <div class="info__contacts">

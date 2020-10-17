@@ -8,6 +8,10 @@ import { isExists, isNotEmpty, isNotExists } from "@guilds-shared/helpers/typegu
 const guildRatingToPoint = (club?: IGuildAPIClubRatingResponse): IInternalGuildPathPoint => ({ rank: club?.rank, points: club?.points ?? 0, absolute: false });
 const sortByPoints = (first: IInternalGuildPathPoint, second: IInternalGuildPathPoint): number => first.points - second.points;
 const filterEmptyPoints = (point: IInternalGuildPathPoint) => isExists(point.rank) || point.absolute;
+const getUniqueTopPoints = (points: IInternalGuildPathPoint[]): IInternalGuildPathPoint[] => {
+  const rankToPoint = new Map<number, IInternalGuildPathPoint>(points.map(point => [point.rank!, point]));
+  return Array.from(rankToPoint.values());
+};
 
 function constructSegment(guildPoint: IInternalGuildPathPoint, start: IInternalGuildPathPoint, end: IInternalGuildPathPoint): IInternalGuildPathSegment {
 
@@ -82,7 +86,7 @@ export async function getGuildSeasonPath(guildsApi: GuildsAPI, season_id: number
 
   return {
     current_position: currentPosition,
-    segments: constructSegments(currentPosition, absolutePoints, topPoints)
+    segments: constructSegments(currentPosition, absolutePoints, getUniqueTopPoints(topPoints))
   };
 }
 
@@ -117,6 +121,6 @@ export async function getGuildStagePath(guildsApi: GuildsAPI, season_id: number,
 
   return {
     current_position: currentPosition,
-    segments: constructSegments(currentPosition, absolutePoints, topPoints)
+    segments: constructSegments(currentPosition, absolutePoints, getUniqueTopPoints(topPoints))
   };
 }

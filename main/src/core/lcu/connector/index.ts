@@ -27,11 +27,14 @@ export class LCUAPI {
   public async getCurrentSummoner(): Promise<ILCUAPISummonerCoreResponse> {
 
     const summonerFromStore = authStore.get("summoner");
-    if (isExists(summonerFromStore)) {
-      return summonerFromStore;
-    }
 
     const summoner = await this.request("/lol-summoner/v1/current-summoner") as ILCUAPISummonerCoreResponse;
+    if (isExists(summonerFromStore) && summonerFromStore.puuid === summoner.puuid) {
+      return summonerFromStore;
+    } else {
+      await this.updateIdToken();
+    }
+
     authStore.set(
       "summoner",
       { accountId: summoner.accountId, displayName: summoner.displayName, puuid: summoner.puuid, summonerId: summoner.summonerId } as ILCUAPISummonerCoreResponse
@@ -44,13 +47,14 @@ export class LCUAPI {
 
     const summonersFromStore = lcuStore.get("summoners");
     const summonerFromStore = summonersFromStore?.find(({ displayName }) => displayName.toLowerCase() === name.toLowerCase());
-    if (isExists(summonerFromStore)) {
-      return summonerFromStore;
-    }
 
     const summoner = await this.request(`/lol-summoner/v1/summoners?name=${encodeURI(name)}`).catch(() => null) as ILCUAPISummonerResponse;
     if (isNotExists(summoner)) {
       return name;
+    }
+
+    if (isExists(summonerFromStore) && summonerFromStore.puuid === summoner.puuid) {
+      return summonerFromStore;
     }
 
     lcuStore.set("summoners", [
@@ -70,10 +74,14 @@ export class LCUAPI {
       return tokenFromStore.token;
     }
 
+    const tokenData = await this.updateIdToken();
+    return tokenData.token;
+  }
+
+  private async updateIdToken(): Promise<ILCUAPIIdToken> {
     const tokenData = await this.request("/lol-rso-auth/v1/authorization/id-token") as ILCUAPIIdToken;
     authStore.setToken(tokenData);
-
-    return tokenData.token;
+    return tokenData;
   }
   // #endregion /lol-rso-auth/ calls
 

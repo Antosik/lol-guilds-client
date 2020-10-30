@@ -2,18 +2,31 @@
 import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { GuildsService } from "@guilds-main/core/guilds/service";
 
+import { authStore } from "@guilds-main/store/auth";
 import { Controller } from "@guilds-main/utils/abstract/Controller";
 import { Result } from "@guilds-shared/helpers/result";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class GuildsController extends Controller {
 
   #guildsService: GuildsService;
+  #tokenSubscription: TAnyFunc | null;
 
   constructor(rpc: MainRPC, guildsService: GuildsService) {
     super(rpc);
     this.#guildsService = guildsService;
+    this.#tokenSubscription = null;
   }
+
+
+  // #region Guilds Service Events Handling (Inner)
+  private _onIdTokenChanged() {
+    this._onGuildsDisconnected();
+    this.#guildsService.connect();
+  }
+  // #endregion Guilds Service Events Handling (Inner)
+
 
   // #region Guilds Service Events Handling (Inner)
   private _onGuildsConnected() {
@@ -93,7 +106,8 @@ export class GuildsController extends Controller {
   _addEventHandlers(): this {
     return this
       ._addRPCEventHandlers()
-      ._addGuildsEventHandlers();
+      ._addGuildsEventHandlers()
+      ._addStoreEventHandlers();
   }
 
   private _addRPCEventHandlers(): this {
@@ -132,10 +146,16 @@ export class GuildsController extends Controller {
     return this;
   }
 
+  private _addStoreEventHandlers(): this {
+    this.#tokenSubscription = authStore.onDidChange("token", this._onIdTokenChanged);
+    return this;
+  }
+
   _removeEventHandlers(): this {
     return this
       ._removeRPCEventHandlers()
-      ._removeGuildsEventHandlers();
+      ._removeGuildsEventHandlers()
+      ._removeStoreEventHandlers();
   }
 
   private _removeRPCEventHandlers(): this {
@@ -174,9 +194,18 @@ export class GuildsController extends Controller {
     return this;
   }
 
+  private _removeStoreEventHandlers(): this {
+    if (isExists(this.#tokenSubscription)) {
+      this.#tokenSubscription();
+    }
+    return this;
+  }
+
   _bindMethods(): void {
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    this._onIdTokenChanged = this._onIdTokenChanged.bind(this);
+
     this._onGuildsConnect = this._onGuildsConnect.bind(this);
     this._handleClubGetSummoner = this._handleClubGetSummoner.bind(this);
     this._handleClubGet = this._handleClubGet.bind(this);

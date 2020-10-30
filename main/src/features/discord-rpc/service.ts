@@ -50,7 +50,7 @@ export class DiscordRPCService implements IService {
   // #region ActivityChange
   public async setLobbyActivity(forceReload = false): Promise<void> {
 
-    if (!this.#discordRPC.isConnected) return;
+    if (!this.#discordRPC.isConnected || !this.#lcuService.isConnected) return;
 
     const lobbyData = await this.#lcuService.getLobby();
     if (isNotExists(lobbyData)) {
@@ -62,7 +62,7 @@ export class DiscordRPCService implements IService {
 
   public async setLobbyActivityByData(lobbyData: TLobbyResponse, forceReload = false): Promise<void> {
 
-    if (!this.#discordRPC.isConnected) return;
+    if (!this.#discordRPC.isConnected || !this.#lcuService.isConnected) return;
     if (!this.isInvalidationNeeded(this.#currentLobbyData, lobbyData) && !forceReload) {
       return;
     }
@@ -118,6 +118,7 @@ export class DiscordRPCService implements IService {
 
   // #region LCUConnect
   public async connectToLobby(encryptedLobbyId: string): Promise<void> {
+    if (!this.#lcuService.isConnected) return;
     const lobbyId = Buffer.from(encryptedLobbyId, "base64").toString();
     await this.#lcuService.connectToLobby(lobbyId);
   }

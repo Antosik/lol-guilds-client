@@ -11,5 +11,3 @@ export const routes = {
   "/client/*": MainPage,
   "*": NotFoundPage
 };
-
-export { subroutes, subprefix } from "./subroutes";

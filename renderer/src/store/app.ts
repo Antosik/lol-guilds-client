@@ -4,84 +4,110 @@ import { randomId } from "@guilds-shared/helpers/functions";
 import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
-function createAppStore() {
-  const getInitialStore = (): IAppStore => ({ notifications: [], invitations: [], currentPage: "/client/" });
+// #region Invitations Store
+function createInvitationsStore() {
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { subscribe, update } = writable<IAppStore>(getInitialStore());
+  const { subscribe, update } = writable<INotification[]>([]);
 
-
-  const removeNotification = (id: string) => {
-    update(state => ({ ...state, notifications: state.notifications.filter(notification => notification.id !== id) }));
+  const remove = (invitationId: string) => {
+    update(state => state.filter(invitation => invitation.id !== invitationId));
   };
 
-  const addNotification = (text: string) => {
-    update(state => {
-      const notification = {
-        id: randomId(),
-        text
-      };
-      setTimeout(() => removeNotification(notification.id), 4000);
-      return ({ ...state, notifications: [...state.notifications, notification] });
-    });
-  };
-
-  const addInvitation = (invitationId: string, text: string) => {
+  const add = (invitationId: string, text: string) => {
     update(state => {
       const invitation = {
         id: invitationId,
         text
       };
-      return { ...state, invitations: [...state.invitations, invitation] };
+      return [...state, invitation];
     });
   };
 
-  const removeInvitation = (invitationId: string) => {
-    update(state =>
-      ({ ...state, invitations: state.invitations.filter(invitation => invitation.id !== invitationId) })
-    );
+  const clear = () => {
+    update(() => []);
   };
-
-  const clearInvitations = () => {
-    update(state => ({ ...state, invitations: [] }));
-  };
-
-  const setCurrentPage = (url: string) => {
-    window.localStorage.setItem("currentPage", url);
-    update(state => ({ ...state, currentPage: url }));
-  };
-
-  const setCurrentPageLoaded = (e: CustomEvent<{ location: string }>) => {
-    const { detail: { location } } = e;
-    window.localStorage.setItem("currentPage", location);
-    update(state => ({ ...state, currentPage: location }));
-  };
-
-  const cleanCurrentPage = () => {
-    window.localStorage.removeItem("currentPage");
-    update(state => ({ ...state, currentPage: "" }));
-  };
-
-  const savedCurrentPage = window.localStorage.getItem("currentPage");
-  if (isExists(savedCurrentPage)) {
-    setCurrentPage(savedCurrentPage);
-  }
-
 
   return {
     subscribe,
-
-    addNotification,
-    removeNotification,
-
-    addInvitation,
-    removeInvitation,
-    clearInvitations,
-
-    setCurrentPage,
-    setCurrentPageLoaded,
-    cleanCurrentPage
+    add,
+    remove,
+    clear
   };
 }
+export const invitations = createInvitationsStore();
+// #endregion Invitations Store
 
-export const appStore = createAppStore();
+
+// #region Notifications Store
+function createNotificationsStore() {
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { subscribe, update } = writable<INotification[]>([]);
+
+  const remove = (notificationId: string) => {
+    update(state => state.filter(notification => notification.id !== notificationId));
+  };
+
+  const add = (text: string) => {
+    update(state => {
+      const notification = {
+        id: randomId(),
+        text
+      };
+      setTimeout(() => remove(notification.id), 4000);
+      return [...state, notification];
+    });
+  };
+
+  const clear = () => {
+    update(() => []);
+  };
+
+  return {
+    subscribe,
+    add,
+    remove,
+    clear
+  };
+}
+export const notifications = createNotificationsStore();
+// #endregion Notifications Store
+
+
+// #region RouteSaver Store
+function createRouteSaverStore() {
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { subscribe, update } = writable<string>("/client/", set => {
+    const savedCurrentPage = window.localStorage.getItem("currentPage");
+    if (isExists(savedCurrentPage)) {
+      set(savedCurrentPage);
+    }
+  });
+
+  const set = (url: string) => {
+    window.localStorage.setItem("currentPage", url);
+    update(() => url);
+  };
+
+  const handleRouteLoaded = (e: CustomEvent<{ location: string }>) => {
+    const { detail: { location } } = e;
+    window.localStorage.setItem("currentPage", location);
+    update(() => location);
+  };
+
+  const clean = () => {
+    window.localStorage.removeItem("currentPage");
+    update(() => "/client/");
+  };
+
+  return {
+    subscribe,
+    set,
+    handleRouteLoaded,
+    clean
+  };
+}
+export const routeSaver = createRouteSaverStore();
+// #endregion RouteSaver Store

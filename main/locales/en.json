@@ -58,7 +58,8 @@
     "my-last-games": "My latest games with the guild",
     "stage": "Stage",
     "season": "Season",
-    "client-not-launched": "League of Legends client is not launched!",
+    "auth-required": "Authentication required",
+    "auth-required-sub": "Please launch the League of Legends client",
     "to-season": "To the season",
     "to-main-page": "Go home",
     "search": "Search"
@@ -101,6 +102,7 @@
     "unexpected": "An unexpected error has occurred!",
     "something": "Something went wrong: {message}",
     "request": "It was not possible to send a request",
+    "lcu-required": "A League of Legends client required to be running",
     "internal": "Internal application error"
   },
   "invite": {

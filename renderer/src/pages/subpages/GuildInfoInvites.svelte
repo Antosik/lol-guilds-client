@@ -6,7 +6,7 @@
     isNotEmpty,
   } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
-  import { guildStore } from "@guilds-web/store/guild";
+  import { guild } from "@guilds-web/store";
   import { sortStrings, sortNumbers } from "@guilds-web/utils/misc";
 
   import IntersectionObs from "@guilds-web/components/IntersectionObs.svelte";
@@ -37,7 +37,7 @@
 
   async function loadInvites(page: number) {
     return rpc
-      .invoke<IInternalInvite[]>("guilds:invites:list", $guildStore.guild?.id, {
+      .invoke<IInternalInvite[]>("guilds:invites:list", $guild.data?.id, {
         page,
       })
       .then((list: IInternalInvite[] | undefined) => {

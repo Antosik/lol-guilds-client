@@ -1,7 +1,8 @@
 <script context="module" lang="typescript">
   import { createEventDispatcher } from "svelte";
   import { _ } from "svelte-i18n";
-  import { isExists } from "@guilds-shared/helpers/typeguards";
+  import { lcuConnected } from "@guilds-web/store/lcu";
+  import { isExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
 
   import IconButton from "@guilds-web/components/IconButton.svelte";
   import PlayerStatus from "@guilds-web/components/PlayerStatus.svelte";
@@ -50,42 +51,42 @@
 
 {#if isExists(member)}
   <li class="guild-member">
-
     <div class="guild-member__info">
       <div>{member.name}</div>
-      <PlayerStatus statusCode={member.status} gameName={member.game} />
-      {#if isExists(member) && member.note}
+      {#if isExists(member) && $lcuConnected}
+        <PlayerStatus statusCode={member.status} gameName={member.game} />
+      {/if}
+      {#if isExists(member) && $lcuConnected && isNotBlank(member.note)}
         <span class="note__tooltip">
           <Tooltip text={member.note} label={$_('utils.note')} icon="note" />
         </span>
       {/if}
     </div>
 
-    <div class="guild-member__buttons">
+    {#if $lcuConnected}
+      <div class="guild-member__buttons">
+        {#if isExists(member) && member.status === 'unknown'}
+          <IconButton
+            icon="invite-user"
+            alt={$_('send.friend-request')}
+            rounded
+            on:click={sendFriendRequest} />
+        {:else if isExists(member) && member.status !== 'banned'}
+          <IconButton
+            icon="chat"
+            alt={$_('send.message')}
+            rounded
+            on:click={openChatWith} />
+        {/if}
 
-      {#if isExists(member) && member.status === 'unknown'}
-        <IconButton
-          icon="invite-user"
-          alt={$_('send.friend-request')}
-          rounded
-          on:click={sendFriendRequest} />
-      {:else if isExists(member) && member.status !== 'banned'}
-        <IconButton
-          icon="chat"
-          alt={$_('send.message')}
-          rounded
-          on:click={openChatWith} />
-      {/if}
-
-      {#if isExists(member) && allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown') && member.game === 'League of Legends'}
-        <IconButton
-          icon="plus"
-          alt={$_('send.lobby-invite')}
-          rounded
-          on:click={inviteToParty} />
-      {/if}
-
-    </div>
-
+        {#if isExists(member) && allowInvite && (member.status === 'chat' || member.status === 'away' || member.status === 'unknown') && member.game === 'League of Legends'}
+          <IconButton
+            icon="plus"
+            alt={$_('send.lobby-invite')}
+            rounded
+            on:click={inviteToParty} />
+        {/if}
+      </div>
+    {/if}
   </li>
 {/if}

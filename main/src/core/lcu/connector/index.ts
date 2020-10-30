@@ -4,7 +4,7 @@ import type { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 
 import { auth, request } from "league-connect";
 
-import { authStore } from "@guilds-main/store/auth";
+import { AuthStore, authStore } from "@guilds-main/store/auth";
 import { lcuStore } from "@guilds-main/store/lcu";
 import { logDebug, logError } from "@guilds-main/utils/log";
 import { wait } from "@guilds-shared/helpers/functions";
@@ -65,13 +65,13 @@ export class LCUAPI {
   // #region /lol-rso-auth/ calls
   public async getIdToken(): Promise<string> {
 
-    const tokenFromStore = authStore.get("token");
-    if (isExists(tokenFromStore) && tokenFromStore.expiry * 1000 > Date.now()) {
+    const tokenFromStore = authStore.getToken();
+    if (isExists(tokenFromStore) && !AuthStore.isTokenExpired(tokenFromStore)) {
       return tokenFromStore.token;
     }
 
     const tokenData = await this.request("/lol-rso-auth/v1/authorization/id-token") as ILCUAPIIdToken;
-    authStore.set("token", tokenData);
+    authStore.setToken(tokenData);
 
     return tokenData.token;
   }

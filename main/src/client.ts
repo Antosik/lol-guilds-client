@@ -60,13 +60,13 @@ export class LeagueGuildsClient implements IDestroyable {
   private async _onLCUConnected(): Promise<void> {
 
     const token = await this.#lcuModule.api.getIdToken();
+
     this.#guildsModule.api.setToken(token);
-    this.#rpc.send("guilds:connected");
+    this.#guildsModule.service.connect();
 
     await Promise.all([
       this.#discordRPCModule.mount(),
       this.#guildGroupModule.mount(),
-      this.#lobbyInvitationsModule.mount(),
       this.#staticGroupsModule.mount(),
     ]);
   }
@@ -75,7 +75,6 @@ export class LeagueGuildsClient implements IDestroyable {
     await Promise.all([
       this.#discordRPCModule.unmount(),
       this.#guildGroupModule.unmount(),
-      this.#lobbyInvitationsModule.unmount(),
       this.#staticGroupsModule.unmount(),
     ]);
   }
@@ -87,6 +86,7 @@ export class LeagueGuildsClient implements IDestroyable {
 
     this.#lcuModule.mount();
     this.#guildsModule.mount();
+    this.#lobbyInvitationsModule.mount();
   }
 
   public async destroy(): Promise<void> {

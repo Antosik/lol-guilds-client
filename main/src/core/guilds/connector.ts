@@ -1,5 +1,6 @@
 import type { Response } from "node-fetch";
 
+import { EventEmitter } from "events";
 import fetch from "node-fetch";
 import { stringify as stringifyQuery } from "querystring";
 
@@ -9,7 +10,7 @@ import { isExists } from "@guilds-shared/helpers/typeguards";
 import { VERSION } from "@guilds-shared/env";
 
 
-export class GuildsAPI {
+export class GuildsAPI extends EventEmitter {
 
   private static RETRY_INTERVAL = 500;
   private static RETRY_COUNT = 3;
@@ -18,6 +19,7 @@ export class GuildsAPI {
 
   public setToken(token: string): void {
     this.#token = token;
+    this.emit("guilds:connected");
   }
 
 
@@ -161,8 +163,11 @@ export class GuildsAPI {
 
     logDebug(`[GuildsAPI] (${retryIndex}/${GuildsAPI.RETRY_COUNT}): "${opts.method} /${path}" ${response.status} "${(opts.body && JSON.stringify(opts.body)) ?? ""}"`);
 
-    if (response.status === 204) {
-      return undefined;
+    if (response.status === 401 || response.status === 403) {
+      this.emit("guilds:disconnected");
+      return;
+    } else if (response.status === 204) {
+      return;
     }
 
     const result = await response.json() as Record<string, unknown> | { detail: string };

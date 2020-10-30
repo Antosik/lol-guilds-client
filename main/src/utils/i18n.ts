@@ -17,8 +17,9 @@ export async function initI18N(): Promise<void> {
     fallbackLng: ["en", "ru"],
     lng: settingsStore.get("language") ?? app.getLocale(),
     preload: ["en", "ru"],
+    interpolation: { prefix: "{", suffix: "}" },
     backend: {
-      loadPath: `${localesPath}/{{lng}}.json`
+      loadPath: `${localesPath}/{lng}.json`
     }
   });
 }

@@ -20,7 +20,6 @@
 </style>
 
 <ul class="main-nav__items-list">
-
   <li class="main-nav__item">
     <h3>
       <a href={`/client/`} class="use-active" use:link use:active>
@@ -29,16 +28,11 @@
     </h3>
   </li>
 
-    <li class="main-nav__item">
-      <h3>
-        <a
-          href={`/client/static-groups`}
-          class="use-active"
-          use:link
-          use:active>
-          {$_('static-groups.head')}
-        </a>
-      </h3>
-    </li>
-
+  <li class="main-nav__item">
+    <h3>
+      <a href={`/client/static-groups`} class="use-active" use:link use:active>
+        {$_('static-groups.head')}
+      </a>
+    </h3>
+  </li>
 </ul>

@@ -2,20 +2,20 @@
   import { _ } from "svelte-i18n";
   import { location } from "svelte-spa-router";
   import { isExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
-  import { appStore } from "@guilds-web/store/app";
+  import { routeSaver } from "@guilds-web/store/app";
 
   import SummonerStatus from "@guilds-web/components/SummonerStatus.svelte";
   import IconButton from "@guilds-web/components/IconButton.svelte";
 </script>
 
 <script lang="typescript">
-  export let summoner: ILCUAPISummonerCoreResponse | NotExisting = undefined;
+  export let summoner: IInternalCurrentSummoner | NotExisting = undefined;
   export let guild: IGuildAPIClubResponse | NotExisting = undefined;
-  export let status: string = "None";
+  export let status: string | NotExisting = "None";
   export let style: string = "normal";
 
   const pageReload = () => {
-    appStore.setCurrentPage($location);
+    routeSaver.set($location);
     window.location.reload();
   };
 </script>

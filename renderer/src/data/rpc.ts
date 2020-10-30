@@ -5,7 +5,7 @@ import type { Result } from "@guilds-shared/helpers/result";
 import { ipcRenderer } from "electron";
 import { EventEmitter } from "events";
 
-import { appStore } from "@guilds-web/store/app";
+import { notifications } from "@guilds-web/store/app";
 import { flowId } from "@guilds-shared/helpers/rpc";
 import { isExists } from "@guilds-shared/helpers/typeguards";
 
@@ -47,11 +47,11 @@ export class ClientRPC extends EventEmitter {
   private handleResult<T>(result: Result<T>): T | undefined {
 
     if (isExists(result?.notification)) {
-      appStore.addNotification(result.notification);
+      notifications.add(result.notification);
     }
 
     if (result?.status === "error") {
-      appStore.addNotification(result?.error?.toString() ?? "Error");
+      notifications.add(result?.error?.toString() ?? "Error");
     }
 
     return result?.data;

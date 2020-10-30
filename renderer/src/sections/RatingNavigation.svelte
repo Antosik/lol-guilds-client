@@ -72,11 +72,10 @@
 </style>
 
 <div class="season-selector">
-
   <div class="season-selector__info">
     <h2 class="season-selector__heading">{$_('main.season')}:</h2>
 
-    <select class="season-selector__select" on:blur={onSeasonChange}>
+    <select class="season-selector__select" on:change={onSeasonChange}>
       {#each seasons as season (season.id)}
         <option value={season.id}>{season.title}</option>
       {/each}
@@ -86,11 +85,15 @@
       {#if isExists(stage_info)}
         <h3>{$_('main.stage')} {stage_info.number}</h3>
         <p>
-          {formatDate(stage_info.start_date, $locale)} - {formatDate(stage_info.end_date, $locale)}
+          {formatDate(stage_info.start_date, $locale)}
+          -
+          {formatDate(stage_info.end_date, $locale)}
         </p>
       {:else if isExists(season_info)}
         <p>
-          {formatDate(season_info.start_date, $locale)} - {formatDate(season_info.end_date, $locale)}
+          {formatDate(season_info.start_date, $locale)}
+          -
+          {formatDate(season_info.end_date, $locale)}
         </p>
       {/if}
     </div>
@@ -114,11 +117,13 @@
               class="use-active"
               use:link
               use:active>
-              {$_('main.stage')} {stage.number}
+              {$_('main.stage')}
+              {stage.number}
             </a>
           {:else}
             <span class="stage-not-active">
-              {$_('main.stage')} {stage.number}
+              {$_('main.stage')}
+              {stage.number}
             </span>
           {/if}
         </li>

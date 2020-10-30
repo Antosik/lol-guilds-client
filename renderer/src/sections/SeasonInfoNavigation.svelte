@@ -80,22 +80,26 @@
 </style>
 
 <div class="season-selector">
-
   <div class="season-selector__info">
     <h2 class="season-selector__heading">
-      {$_('main.season')}: {season.title}
+      {$_('main.season')}:
+      {season.title}
     </h2>
 
     <div class="season-selector__schedule">
       {#if isExists(stage)}
         <h3>{$_('main.stage')} {stage.number}</h3>
         <p>
-          {formatDate(stage.start_date, $locale)} - {formatDate(stage.end_date, $locale)}
+          {formatDate(stage.start_date, $locale)}
+          -
+          {formatDate(stage.end_date, $locale)}
         </p>
         <p>{formatDateDistance(now, stage.start_date, stage.end_date)}</p>
       {:else}
         <p>
-          {formatDate(season.start_date, $locale)} - {formatDate(season.end_date, $locale)}
+          {formatDate(season.start_date, $locale)}
+          -
+          {formatDate(season.end_date, $locale)}
         </p>
         <p>{formatDateDistance(now, season.start_date, season.end_date)}</p>
       {/if}
@@ -117,11 +121,13 @@
             class="use-active"
             use:link
             use:active>
-            {$_('main.stage')} {stage.number}
+            {$_('main.stage')}
+            {stage.number}
           </a>
         {:else}
           <span class="stage-not-active">
-            {$_('main.stage')} {stage.number}
+            {$_('main.stage')}
+            {stage.number}
           </span>
         {/if}
       </li>

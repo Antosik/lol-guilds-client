@@ -1,17 +1,13 @@
 <script context="module" lang="typescript">
-  import { onDestroy } from "svelte";
   import { _ } from "svelte-i18n";
   import { isExists } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
-  import { guildStore } from "@guilds-web/store/guild";
-  import { summonerStore } from "@guilds-web/store/summoner";
+  import { summoner, guild, members, status } from "@guilds-web/store";
+  import { lcuConnected } from "@guilds-web/store/lcu";
 
   import Loading from "@guilds-web/blocks/Loading.svelte";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
 
-  const onMemberStatusUpdate = (member: IInternalGuildMember) => {
-    guildStore.setMemberStatus(member);
-  };
 
   async function onMemberFriendRequest(event: CustomEvent<string>) {
     await rpc.invoke("lcu:friend-request", event.detail);
@@ -27,19 +23,18 @@
 <script lang="typescript">
   let inviteState: "friends" | "all" = "friends";
 
-  $: guildMembersToInvite = $guildStore.members.filter(
-    ({ name }) =>
-      name.toLowerCase() !== $summonerStore.summoner?.displayName.toLowerCase()
+  $: summonerName = $summoner.data?.displayName ?? "???";
+  $: guildMembersToInvite = $members.data.filter(
+    ({ name }) => name.toLowerCase() !== summonerName.toLowerCase()
   );
-  $: allowInvite =
-    $summonerStore.status === "None" || $summonerStore.status === "Lobby";
+  $: allowInvite = $status === "None" || $status === "Lobby";
 
   // #region Events Handling
   async function onMemberInviteMultiple() {
     const statuses =
       inviteState !== "all" ? ["chat", "away"] : ["chat", "away", "unknown"];
 
-    const ready = $guildStore.members
+    const ready = $members.data
       .filter((member) => statuses.includes(member.status ?? "offline"))
       .map((member) => member.name);
 
@@ -47,20 +42,6 @@
   }
   // #endregion Events Handling
 
-  const membersLoadingPromise = rpc
-    .invoke<IInternalGuildMember[]>("guilds:members", $guildStore.guild?.id)
-    .then((members) => guildStore.setMembers(members))
-    .then(() => {
-      rpc.addListener("guilds:member-status:update", onMemberStatusUpdate);
-      return rpc.invoke(
-        "guilds:member-status:subscribe",
-        $guildStore.guild?.id
-      );
-    });
-
-  onDestroy(() => {
-    rpc.removeListener("guilds:member-status:update", onMemberStatusUpdate);
-  });
 </script>
 
 <style>
@@ -96,29 +77,31 @@
   }
 </style>
 
-{#if isExists($guildStore.guild)}
+{#if isExists($guild)}
   <div class="guild-members">
     <h2>{$_('main.guild-members')}</h2>
 
-    {#await membersLoadingPromise}
+    {#if $members.isLoading}
       <Loading>
         <span class="with-loading-ellipsis">{$_('loading.members')}</span>
       </Loading>
-    {:then}
-      <div class="guild-members__invite-all">
-        <button
-          type="button"
-          class="flex-center"
-          on:click={onMemberInviteMultiple}>
-          {#if inviteState === 'all'}
-            {$_('invite.all')}
-          {:else}{$_('invite.friends')}{/if}
-        </button>
-        <select bind:value={inviteState} class="mini-block">
-          <option value="friends">{$_('invite.friends')}</option>
-          <option value="all">{$_('invite.all')}</option>
-        </select>
-      </div>
+    {:else}
+      {#if $lcuConnected}
+        <div class="guild-members__invite-all">
+          <button
+            type="button"
+            class="flex-center"
+            on:click={onMemberInviteMultiple}>
+            {#if inviteState === 'all'}
+              {$_('invite.all')}
+            {:else}{$_('invite.friends')}{/if}
+          </button>
+          <select bind:value={inviteState} class="mini-block">
+            <option value="friends">{$_('invite.friends')}</option>
+            <option value="all">{$_('invite.all')}</option>
+          </select>
+        </div>
+      {/if}
 
       <MemberInviteList
         {allowInvite}
@@ -126,8 +109,6 @@
         on:member-invite={onMemberInvite}
         on:friend-request={onMemberFriendRequest}
         on:open-chat={onMemberOpenChat} />
-    {:catch}
-      <h3>{$_('error.unexpected')}</h3>
-    {/await}
+    {/if}
   </div>
 {/if}

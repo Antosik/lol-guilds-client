@@ -1,15 +1,13 @@
 <script context="module" lang="typescript">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { location } from "svelte-spa-router";
   import {
     isExists,
     isEmpty,
     isNotEmpty,
   } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
-  import { summonerStore } from "@guilds-web/store/summoner";
-  import { guildStore } from "@guilds-web/store/guild";
+  import { summoner, guild } from "@guilds-web/store";
 
   import GameInfo from "@guilds-web/components/GameInfo.svelte";
   import GuildMemberStats from "@guilds-web/components/GuildMemberStats.svelte";
@@ -43,18 +41,18 @@
     : rpc.invoke<IInternalGuildPath>("guilds:path:stage", season_id, stage_id);
 
   $: topMembersLoadingPromise = loadMembers(season_id, stage_id);
-  $: summoner_name = $summonerStore.summoner?.displayName ?? "???";
+  $: summoner_name = $summoner.data?.displayName ?? "???";
 
-  $: afterNavigation($location);
-  $: loadGames($location, lastGamesPage);
+  $: afterNavigation(season_id, stage_id);
+  $: loadGames(season_id, stage_id, lastGamesPage);
 
-  function afterNavigation(_: string) {
+  function afterNavigation(_?: number, __?: number) {
     lastGames = [];
     lastGamesPage = 1;
   }
 
-  async function loadGames(_: string, page: number) {
-    return !stage_id
+  async function loadGames(season_id?: number, stage_id?: number, page: number = 1) {
+    return isExists(stage_id)
       ? rpc
           .invoke<IGuildAPIGameClubResponse[]>(
             "guilds:games:season",
@@ -107,7 +105,7 @@
       ? rpc
           .invoke<IInternalGuildMembersSeasonRatingWithSummoner[]>(
             "guilds:members:season",
-            $guildStore.guild?.id,
+            $guild.data?.id,
             season_id
           )
           .then((members) => {
@@ -121,7 +119,7 @@
       : rpc
           .invoke<IInternalGuildMembersStageRatingWithSummoner[]>(
             "guilds:members:stage",
-            $guildStore.guild?.id,
+            $guild.data?.id,
             season_id,
             stage_id
           )

@@ -249,6 +249,13 @@ export class LCUAPI {
   // #endregion /lol-lobby/ calls
 
 
+  // #region /riot-client/ calls
+  public async getRegionAndLocale(): Promise<ILCUAPIRegionLocaleResponse> {
+    return this.request("/riotclient/region-locale") as Promise<ILCUAPIRegionLocaleResponse>;
+  }
+  // #endregion /riot-client/ calls
+
+
   // #region General
   public async request(path: string, options: ILCUAPIRequestOptions = { method: "GET" }, retry = LCUAPI.RETRY_COUNT): Promise<unknown> {
 

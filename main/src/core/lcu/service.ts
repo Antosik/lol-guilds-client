@@ -198,5 +198,9 @@ export class LCUService implements IService {
   public async connectToLobby(lobbyId: string): Promise<void> {
     return this.#lcuApi.connectToLobby(lobbyId);
   }
+
+  public async getRegionAndLocale(): Promise<ILCUAPIRegionLocaleResponse> {
+    return this.#lcuApi.getRegionAndLocale();
+  }
   // #endregion Main
 }

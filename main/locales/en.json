@@ -103,7 +103,8 @@
     "something": "Something went wrong: {message}",
     "request": "It was not possible to send a request",
     "lcu-required": "A League of Legends client required to be running",
-    "internal": "Internal application error"
+    "internal": "Internal application error",
+    "another-region": "Sorry, but Guilds are an exclusive RU server program"
   },
   "invite": {
     "all": "Invite all",

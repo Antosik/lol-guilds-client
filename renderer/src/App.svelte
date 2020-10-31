@@ -14,7 +14,7 @@
   import { rpc } from "./data/rpc";
   import { invitations, notifications, routeSaver } from "./store/app";
   import { lcuConnected } from "./store/lcu";
-  import { summoner, guildsConnected } from "./store";
+  import { region, summoner, guildsConnected } from "./store";
   import { routes } from "./routes";
 
   import IconButton from "./components/IconButton.svelte";
@@ -61,26 +61,25 @@
 </script>
 
 <script lang="typescript">
-  const handleRouting = (
-    auth: boolean,
-    summoner: TSummonerStore
-  ) => {
+  const handleRouting = (auth: boolean, summoner: TSummonerStore, region: string | NotExisting) => {
     if (!auth) {
       replace("/not-launched/");
+    } else if (isNotBlank(region) && region !== "ru") {
+      replace("/another-region/");
     } else if (summoner.isLoading) {
       replace("/summoner-loading/");
     } else if (isNotExists(summoner.data)) {
       replace("/not-launched/");
     } else {
       const pageToRoute =
-        $routeSaver === "/not-launched/" || $routeSaver === "/summoner-loading/"
+        $routeSaver === "/not-launched/" || $routeSaver === "/summoner-loading/" || $routeSaver === "/another-region/"
           ? "/client/"
           : $routeSaver;
       replace(pageToRoute);
     }
   };
 
-  $: handleRouting($guildsConnected, $summoner);
+  $: handleRouting($guildsConnected, $summoner, $region);
   let isSettingsModalOpen = false;
 
   const onSettingsModalOpen = () => (isSettingsModalOpen = true);

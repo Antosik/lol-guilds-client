@@ -60,6 +60,10 @@ export class LCUController extends Controller {
     return Result.create(this.#lcuService.disconnectSocket(), "success");
   }
 
+  private _handleGetRegionAndLocale() {
+    return Result.resolve(this.#lcuService.getRegionAndLocale());
+  }
+
   private _handleGetSummoner() {
     return Result.resolve(this.#lcuService.getCurrentSummoner());
   }
@@ -146,6 +150,7 @@ export class LCUController extends Controller {
     this.rpc
       .addListener("lcu:connect", this._handleLCUConnect)
       .setHandler("lcu:disconnect", this._handleLCUDisconnect)
+      .setHandler("lcu:get-region", this._handleGetRegionAndLocale)
       .setHandler("lcu:get-summoner", this._handleGetSummoner)
       .setHandler("lcu:get-gameflow", this._handleGetGameflowStatus)
       .setHandler("lcu:get-invitations", this._handleGetPendingInvitations)
@@ -181,6 +186,7 @@ export class LCUController extends Controller {
     this.rpc
       .removeListener("lcu:connect", this._handleLCUConnect)
       .removeHandler("lcu:disconnect")
+      .removeHandler("lcu:get-region")
       .removeHandler("lcu:get-summoner")
       .removeHandler("lcu:get-gameflow")
       .removeHandler("lcu:get-invitations")
@@ -199,6 +205,7 @@ export class LCUController extends Controller {
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this._handleLCUConnect = this._handleLCUConnect.bind(this);
     this._handleLCUDisconnect = this._handleLCUDisconnect.bind(this);
+    this._handleGetRegionAndLocale = this._handleGetRegionAndLocale.bind(this);
     this._handleGetSummoner = this._handleGetSummoner.bind(this);
     this._handleGetGameflowStatus = this._handleGetGameflowStatus.bind(this);
     this._handleGetPendingInvitations = this._handleGetPendingInvitations.bind(this);

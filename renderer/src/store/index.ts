@@ -7,6 +7,21 @@ import { lcuConnected } from "@guilds-web/store/lcu";
 import { isExists, isNotBlank, isNotExists } from "@guilds-shared/helpers/typeguards";
 
 
+export const region = derived<Readable<boolean>, string | NotExisting>(lcuConnected, (isLCUConnected, set) => {
+
+  if (isLCUConnected) {
+    rpc.invoke<ILCUAPIRegionLocaleResponse>("lcu:get-region")
+      .then((response) => {
+        if (isExists(response)) {
+          set(response.region.toLowerCase());
+        }
+      })
+      .catch(() => set(null));
+  } else {
+    set(null);
+  }
+}, null);
+
 
 export const status = derived<Readable<boolean>, string | NotExisting>(lcuConnected, (isLCUConnected, set) => {
 
@@ -29,6 +44,7 @@ export const status = derived<Readable<boolean>, string | NotExisting>(lcuConnec
     rpc.removeListener("lcu:gameflow-phase", onGameflow);
   };
 }, null);
+
 
 export const guildsConnected = readable<boolean>(false, set => {
 

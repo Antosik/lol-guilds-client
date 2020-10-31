@@ -26,6 +26,9 @@ export abstract class Module implements IMountable {
   }
 
   public mount(): void {
+    if (this.#isMounted) {
+      this.controller.unmount();
+    }
     this.controller.mount();
     this.#isMounted = true;
   }

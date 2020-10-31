@@ -210,6 +210,16 @@ declare interface ILCUAPIProcessControlResponse {
 // #endregion ProcessControl Response
 
 
+// #region RiotClient Response
+declare interface ILCUAPIRegionLocaleResponse {
+  locale: string;
+  region: string;
+  webLanguage: string;
+  webRegion: string;
+}
+// #endregion RiotClient Response
+
+
 // #region Utils
 declare interface ILCUAPIRequestOptions {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";

@@ -36,6 +36,20 @@ export class LCUModule extends Module {
     return this.#controller;
   }
 
+
+  // #region IMountable implementation
+  public mount(): void {
+    super.mount();
+    void this.#lcuApiSocket.connect();
+  }
+
+  public unmount(): void {
+    super.unmount();
+    this.#lcuApiSocket.disconnect();
+  }
+  // #endregion IMountable implementation
+
+
   // #region IDestroyable implementation
   public destroy(): void {
     super.destroy();

@@ -1,3 +1,8 @@
+declare interface IInternalCurrentSummoner {
+  displayName: string;
+  accountId: number;
+}
+
 declare interface IInternalGuildMember {
   puuid?: string;
   name: string;

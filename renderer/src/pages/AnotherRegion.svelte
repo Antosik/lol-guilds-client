@@ -9,8 +9,7 @@
 </script>
 
 <div class="absolute-full flex-center not-launched">
-  <h1 class="not-launched__heading">{$_('main.auth-required')}</h1>
-  <h2 class="not-launched__heading">{$_('main.auth-required-sub')}</h2>
+  <h1 class="not-launched__heading">{$_('error.another-region')}</h1>
   <button
     class="flex-center not-launched__button"
     type="button"

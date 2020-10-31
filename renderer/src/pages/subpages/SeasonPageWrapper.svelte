@@ -4,11 +4,8 @@
   import Router from "svelte-spa-router/Router.svelte";
   import { isExists } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
-  import { appStore } from "@guilds-web/store/app";
-  import {
-    season_subprefix as subprefix,
-    season_subroutes as subroutes,
-  } from "@guilds-web/routes/subroutes";
+  import { routeSaver } from "@guilds-web/store/app";
+  import { prefix, routes } from "@guilds-web/routes/subroutes/season";
 
   import Loading from "@guilds-web/blocks/Loading.svelte";
   import SeasonInfoNavigation from "@guilds-web/sections/SeasonInfoNavigation.svelte";
@@ -38,7 +35,6 @@
 </script>
 
 <div class="page rating-page">
-
   {#await seasonLoadingPromise}
     <Loading>
       <span class="with-loading-ellipsis">{$_('loading.seasons')}</span>
@@ -47,15 +43,11 @@
     {#if isExists(season)}
       <SeasonInfoNavigation {season} {stage} />
 
-      <Router
-        routes={subroutes}
-        prefix={subprefix}
-        on:routeLoaded={appStore.setCurrentPageLoaded} />
+      <Router {routes} {prefix} on:routeLoaded={routeSaver.handleRouteLoaded} />
     {:else}
       <p>{$_('not-found.active-season')}</p>
     {/if}
   {:catch error}
     <p>{$_('error.something', { values: { message: error.message } })}</p>
   {/await}
-
 </div>

@@ -60,6 +60,22 @@ export class LCUController extends Controller {
     return Result.create(this.#lcuService.disconnectSocket(), "success");
   }
 
+  private _handleGetRegionAndLocale() {
+    return Result.resolve(this.#lcuService.getRegionAndLocale());
+  }
+
+  private _handleGetSummoner() {
+    return Result.resolve(this.#lcuService.getCurrentSummoner());
+  }
+
+  private _handleGetGameflowStatus() {
+    return Result.resolve(this.#lcuService.getStatus());
+  }
+
+  private _handleGetPendingInvitations() {
+    return Result.resolve(this.#lcuService.getReceivedInvitations());
+  }
+
   private async _handleSendFriendRequest(nickname: string) {
 
     const requestStatus = await this.#lcuService.sendFriendRequestByNickname(nickname);
@@ -134,6 +150,10 @@ export class LCUController extends Controller {
     this.rpc
       .addListener("lcu:connect", this._handleLCUConnect)
       .setHandler("lcu:disconnect", this._handleLCUDisconnect)
+      .setHandler("lcu:get-region", this._handleGetRegionAndLocale)
+      .setHandler("lcu:get-summoner", this._handleGetSummoner)
+      .setHandler("lcu:get-gameflow", this._handleGetGameflowStatus)
+      .setHandler("lcu:get-invitations", this._handleGetPendingInvitations)
       .setHandler("lcu:lobby-invite", this._handleSendLobbyInvite)
       .setHandler("lcu:lobby-invite-all", this._handleSendLobbyInvite)
       .setHandler("lcu:friend-request", this._handleSendFriendRequest)
@@ -166,6 +186,10 @@ export class LCUController extends Controller {
     this.rpc
       .removeListener("lcu:connect", this._handleLCUConnect)
       .removeHandler("lcu:disconnect")
+      .removeHandler("lcu:get-region")
+      .removeHandler("lcu:get-summoner")
+      .removeHandler("lcu:get-gameflow")
+      .removeHandler("lcu:get-invitations")
       .removeHandler("lcu:lobby-invite")
       .removeHandler("lcu:lobby-invite-all")
       .removeHandler("lcu:friend-request")
@@ -181,6 +205,10 @@ export class LCUController extends Controller {
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     this._handleLCUConnect = this._handleLCUConnect.bind(this);
     this._handleLCUDisconnect = this._handleLCUDisconnect.bind(this);
+    this._handleGetRegionAndLocale = this._handleGetRegionAndLocale.bind(this);
+    this._handleGetSummoner = this._handleGetSummoner.bind(this);
+    this._handleGetGameflowStatus = this._handleGetGameflowStatus.bind(this);
+    this._handleGetPendingInvitations = this._handleGetPendingInvitations.bind(this);
     this._handleSendLobbyInvite = this._handleSendLobbyInvite.bind(this);
     this._handleSendFriendRequest = this._handleSendFriendRequest.bind(this);
     this._handleOpenChat = this._handleOpenChat.bind(this);

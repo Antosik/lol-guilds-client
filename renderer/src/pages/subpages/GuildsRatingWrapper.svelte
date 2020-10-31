@@ -5,11 +5,8 @@
   import { push } from "svelte-spa-router";
   import { isExists } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
-  import { appStore } from "@guilds-web/store/app";
-  import {
-    rating_subprefix as subprefix,
-    rating_subroutes as subroutes,
-  } from "@guilds-web/routes/subroutes";
+  import { routeSaver } from "@guilds-web/store/app";
+  import { prefix, routes } from "@guilds-web/routes/subroutes/rating";
 
   import Loading from "@guilds-web/blocks/Loading.svelte";
   import RatingNavigation from "@guilds-web/sections/RatingNavigation.svelte";
@@ -37,13 +34,11 @@
 </script>
 
 <div class="page rating-page">
-
   {#await seasonsLoadingPromise}
     <Loading>
       <span class="with-loading-ellipsis">{$_('loading.seasons')}</span>
     </Loading>
   {:then seasons}
-
     {#if isExists(season_id)}
       <RatingNavigation
         {seasons}
@@ -55,12 +50,8 @@
       </Loading>
     {/if}
 
-    <Router
-      routes={subroutes}
-      prefix={subprefix}
-      on:routeLoaded={appStore.setCurrentPageLoaded} />
+    <Router {routes} {prefix} on:routeLoaded={routeSaver.handleRouteLoaded} />
   {:catch error}
     <p>{$_('error.something', { values: { message: error.message } })}</p>
   {/await}
-
 </div>

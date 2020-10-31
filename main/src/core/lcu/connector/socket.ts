@@ -4,7 +4,6 @@ import type { Credentials, LeagueWebSocket, EventResponse } from "league-connect
 import { EventEmitter } from "events";
 import { auth, connect, request } from "league-connect";
 
-import { authStore } from "@guilds-main/store/auth";
 import { logDebug, logError } from "@guilds-main/utils/log";
 import { wait } from "@guilds-shared/helpers/functions";
 import { isExists, isNotExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
@@ -44,6 +43,7 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
 
   public destroy(): void {
     this.disconnect();
+    this.removeAllListeners();
   }
 
   // #region Socket
@@ -129,7 +129,6 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
 
     this.#credentials = undefined;
     this.#socket = undefined;
-    authStore.clear();
 
     this.emit("lcu:disconnected");
     logDebug("[LCUAPISocket]: \"disconnected\"");

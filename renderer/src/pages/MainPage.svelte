@@ -3,12 +3,11 @@
   import { _ } from "svelte-i18n";
   import Router from "svelte-spa-router/Router.svelte";
   import { replace, location } from "svelte-spa-router";
-  import { isNotExists, isExists } from "@guilds-shared/helpers/typeguards";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "../data/rpc";
-  import { appStore } from "../store/app";
-  import { summonerStore } from "../store/summoner";
-  import { guildStore } from "../store/guild";
-  import { subroutes, subprefix } from "../routes";
+  import { routeSaver } from "../store/app";
+  import { guild, summoner, status } from "../store";
+  import { routes, prefix } from "../routes/subroutes";
 
   import ScrollTopButton from "../components/ScrollTopButton.svelte";
   import Loading from "../blocks/Loading.svelte";
@@ -26,8 +25,6 @@
 </script>
 
 <script lang="typescript">
-  $: guild = $guildStore.guild;
-
   let scrollY: number = 0;
 
   const onAppScroll = (e: Event) => {
@@ -36,7 +33,7 @@
 
   onMount(() => {
     document.querySelector("#app")!.addEventListener("scroll", onAppScroll);
-    if (isNotExists($summonerStore.summoner)) {
+    if ($summoner.isLoading) {
       replace("/summoner-loading");
     }
   });
@@ -56,12 +53,12 @@
   }
 </style>
 
-{#if isExists($summonerStore.summoner)}
+{#if isExists($summoner)}
   <div class="main-application" on:scroll={onAppScroll}>
     <SummonerInfo
-      summoner={$summonerStore.summoner}
-      {guild}
-      status={$summonerStore.status}
+      summoner={$summoner.data}
+      guild={$guild.data}
+      status={$status}
       style={$location === '/client/' ? 'normal' : 'light'}
       on:click-reconnect={LCUReconnect} />
 
@@ -70,23 +67,22 @@
     {/if}
 
     <main class="subpages">
-      {#if guild === undefined}
+      {#if $guild.isLoading}
         <Loading>
           <span class="with-loading-ellipsis">{$_('loading.into-system')}</span>
         </Loading>
-      {:else if guild === null}
+      {:else if $guild.data === null}
         <div class="guilds_not-participating flex-center">
           <h2>{$_('guilds-program.not-participating')}</h2>
           <p>{$_('guilds-program.select-guild')}</p>
         </div>
       {:else}
         <Router
-          routes={subroutes}
-          prefix={subprefix}
-          on:routeLoaded={appStore.setCurrentPageLoaded} />
+          {routes}
+          {prefix}
+          on:routeLoaded={routeSaver.handleRouteLoaded} />
       {/if}
     </main>
-
   </div>
 
   {#if scrollY > 500}

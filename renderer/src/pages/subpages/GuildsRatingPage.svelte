@@ -1,13 +1,13 @@
 <script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
-  import { location } from "svelte-spa-router";
   import {
     isEmpty,
     isExists,
     isNotEmpty,
+    isNotExists,
   } from "@guilds-shared/helpers/typeguards";
   import { rpc } from "@guilds-web/data/rpc";
-  import { guildStore } from "@guilds-web/store/guild";
+  import { guild } from "@guilds-web/store";
 
   import IntersectionObs from "@guilds-web/components/IntersectionObs.svelte";
   import Loading from "@guilds-web/blocks/Loading.svelte";
@@ -33,19 +33,14 @@
   const SEASON_CLUBS_COUNT = 500;
   const STAGE_CLUBS_COUNT = 25;
 
-  $: season_id = isExists(params.season_id)
-    ? Number(params.season_id)
-    : undefined;
-  $: stage_id = isExists(params.season_id)
-    ? Number(params.stage_id)
-    : undefined;
+  $: myGuildId = $guild.data?.id;
+  $: season_id = isExists(params.season_id) ? Number(params.season_id) : undefined;
+  $: stage_id = isExists(params.stage_id) ? Number(params.stage_id) : undefined;
 
-  $: afterNavigation($location);
-  $: loadRating($location, currentPage);
+  $: afterNavigation(season_id, stage_id);
+  $: loadRating(season_id, stage_id, currentPage);
 
-  $: guild = $guildStore.guild!;
-
-  function afterNavigation(_: string) {
+  function afterNavigation(season_id?: number, stage_id?: number) {
     guilds = [];
     currentPage = 1;
     initialRatingLoading = true;
@@ -64,10 +59,10 @@
         );
   }
 
-  async function loadRating(_: string, page: number) {
-    return !season_id
+  async function loadRating(season_id?: number, stage_id?: number, page: number = 1) {
+    return isNotExists(season_id)
       ? Promise.resolve()
-      : !stage_id
+      : isNotExists(stage_id)
       ? rpc
           .invoke<IGuildAPIClubSeasonRatingResponse[]>(
             "guilds:rating:season",
@@ -125,7 +120,7 @@
 <div class="guilds-rating">
   <h3>{$_('guilds-rating.head')}</h3>
   {#if isNotEmpty(guilds)}
-    <GuildsRatingTable {guilds} myGuildId={guild.id} />
+    <GuildsRatingTable {guilds} {myGuildId} />
 
     {#if !finished && ((!stage_id && guilds.length < SEASON_CLUBS_COUNT) || (stage_id && guilds.length < STAGE_CLUBS_COUNT))}
       <IntersectionObs on:intersect={() => currentPage++}>

@@ -1,18 +1,12 @@
 <script context="module" lang="typescript">
   import Router from "svelte-spa-router/Router.svelte";
-  import { appStore } from "@guilds-web/store/app";
+  import { routeSaver } from "@guilds-web/store/app";
   import MainPageNavigation from "@guilds-web/sections/MainPageNavigation.svelte";
-  import {
-    main_subprefix as subprefix,
-    main_subroutes as subroutes,
-  } from "@guilds-web/routes/subroutes";
+  import { prefix, routes } from "@guilds-web/routes/subroutes/main";
 </script>
 
 <div class="page main-page">
   <MainPageNavigation />
 
-  <Router
-    routes={subroutes}
-    prefix={subprefix}
-    on:routeLoaded={appStore.setCurrentPageLoaded} />
+  <Router {routes} {prefix} on:routeLoaded={routeSaver.handleRouteLoaded} />
 </div>

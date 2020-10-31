@@ -8,7 +8,7 @@
   export let guild: IGuildAPIClubResponse | null | undefined;
 
   $: short_description = guild?.short_description;
-  $: long_description = guild?.short_description;
+  $: long_description = guild?.long_description;
 </script>
 
 <style>

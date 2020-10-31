@@ -1,7 +1,6 @@
 import type { LCUAPI } from "@guilds-main/core/lcu/connector";
 import type { LCUAPISocket } from "@guilds-main/core/lcu/connector/socket";
 
-import { authStore } from "@guilds-main/store/auth";
 import { i18n } from "@guilds-main/utils/i18n";
 import { EGameflowStatus } from "@guilds-shared/helpers/gameflow";
 import { isBlank, isNotBlank, isExists, isNotExists, isEmpty } from "@guilds-shared/helpers/typeguards";
@@ -35,13 +34,11 @@ export class LCUService implements IService {
 
 
   // #region Main
+  public get isConnected(): boolean {
+    return this.#lcuApiSocket.isConnected;
+  }
+
   public async connectSocket(): Promise<boolean> {
-
-    if (!this.#lcuApiSocket.isConnected) {
-      authStore.delete("summoner");
-      authStore.delete("token");
-    }
-
     return this.#lcuApiSocket.connect();
   }
 
@@ -49,7 +46,7 @@ export class LCUService implements IService {
     return this.#lcuApiSocket.disconnect();
   }
 
-  public async getCurrentSummoner(): Promise<ILCUAPISummonerResponse> {
+  public async getCurrentSummoner(): Promise<ILCUAPISummonerCoreResponse> {
     return this.#lcuApi.getCurrentSummoner();
   }
 
@@ -200,6 +197,10 @@ export class LCUService implements IService {
 
   public async connectToLobby(lobbyId: string): Promise<void> {
     return this.#lcuApi.connectToLobby(lobbyId);
+  }
+
+  public async getRegionAndLocale(): Promise<ILCUAPIRegionLocaleResponse> {
+    return this.#lcuApi.getRegionAndLocale();
   }
   // #endregion Main
 }

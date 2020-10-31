@@ -32,4 +32,12 @@ export class GuildsModule extends Module {
   public get controller(): GuildsController {
     return this.#controller;
   }
+
+
+  // #region IMountable implementation
+  public mount(): void {
+    super.mount();
+    this.#service.connect();
+  }
+  // #endregion IMountable implementation
 }

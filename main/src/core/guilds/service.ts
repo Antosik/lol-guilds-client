@@ -1,6 +1,7 @@
 import type { GuildsAPI } from "./connector";
 
 import { getGuildSeasonPath, getGuildStagePath } from "./utils/guildPath";
+import { AuthStore, authStore } from "@guilds-main/store/auth";
 import { i18n } from "@guilds-main/utils/i18n";
 import { isExists, isNotExists } from "@guilds-shared/helpers/typeguards";
 
@@ -13,6 +14,34 @@ export class GuildsService implements IService {
     this.#guildsApi = guildsApi;
   }
 
+
+  public connect(): void {
+    const authToken = authStore.getToken();
+    if (isExists(authToken) && !AuthStore.isTokenExpired(authToken)) {
+      this.#guildsApi.setToken(authToken.token);
+    }
+  }
+
+
+  // #region Events
+  public addListener(event: string, callback: TAnyFunc): this {
+    this.#guildsApi.addListener(event, callback);
+    return this;
+  }
+  public removeAllListeners(event: string): this {
+    this.#guildsApi.removeAllListeners(event);
+    return this;
+  }
+  public removeListener(event: string, callback: TAnyFunc): this {
+    this.#guildsApi.removeListener(event, callback);
+    return this;
+  }
+  // #endregion Events
+
+
+  public async getSummoner(): Promise<IGuildAPICurrentSummonerResponse> {
+    return this.#guildsApi.getCurrentSummoner();
+  }
 
   public async getCurrentClub(): Promise<IGuildAPIClubResponse> {
 

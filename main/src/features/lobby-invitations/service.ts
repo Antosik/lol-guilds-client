@@ -67,7 +67,9 @@ export class LobbyInvitationsService implements IService {
     if (isNotExists(club_id) || isNotExists(this.#guildsService) || isNotExists(this.#lcuService)) { return []; }
 
     const guildMembers = await this.#guildsService.getGuildMembers(club_id);
-    const friendsList = await this.#lcuService.getFriendsList();
+    const friendsList = this.#lcuService.isConnected
+      ? await this.#lcuService.getFriendsList()
+      : [];
 
     const friendNameToDataMap = new Map<string, ILCUAPIFriendCoreResponse>(friendsList.map(friend => [friend.name.toLowerCase(), friend]));
 
@@ -90,7 +92,9 @@ export class LobbyInvitationsService implements IService {
     if (isNotExists(club_id) || isNotExists(this.#guildsService) || isNotExists(this.#lcuService)) { return []; }
 
     const guildMembers = await this.getGuildMembersWithStatus(club_id);
-    const bannedList = await this.#lcuService.getBannedList();
+    const bannedList = this.#lcuService.isConnected
+      ? await this.#lcuService.getBannedList()
+      : [];
 
     const bannedPlayersNames = bannedList.map<string>(player => player.name);
 
@@ -106,10 +110,10 @@ export class LobbyInvitationsService implements IService {
 
     if (isNotExists(club_id) || isNotExists(this.#guildsService) || isNotExists(this.#lcuService)) { return []; }
 
-    const [friendsList, invites] = await Promise.all([
-      this.#lcuService.getFriendsList(),
-      this.#guildsService.getInvitesList(club_id, options)
-    ]);
+    const invites = await this.#guildsService.getInvitesList(club_id, options);
+    const friendsList = this.#lcuService.isConnected
+      ? await this.#lcuService.getFriendsList()
+      : [];
 
     const friendNames = friendsList.map(friend => friend.name);
 

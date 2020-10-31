@@ -58,7 +58,8 @@
     "my-last-games": "Мои последние игры с гильдией",
     "stage": "Этап",
     "season": "Сезон",
-    "client-not-launched": "Клиент League of Legends не запущен!",
+    "auth-required": "Требуется авторизация",
+    "auth-required-sub": "Пожалуйста, запустите клиент League of Legends",
     "to-season": "К сезону",
     "to-main-page": "Перейти на главную",
     "search": "Поиск"
@@ -101,7 +102,9 @@
     "unexpected": "Произошла странная ошибка!",
     "something": "Что-то пошло не так: {message}",
     "request": "Не удалось отправить запрос",
-    "internal": "Внутренняя ошибка приложения"
+    "lcu-required": "Требуется запущенный клиент League of Legends",
+    "internal": "Внутренняя ошибка приложения",
+    "another-region": "Извините, но Гильдии - эксклюзивная программа РУ-сервера"
   },
   "invite": {
     "all": "Пригласить всех",

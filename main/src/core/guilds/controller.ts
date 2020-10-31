@@ -2,21 +2,49 @@
 import type { MainRPC } from "@guilds-main/utils/rpc";
 import type { GuildsService } from "@guilds-main/core/guilds/service";
 
+import { authStore } from "@guilds-main/store/auth";
 import { Controller } from "@guilds-main/utils/abstract/Controller";
 import { Result } from "@guilds-shared/helpers/result";
+import { isExists } from "@guilds-shared/helpers/typeguards";
 
 
 export class GuildsController extends Controller {
 
   #guildsService: GuildsService;
+  #tokenSubscription: TAnyFunc | null;
 
   constructor(rpc: MainRPC, guildsService: GuildsService) {
     super(rpc);
     this.#guildsService = guildsService;
+    this.#tokenSubscription = null;
   }
 
 
+  // #region Guilds Service Events Handling (Inner)
+  private _onIdTokenChanged() {
+    this._onGuildsDisconnected();
+    this.#guildsService.connect();
+  }
+  // #endregion Guilds Service Events Handling (Inner)
+
+
+  // #region Guilds Service Events Handling (Inner)
+  private _onGuildsConnected() {
+    this.rpc.send("guilds:connected");
+  }
+  private _onGuildsDisconnected() {
+    this.rpc.send("guilds:disconnected");
+  }
+  // #endregion Guilds Service Events Handling (Inner)
+
+
   // #region RPC Events Handling (Outer)
+  private _onGuildsConnect() {
+    this.#guildsService.connect();
+  }
+  private _handleClubGetSummoner() {
+    return Result.resolve(this.#guildsService.getSummoner());
+  }
   private _handleClubGet() {
     return Result.resolve(this.#guildsService.getCurrentClub());
   }
@@ -76,12 +104,17 @@ export class GuildsController extends Controller {
 
   // #region IController implementation
   _addEventHandlers(): this {
-    return this._addRPCEventHandlers();
+    return this
+      ._addRPCEventHandlers()
+      ._addGuildsEventHandlers()
+      ._addStoreEventHandlers();
   }
 
   private _addRPCEventHandlers(): this {
 
     this.rpc
+      .addListener("guilds:connect", this._onGuildsConnect)
+      .setHandler("guilds:get-summoner", this._handleClubGetSummoner)
       .setHandler("guilds:club", this._handleClubGet)
       .setHandler("guilds:role", this._handleGuildRole)
       .setHandler("guilds:invites:accept", this._handleAcceptInvite)
@@ -104,13 +137,32 @@ export class GuildsController extends Controller {
     return this;
   }
 
+  private _addGuildsEventHandlers(): this {
+
+    this.#guildsService
+      .addListener("guilds:connected", this._onGuildsConnected)
+      .addListener("guilds:disconnected", this._onGuildsDisconnected);
+
+    return this;
+  }
+
+  private _addStoreEventHandlers(): this {
+    this.#tokenSubscription = authStore.onDidChange("token", this._onIdTokenChanged);
+    return this;
+  }
+
   _removeEventHandlers(): this {
-    return this._removeRPCEventHandlers();
+    return this
+      ._removeRPCEventHandlers()
+      ._removeGuildsEventHandlers()
+      ._removeStoreEventHandlers();
   }
 
   private _removeRPCEventHandlers(): this {
 
     this.rpc
+      .removeListener("guilds:connect", this._onGuildsConnect)
+      .removeHandler("guilds:get-summoner")
       .removeHandler("guilds:club")
       .removeHandler("guilds:role")
       .removeHandler("guilds:invites:accept")
@@ -133,9 +185,29 @@ export class GuildsController extends Controller {
     return this;
   }
 
+  private _removeGuildsEventHandlers(): this {
+
+    this.#guildsService
+      .removeListener("guilds:connected", this._onGuildsConnected)
+      .removeListener("guilds:disconnected", this._onGuildsDisconnected);
+
+    return this;
+  }
+
+  private _removeStoreEventHandlers(): this {
+    if (isExists(this.#tokenSubscription)) {
+      this.#tokenSubscription();
+    }
+    return this;
+  }
+
   _bindMethods(): void {
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    this._onIdTokenChanged = this._onIdTokenChanged.bind(this);
+
+    this._onGuildsConnect = this._onGuildsConnect.bind(this);
+    this._handleClubGetSummoner = this._handleClubGetSummoner.bind(this);
     this._handleClubGet = this._handleClubGet.bind(this);
     this._handleGamesSeason = this._handleGamesSeason.bind(this);
     this._handleGamesStage = this._handleGamesStage.bind(this);
@@ -154,6 +226,9 @@ export class GuildsController extends Controller {
     this._handleGuildRole = this._handleGuildRole.bind(this);
     this._handleAcceptInvite = this._handleAcceptInvite.bind(this);
     this._handleDeclineInvite = this._handleDeclineInvite.bind(this);
+
+    this._onGuildsConnected = this._onGuildsConnected.bind(this);
+    this._onGuildsDisconnected = this._onGuildsDisconnected.bind(this);
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   }
   // #endregion IController implementation

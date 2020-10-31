@@ -28,7 +28,9 @@ export class LobbyInvitationsController extends Controller {
       return;
     }
 
-    this.rpc.send("lcu:invitations", Result.resolve(this.#service.filterIncomingInvitationsFromGuildMembers(invites)));
+    this.#service.filterIncomingInvitationsFromGuildMembers(invites)
+      .then((invitations) => this.rpc.send("lcu:invitations", Result.create(invitations)))
+      .catch(() => this.rpc.send("lcu:invitations", Result.create([], "success")));
   }
   // #endregion RPC Events Handling (Outer)
 

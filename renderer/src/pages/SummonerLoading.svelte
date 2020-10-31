@@ -5,6 +5,7 @@
 
   function LCUReconnect() {
     rpc.send("lcu:connect");
+    rpc.send("guilds:connect");
   }
 </script>
 

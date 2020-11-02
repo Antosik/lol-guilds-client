@@ -38,11 +38,15 @@ export class DiscordRPCService implements IService {
   // #region RPC Control
   public async enable(): Promise<void> {
     if (!this.#discordRPC.isConnected) {
+      this.#discordRPC.reconnect = true;
       await this.#discordRPC.connect();
     }
   }
   public async disable(): Promise<void> {
-    await this.#discordRPC.destroy();
+    if (this.#discordRPC.isConnected) {
+      this.#discordRPC.reconnect = false;
+      await this.#discordRPC.disconnect();
+    }
   }
   // #endregion RPC Control
 

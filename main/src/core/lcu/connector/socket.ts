@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { Credentials, LeagueWebSocket, EventResponse } from "league-connect";
 
-import { EventEmitter } from "events";
 import { auth, connect, request } from "league-connect";
 
+import { AsyncConnector } from "@guilds-main/utils/abstract/AsyncConnector";
 import { logDebug, logError } from "@guilds-main/utils/log";
 import { wait } from "@guilds-shared/helpers/functions";
 import { isExists, isNotExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
 
 
-export class LCUAPISocket extends EventEmitter implements IDestroyable {
+export class LCUAPISocket extends AsyncConnector {
 
   private static SESSION_PING_RETRY = 3;
-  private static SESSION_PING_INTERVAL = 1000;
-  private static RECONNECT_INTERVAL = 3000;
+  private static SESSION_PING_INTERVAL = 1e3;
+  private static RECONNECT_INTERVAL = 3e3;
 
-  #reconnectTimer?: NodeJS.Timer;
-  #isInited: boolean;
   #credentials?: Credentials;
   #socket?: LeagueWebSocket;
 
@@ -25,12 +23,9 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
   }
 
   constructor() {
-    super();
-
-    this.#isInited = false;
+    super(LCUAPISocket.RECONNECT_INTERVAL);
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-    this.connect = this.connect.bind(this);
     this._socketListener = this._socketListener.bind(this);
     this._onProcessStateChange = this._onProcessStateChange.bind(this);
     this._onSessionStateChange = this._onSessionStateChange.bind(this);
@@ -40,33 +35,6 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
   public setCredentials(credentials: Credentials): void {
     this.#credentials = credentials;
   }
-
-  public destroy(): void {
-    this.disconnect();
-    this.removeAllListeners();
-  }
-
-  // #region Socket
-  public async connect(): Promise<boolean> {
-
-    try {
-      this.#credentials = await auth();
-      this.#socket = await connect(this.#credentials);
-
-      await this._onConnect();
-
-      return true;
-    } catch (e) {
-      this._onDisconnect();
-
-      return false;
-    }
-  }
-
-  public disconnect(): void {
-    this._onDisconnect();
-  }
-  // #endregion Socket
 
 
   // #region Listener handlers
@@ -84,21 +52,23 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
 
 
   // #region Connect handlers
-  private _setSocketReconnectTimer(mode: "on" | "off"): void {
+  protected async connectClient(): Promise<void> {
+    this.#credentials = await auth();
+    this.#socket = await connect(this.#credentials);
 
-    if (isExists(this.#reconnectTimer) && mode === "off") {
-      clearInterval(this.#reconnectTimer);
-      this.#reconnectTimer = undefined;
-    } else if (isNotExists(this.#reconnectTimer) && mode === "on") {
-      this.#reconnectTimer = setInterval(this.connect, LCUAPISocket.RECONNECT_INTERVAL);
-    }
+    await this._afterConnect();
   }
 
-  private async _onConnect(): Promise<void> {
+  private _onConnected() {
+    this.emit("lcu:connected");
+    logDebug("[LCUAPISocket]: \"connected\"");
+  }
 
-    this._setSocketReconnectTimer("off");
+  private async _afterConnect(): Promise<void> {
 
-    if (this.isConnected && this.#isInited) return;
+    this._setReconnectTimer("off");
+
+    if (this.isConnected) return;
 
     if (isNotExists(this.#socket)) {
       return this.disconnect();
@@ -115,13 +85,7 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
     return this._pingSessionState();
   }
 
-  private _onDisconnect() {
-
-    this._setSocketReconnectTimer("on");
-
-    if (!this.isConnected && this.#isInited) return;
-    this.#isInited = false;
-
+  protected destroyClient(): Promise<void> {
     if (isExists(this.#socket)) {
       this.#socket.removeAllListeners();
       this.#socket.close();
@@ -132,6 +96,7 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
 
     this.emit("lcu:disconnected");
     logDebug("[LCUAPISocket]: \"disconnected\"");
+    return Promise.resolve();
   }
   // #endregion
 
@@ -146,8 +111,7 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
       .then(res => res.json())
       .then((data: ILCUAPISessionResponse) => {
         if (data.sessionState === "connected" || data.sessionState === "loaded") {
-          this.#isInited = true;
-          this.emit("lcu:connected");
+          this._onConnected();
         } else {
           throw new Error();
         }
@@ -165,17 +129,16 @@ export class LCUAPISocket extends EventEmitter implements IDestroyable {
       });
   }
 
-  private _onProcessStateChange(data: ILCUAPIProcessControlResponse | null) {
+  private _onProcessStateChange(data: ILCUAPIProcessControlResponse | null): void | Promise<void> {
     if (data?.status === "Stopping") {
       return this.disconnect();
     }
   }
 
-  private _onSessionStateChange(data: ILCUAPISessionResponse | null) {
+  private _onSessionStateChange(data: ILCUAPISessionResponse | null): void | Promise<void> {
 
     if (data?.sessionState === "loaded") {
-      this.#isInited = true;
-      this.emit("lcu:connected");
+      this._onConnected();
     } else if (data?.sessionState === "disconnected") {
       return this.disconnect();
     }

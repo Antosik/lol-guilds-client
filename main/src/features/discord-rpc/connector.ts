@@ -122,7 +122,12 @@ export class DiscordRPC extends AsyncConnector {
   }
 
   private async _onError(error: Error): Promise<void> {
-    logError("[DiscordRPC]: onError - ", error);
+    if (error.message.includes("RPC_CONNECTION_TIMEOUT")) {
+      logError("[DiscordRPC]: onError - RPC Timeout");
+      this.emit("discord:timeout");
+    } else {
+      logError("[DiscordRPC]: onError - ", error);
+    }
     return this.destroy();
   }
   // #endregion Event handlers

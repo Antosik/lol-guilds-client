@@ -30,6 +30,10 @@ export class DiscordRPCController extends Controller {
   private async _onDiscordActivityJoin(secret: string) {
     await this.#service.connectToLobby(secret);
   }
+
+  private _onDiscordTimeout() {
+    this.rpc.send("discord:timeout");
+  }
   // #endregion Event Handlers
 
 
@@ -37,6 +41,7 @@ export class DiscordRPCController extends Controller {
   _bindMethods(): void {
 
     /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    this._onDiscordTimeout = this._onDiscordTimeout.bind(this);
     this._onLobbyUpdate = this._onLobbyUpdate.bind(this);
     this._onRPCConnected = this._onRPCConnected.bind(this);
     this._onDiscordActivityJoin = this._onDiscordActivityJoin.bind(this);
@@ -46,7 +51,8 @@ export class DiscordRPCController extends Controller {
   _addEventHandlers(): this {
     this.#service
       .addListener("discord:connected", this._onRPCConnected)
-      .addListener("discord:join", this._onDiscordActivityJoin);
+      .addListener("discord:join", this._onDiscordActivityJoin)
+      .addListener("discord:timeout", this._onDiscordTimeout);
     this.#lcuService.addListener("lcu:lol-lobby.v2.lobby", this._onLobbyUpdate);
     return this;
   }
@@ -54,7 +60,8 @@ export class DiscordRPCController extends Controller {
   _removeEventHandlers(): this {
     this.#service
       .removeListener("discord:connected", this._onRPCConnected)
-      .removeListener("discord:join", this._onDiscordActivityJoin);
+      .removeListener("discord:join", this._onDiscordActivityJoin)
+      .removeListener("discord:timeout", this._onDiscordTimeout);
     this.#lcuService.removeListener("lcu:lol-lobby.v2.lobby", this._onLobbyUpdate);
     return this;
   }

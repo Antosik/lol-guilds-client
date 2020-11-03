@@ -52,11 +52,15 @@ export class LCUAPISocket extends AsyncConnector {
 
 
   // #region Connect handlers
-  protected async connectClient(): Promise<void> {
+  protected async _connectClient(): Promise<void> {
     this.#credentials = await auth();
     this.#socket = await connect(this.#credentials);
 
     await this._afterConnect();
+  }
+
+  protected _onAlreadyConnected(): void {
+    this.emit("lcu:connected");
   }
 
   private _onConnected() {
@@ -85,7 +89,7 @@ export class LCUAPISocket extends AsyncConnector {
     return this._pingSessionState();
   }
 
-  protected destroyClient(): Promise<void> {
+  protected _destroyClient(): Promise<void> {
     if (isExists(this.#socket)) {
       this.#socket.removeAllListeners();
       this.#socket.close();

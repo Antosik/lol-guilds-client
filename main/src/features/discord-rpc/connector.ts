@@ -62,7 +62,7 @@ export class DiscordRPC extends AsyncConnector {
 
 
   // #region Connect handlers
-  protected async connectClient(): Promise<void> {
+  protected async _connectClient(): Promise<void> {
     this.#client = new DiscordRPCClient({ transport: "ipc" });
 
     this.#client.once("ready", this._onReady);
@@ -74,6 +74,10 @@ export class DiscordRPC extends AsyncConnector {
     /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/ban-ts-comment  */
 
     await this.#client.login({ clientId: DiscordRPC.CLIENT_ID }).catch(this._onError);
+  }
+
+  protected _onAlreadyConnected(): void {
+    this.emit("discord:connected");
   }
 
   private async _onReady(): Promise<void> {
@@ -134,8 +138,8 @@ export class DiscordRPC extends AsyncConnector {
 
 
   // #region Destroy
-  protected async destroyClient(): Promise<void> {
-    await this.cleanupSubscriptions();
+  protected async _destroyClient(): Promise<void> {
+    await this._cleanupSubscriptions();
 
     if (isExists(this.#client)) {
       await this.#client.destroy();
@@ -148,7 +152,7 @@ export class DiscordRPC extends AsyncConnector {
     logDebug("[DiscordRPC]: \"disconnected\"");
   }
 
-  private async cleanupSubscriptions() {
+  private async _cleanupSubscriptions() {
     if (isNotEmpty(this.#subscriptions)) {
       try {
         for (const subscription of this.#subscriptions) {

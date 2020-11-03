@@ -48,11 +48,14 @@ export abstract class AsyncConnector extends EventEmitter implements IDestroyabl
 
 
   // #region Connect
-  protected async abstract connectClient(): Promise<void>;
+  protected async abstract _connectClient(): Promise<void>;
+  protected abstract _onAlreadyConnected(): void;
   public async connect(): Promise<void> {
 
-    if (!this.#tryReconnect || this.#isConnecting || this.isConnected) {
+    if (!this.#tryReconnect || this.#isConnecting) {
       return;
+    } else if (this.isConnected) {
+      this._onAlreadyConnected();
     } else if (this.#isDisconnecting) {
       this._setReconnectTimer("on");
       return;
@@ -62,7 +65,7 @@ export abstract class AsyncConnector extends EventEmitter implements IDestroyabl
       this.#isConnecting = true;
       this.#tryReconnect = true;
 
-      await this.connectClient();
+      await this._connectClient();
     } catch (e) {
       await this.disconnect();
     }
@@ -77,7 +80,7 @@ export abstract class AsyncConnector extends EventEmitter implements IDestroyabl
     await this.destroy();
   }
 
-  protected async abstract destroyClient(): Promise<void>;
+  protected async abstract _destroyClient(): Promise<void>;
   public async destroy(): Promise<void> {
 
     if (this.#tryReconnect) {
@@ -87,7 +90,7 @@ export abstract class AsyncConnector extends EventEmitter implements IDestroyabl
     if (!this.isConnected || this.#isDisconnecting) return;
 
     this.#isDisconnecting = true;
-    await this.destroyClient();
+    await this._destroyClient();
     this.#isDisconnecting = false;
   }
   // #endregion Disconnect

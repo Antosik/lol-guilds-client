@@ -75,6 +75,12 @@ function createNotificationsStore() {
     });
   };
 
+  const removePermanent = (text: string) => {
+    if (!permanentStore.has(text.toLowerCase())) return;
+    permanentStore.delete(text.toLowerCase());
+    update(state => state.filter(notification => notification.id !== text));
+  };
+
   const clear = () => {
     update(() => []);
   };
@@ -83,6 +89,7 @@ function createNotificationsStore() {
     subscribe,
     add,
     addPermanent,
+    removePermanent,
     remove,
     clear
   };

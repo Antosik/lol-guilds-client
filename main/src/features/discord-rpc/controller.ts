@@ -20,7 +20,10 @@ export class DiscordRPCController extends Controller {
 
   // #region Event Handlers
   private async _onRPCConnected() {
-    return this.#service.setLobbyActivity(true);
+    return Promise.all([
+      this.#service.setLobbyActivity(true),
+      this.rpc.send("discord:connected")
+    ]);
   }
 
   private async _onLobbyUpdate(lobbyData: TLobbyResponse) {

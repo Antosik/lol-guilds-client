@@ -109,12 +109,20 @@
         });
       });
   };
+  const onDiscordTimeout = () => {
+    notifications.addPermanent($_('discord.timeout'));
+  }
+  const onDiscordConnected = () => {
+    notifications.removePermanent($_('discord.timeout'));
+  }
 
   onMount(() => {
     rpc.send("lcu:connect");
     rpc.send("guilds:connect");
 
     rpc.addListener("lcu:invitations", onReceivedInvitation);
+    rpc.addListener("discord:timeout", onDiscordTimeout);
+    rpc.addListener("discord:connected", onDiscordConnected);
 
     window.addEventListener("online", onOnlineChange);
     window.addEventListener("offline", onOnlineChange);
@@ -122,6 +130,8 @@
 
   onDestroy(() => {
     rpc.removeListener("lcu:invitations", onReceivedInvitation);
+    rpc.removeListener("discord:timeout", onDiscordTimeout);
+    rpc.removeListener("discord:connected", onDiscordConnected);
 
     window.removeEventListener("online", onOnlineChange);
     window.removeEventListener("offline", onOnlineChange);

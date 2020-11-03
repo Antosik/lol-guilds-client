@@ -163,7 +163,7 @@ export class GuildsAPI extends EventEmitter {
 
     logDebug(`[GuildsAPI] (${retryIndex}/${GuildsAPI.RETRY_COUNT}): "${opts.method} /${path}" ${response.status} "${(opts.body && JSON.stringify(opts.body)) ?? ""}"`);
 
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
       this.emit("guilds:disconnected");
       return;
     } else if (response.status === 204) {

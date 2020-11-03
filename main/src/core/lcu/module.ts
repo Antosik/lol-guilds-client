@@ -45,7 +45,7 @@ export class LCUModule extends Module {
 
   public unmount(): void {
     super.unmount();
-    this.#lcuApiSocket.disconnect();
+    void this.#lcuApiSocket.disconnect();
   }
   // #endregion IMountable implementation
 
@@ -53,7 +53,7 @@ export class LCUModule extends Module {
   // #region IDestroyable implementation
   public destroy(): void {
     super.destroy();
-    this.#lcuApiSocket.destroy();
+    void this.#lcuApiSocket.destroy();
   }
   // #endregion IDestroyable implementation
 }

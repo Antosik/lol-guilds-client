@@ -186,7 +186,10 @@
         "error": "An error occurred while saving"
     },
     "please-reload": "Please reload the page",
-    "discord": "Discord Integration"
+    "discord": "Discord Integration (experimental)"
+  },
+  "discord": {
+    "timeout": "Discord connection problems - please restart it"
   },
   "static-groups": {
     "head": "Static groups",

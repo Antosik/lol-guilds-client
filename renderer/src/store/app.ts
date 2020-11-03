@@ -44,6 +44,7 @@ function createNotificationsStore() {
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { subscribe, update } = writable<INotification[]>([]);
+  const permanentStore = new Set();
 
   const remove = (notificationId: string) => {
     update(state => state.filter(notification => notification.id !== notificationId));
@@ -60,6 +61,26 @@ function createNotificationsStore() {
     });
   };
 
+  const addPermanent = (text: string) => {
+
+    if (permanentStore.has(text.toLowerCase())) return;
+    permanentStore.add(text.toLowerCase());
+
+    update(state => {
+      const notification = {
+        id: text,
+        text
+      };
+      return [...state, notification];
+    });
+  };
+
+  const removePermanent = (text: string) => {
+    if (!permanentStore.has(text.toLowerCase())) return;
+    permanentStore.delete(text.toLowerCase());
+    update(state => state.filter(notification => notification.id !== text));
+  };
+
   const clear = () => {
     update(() => []);
   };
@@ -67,6 +88,8 @@ function createNotificationsStore() {
   return {
     subscribe,
     add,
+    addPermanent,
+    removePermanent,
     remove,
     clear
   };

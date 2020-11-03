@@ -52,7 +52,7 @@ export class DiscordRPCModule extends Module {
     super.mount();
 
     if (settingsStore.get("features.discord")) {
-      await this.#discordRPC.connect();
+      await this.#service.enable();
     }
   }
 
@@ -60,7 +60,7 @@ export class DiscordRPCModule extends Module {
     super.unmount();
 
     if (this.#discordRPC.isConnected) {
-      await this.#discordRPC.disconnect();
+      await this.#service.disable();
     }
   }
   // #endregion IMountable implementation

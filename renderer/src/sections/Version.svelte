@@ -48,6 +48,7 @@
     position: fixed;
     bottom: 0;
     right: 0;
+    font-size: 0.8rem;
   }
 
   .version-block__update-state {

@@ -1,6 +1,6 @@
 <script context="module" lang="typescript">
   import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
+  import { _, number } from "svelte-i18n";
   import {
     isExists,
     isEmpty,
@@ -207,7 +207,7 @@
               </p>
             {:else}
               <p>
-                #{guild.current_position.rank} ({guild.current_position.points}pts)
+                #{guild.current_position.rank} ({$number(guild.current_position.points)}pts)
               </p>
             {/if}
           </div>

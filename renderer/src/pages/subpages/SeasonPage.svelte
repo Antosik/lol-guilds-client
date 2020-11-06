@@ -68,7 +68,7 @@
               return;
             }
 
-            lastGames = [...lastGames, ...list];
+            lastGames = list;
           })
       : rpc
           .invoke<IGuildAPIGameClubResponse[]>(
@@ -86,7 +86,7 @@
               return;
             }
 
-            lastGames = [...lastGames, ...list];
+            lastGames = list;
           });
   }
 

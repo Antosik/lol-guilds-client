@@ -76,7 +76,6 @@
 </style>
 
 <div class="info">
-
   <div class="info__version">
     <span class="info__version__current">
       {#await versionGetPromise then version}v{version}{/await}
@@ -108,10 +107,13 @@
   </div>
 
   <div class="info__contacts">
-    <a href={ISSUES_URL} target="_blank" class="info__contacts__bug-report">
+    <div class="info__contacts__bug-report">
       {$_('settings.bugreport')}
-    </a>
+      (<a href="https://discord.com/invite/ZkCEYj2" target="_blank">Discord</a>
+      /
+      <a href={`${ISSUES_URL}/new/choose`} target="_blank">GitHub</a>)
+    </div>
+
     <div class="info__contacts__credits">Made with ♥ by Ariastel Team</div>
   </div>
-
 </div>

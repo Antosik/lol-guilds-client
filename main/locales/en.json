@@ -108,6 +108,7 @@
   },
   "invite": {
     "all": "Invite all",
+    "all-dialog": "By clicking this button you will invite all members of the guild to the lobby. Want to continue?",
     "friends": "Invite friends",
     "from-guild-member": "Lobby invitation from a guild member"
   },

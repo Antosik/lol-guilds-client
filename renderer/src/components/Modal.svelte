@@ -88,5 +88,6 @@
     <div class="modal__content">
       <slot />
     </div>
+    <slot name="after-content" />
   </div>
 {/if}

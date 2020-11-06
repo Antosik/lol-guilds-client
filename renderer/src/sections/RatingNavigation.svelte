@@ -77,7 +77,7 @@
 
     <select class="season-selector__select" on:change={onSeasonChange}>
       {#each seasons as season (season.id)}
-        <option value={season.id}>{season.title}</option>
+        <option value={season.id} selected={season.id == selectedSeason}>{season.title}</option>
       {/each}
     </select>
 

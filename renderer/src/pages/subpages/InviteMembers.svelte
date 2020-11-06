@@ -5,9 +5,9 @@
   import { summoner, guild, members, status } from "@guilds-web/store";
   import { lcuConnected } from "@guilds-web/store/lcu";
 
+  import Dialog from "@guilds-web/components/Dialog.svelte";
   import Loading from "@guilds-web/blocks/Loading.svelte";
   import MemberInviteList from "@guilds-web/blocks/MemberInviteList.svelte";
-
 
   async function onMemberFriendRequest(event: CustomEvent<string>) {
     await rpc.invoke("lcu:friend-request", event.detail);
@@ -29,6 +29,14 @@
   );
   $: allowInvite = $status === "None" || $status === "Lobby";
 
+  let cachedMembersToInvite: string[] = [];
+  let dialogOpened = false;
+  let dialogAccepted = false;
+
+  const dialogButtons = [
+    { label: $_("invite.all"), handler: onDialogAccepted },
+  ];
+
   // #region Events Handling
   async function onMemberInviteMultiple() {
     const statuses =
@@ -38,10 +46,25 @@
       .filter((member) => statuses.includes(member.status ?? "offline"))
       .map((member) => member.name);
 
-    await rpc.invoke("lcu:lobby-invite-all", ready);
+    cachedMembersToInvite = ready;
+    if (!dialogAccepted) {
+      dialogOpened = true;
+      return;
+    }
+
+    await rpc.invoke("lcu:lobby-invite-all", cachedMembersToInvite);
+  }
+
+  async function onDialogAccepted() {
+    dialogOpened = false;
+    dialogAccepted = true;
+    
+    await rpc.invoke("lcu:lobby-invite-all", cachedMembersToInvite);
+  }
+  function onDialogClosed() {
+    dialogOpened = false;
   }
   // #endregion Events Handling
-
 </script>
 
 <style>
@@ -112,3 +135,10 @@
     {/if}
   </div>
 {/if}
+
+<Dialog isOpen={dialogOpened} buttons={dialogButtons} on:close={onDialogClosed}>
+  <h2 slot="heading">{$_('invite.all')}</h2>
+  <span slot="content">
+    {$_('invite.all-dialog')}
+  </span>
+</Dialog>

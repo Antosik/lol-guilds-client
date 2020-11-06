@@ -1,4 +1,5 @@
 <script context="module" lang="typescript">
+  import { number } from "svelte-i18n";
   import { isNotBlank, isExists } from "@guilds-shared/helpers/typeguards";
 </script>
 
@@ -60,7 +61,6 @@
   class:guild-graph__point--end={isEnd}
   class:guild-graph__point--current={isCurrent}
   style={positionStyle}>
-
   {#if isNotBlank(description)}
     {description}
   {:else if rank}
@@ -68,7 +68,6 @@
   {/if}
 
   {#if isExists(points)}
-    <div class="guild-graph__point__points">{points}pt</div>
+    <div class="guild-graph__point__points">{$number(points)}pts</div>
   {/if}
-
 </div>

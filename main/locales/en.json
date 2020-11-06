@@ -108,13 +108,14 @@
   },
   "invite": {
     "all": "Invite all",
+    "all-dialog": "By clicking this button you will invite all members of the guild to the lobby. Want to continue?",
     "friends": "Invite friends",
     "from-guild-member": "Lobby invitation from a guild member"
   },
   "guild-path": {
     "start": "Start",
     "not-participating": {
-      "status": "We're not participating. ({points}pt)",
+      "status": "We're not participating. ({points}pts)",
       "needed": "Your guild needs {points} more points to participate"
     }
   },
@@ -137,6 +138,7 @@
       "create-group": {
         "head": "Create a group in League Client",
         "description": "Using this feature, you can create a group in a League Client and move your friends from the guild there",
+        "additional": "By default we move guild friends from guild from the General folder, but you can also move players from other groups by checking the box below",
         "button": "Create a group",
         "checkbox": "Move friends from other groups"
       }

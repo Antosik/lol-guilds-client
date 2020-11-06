@@ -1,6 +1,6 @@
 <script context="module" lang="typescript">
   import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
+  import { _, number } from "svelte-i18n";
   import {
     isExists,
     isEmpty,
@@ -68,7 +68,7 @@
               return;
             }
 
-            lastGames = [...lastGames, ...list];
+            lastGames = list;
           })
       : rpc
           .invoke<IGuildAPIGameClubResponse[]>(
@@ -86,7 +86,7 @@
               return;
             }
 
-            lastGames = [...lastGames, ...list];
+            lastGames = list;
           });
   }
 
@@ -144,7 +144,7 @@
   ) {
     for (let i = 0, len = members.length; i < len; i++) {
       if (members[i].summoner.summoner_name === summonerName) {
-        return `#${i + 1} (${members[i].results.points}pt)`;
+        return `#${i + 1} (${members[i].results.points}pts)`;
       }
     }
 
@@ -207,7 +207,7 @@
               </p>
             {:else}
               <p>
-                #{guild.current_position.rank} ({guild.current_position.points}pt)
+                #{guild.current_position.rank} ({$number(guild.current_position.points)}pts)
               </p>
             {/if}
           </div>

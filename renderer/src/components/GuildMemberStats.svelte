@@ -6,4 +6,4 @@
 
 <h4>{index}. {name}</h4>
 
-<p class="points">{points}pt</p>
+<p class="points">{points}pts</p>

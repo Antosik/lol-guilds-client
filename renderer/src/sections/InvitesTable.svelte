@@ -1,6 +1,6 @@
 <script context="module" lang="typescript">
   import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
+  import { _, number } from "svelte-i18n";
   import { isEmpty, isExists } from "@guilds-shared/helpers/typeguards";
   import IconButton from "@guilds-web/components/IconButton.svelte";
 </script>
@@ -121,7 +121,7 @@
           <td>{invite.displayName}</td>
           <td>{invite.level}</td>
           <td>{$_(`ranked.${invite.rank}`)}</td>
-          <td>{invite.points}pt</td>
+          <td>{$number(invite.points)}pts</td>
           <td>
             <ul class="invite-actions">
               <li>

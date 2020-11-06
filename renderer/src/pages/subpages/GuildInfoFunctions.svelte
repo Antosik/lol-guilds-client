@@ -39,7 +39,8 @@
   <li class="guild-function guild-function--group">
     <h4>{$_('guild-info.functions.create-group.head')}</h4>
     <p class="guild-function__description">
-      {$_('guild-info.functions.create-group.description')}
+      {$_('guild-info.functions.create-group.description')}<br/>
+      {$_('guild-info.functions.create-group.additional')}
     </p>
 
     {#if !$lcuConnected}

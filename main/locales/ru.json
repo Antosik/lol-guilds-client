@@ -114,8 +114,8 @@
   "guild-path": {
     "start": "Старт",
     "not-participating": {
-      "status": "Не участвуем ({points}pt)",
-      "needed": "Для участия необходимо еще {points}pt"
+      "status": "Не участвуем ({points}pts)",
+      "needed": "Для участия необходимо еще {points}pts"
     }
   },
   "guilds-program": {

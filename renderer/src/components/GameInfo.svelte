@@ -32,6 +32,6 @@
 
 <p class="game-result" class:game-result--win={data.is_winner}>
   {#if data.is_winner}
-    {$_('utils.win')} +{getPointsCount(data.game.queue.queue_type, data.premade_size)}pt
+    {$_('utils.win')} +{getPointsCount(data.game.queue.queue_type, data.premade_size)}pts
   {:else}{$_('utils.lose')}{/if}
 </p>

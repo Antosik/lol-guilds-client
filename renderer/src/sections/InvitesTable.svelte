@@ -121,7 +121,7 @@
           <td>{invite.displayName}</td>
           <td>{invite.level}</td>
           <td>{$_(`ranked.${invite.rank}`)}</td>
-          <td>{invite.points}pt</td>
+          <td>{invite.points}pts</td>
           <td>
             <ul class="invite-actions">
               <li>

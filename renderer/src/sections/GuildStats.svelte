@@ -13,9 +13,9 @@
 {#if guild.rank === 0}
   <p>{$_('guilds-rating.not-participating')}</p>
   {#if guild.points !== 0}
-    <p>{$_('guilds-rating.guild-points')} - {guild.points}pt</p>
+    <p>{$_('guilds-rating.guild-points')} - {guild.points}pts</p>
   {/if}
 {:else}
   <p>{$_('guilds-rating.guild-place')} - #{guild.rank}</p>
-  <p>{$_('guilds-rating.guild-points')} - {guild.points}pt</p>
+  <p>{$_('guilds-rating.guild-points')} - {guild.points}pts</p>
 {/if}

@@ -75,7 +75,7 @@
               {guild.club.lol_name}
             {:else}{$_('guilds-rating.guild-disbanded')}{/if}
           </td>
-          <td>{guild.points}pt</td>
+          <td>{guild.points}pts</td>
           <td>{guild.rank_reward ? guild.rank_reward.reward_value : ''}</td>
         </tr>
       {/each}

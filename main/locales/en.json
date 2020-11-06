@@ -114,7 +114,7 @@
   "guild-path": {
     "start": "Start",
     "not-participating": {
-      "status": "We're not participating. ({points}pt)",
+      "status": "We're not participating. ({points}pts)",
       "needed": "Your guild needs {points} more points to participate"
     }
   },

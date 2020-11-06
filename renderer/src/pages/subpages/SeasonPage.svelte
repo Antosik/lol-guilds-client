@@ -144,7 +144,7 @@
   ) {
     for (let i = 0, len = members.length; i < len; i++) {
       if (members[i].summoner.summoner_name === summonerName) {
-        return `#${i + 1} (${members[i].results.points}pt)`;
+        return `#${i + 1} (${members[i].results.points}pts)`;
       }
     }
 
@@ -207,7 +207,7 @@
               </p>
             {:else}
               <p>
-                #{guild.current_position.rank} ({guild.current_position.points}pt)
+                #{guild.current_position.rank} ({guild.current_position.points}pts)
               </p>
             {/if}
           </div>

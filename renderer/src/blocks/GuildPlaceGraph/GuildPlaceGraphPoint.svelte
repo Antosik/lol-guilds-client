@@ -68,7 +68,7 @@
   {/if}
 
   {#if isExists(points)}
-    <div class="guild-graph__point__points">{points}pt</div>
+    <div class="guild-graph__point__points">{points}pts</div>
   {/if}
 
 </div>

@@ -43,10 +43,14 @@ export class GuildsService implements IService {
     return this.#guildsApi.getCurrentSummoner();
   }
 
-  public async getCurrentClub(): Promise<IGuildAPIClubResponse> {
+  public async getCurrentClub(): Promise<IGuildAPIClubResponse | null> {
 
-    const { next, prev, club: current } = await this.#guildsApi.getCurrentSummoner();
+    const summoner = await this.#guildsApi.getCurrentSummoner();
+    if (isNotExists(summoner)) {
+      return null;
+    }
 
+    const { next, prev, club: current } = summoner;
     const club = isExists(next)
       ? next
       : isExists(current)

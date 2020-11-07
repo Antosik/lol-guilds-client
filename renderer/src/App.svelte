@@ -62,10 +62,10 @@
 
 <script lang="typescript">
   const handleRouting = (auth: boolean, summoner: TSummonerStore, region: string | NotExisting) => {
-    if (!auth) {
-      replace("/not-launched/");
-    } else if (isNotBlank(region) && region !== "ru") {
+    if (isNotBlank(region) && region !== "ru") {
       replace("/another-region/");
+    } else if (!auth) {
+      replace("/not-launched/");
     } else if (summoner.isLoading) {
       replace("/summoner-loading/");
     } else if (isNotExists(summoner.data)) {

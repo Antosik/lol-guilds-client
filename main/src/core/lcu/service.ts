@@ -89,13 +89,13 @@ export class LCUService implements IService {
 
     const currentGameflow = await this.#lcuApi.getStatus();
     if (currentGameflow !== EGameflowStatus.None && currentGameflow !== EGameflowStatus.Lobby) {
-      throw new Error(i18n.t("social.lobby.failure"));
+      throw new Error(i18n.t("social.lobby-creation.failure"));
     }
 
     if (currentGameflow !== EGameflowStatus.Lobby) {
       const lobbyStatus = await this.#lcuApi.createLobby();
       if (!lobbyStatus) {
-        throw new Error(i18n.t("social.lobby.failure"));
+        throw new Error(i18n.t("social.lobby-creation.failure"));
       }
     }
   }

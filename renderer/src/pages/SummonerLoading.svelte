@@ -1,11 +1,9 @@
 <script context="module" lang="typescript">
   import { onMount } from "svelte";
   import { _ } from "svelte-i18n";
-  import { rpc } from "@guilds-web/data/rpc";
 
-  function LCUReconnect() {
-    rpc.send("lcu:connect");
-    rpc.send("guilds:connect");
+  function reload() {
+    window.location.reload();
   }
 </script>
 
@@ -24,7 +22,7 @@
     <button
       class="flex-center summoner-loading__button"
       type="button"
-      on:click={LCUReconnect}>
+      on:click={reload}>
       {$_('utils.reload')}
     </button>
   {/if}

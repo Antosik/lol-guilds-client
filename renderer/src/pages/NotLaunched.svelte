@@ -1,10 +1,8 @@
 <script context="module" lang="typescript">
   import { _ } from "svelte-i18n";
-  import { rpc } from "@guilds-web/data/rpc";
 
-  function reconnect() {
-    rpc.send("lcu:connect");
-    rpc.send("guilds:connect");
+  function reload() {
+    window.location.reload();
   }
 </script>
 
@@ -14,7 +12,7 @@
   <button
     class="flex-center not-launched__button"
     type="button"
-    on:click={reconnect}>
+    on:click={reload}>
     {$_('utils.reload')}
   </button>
 </div>

@@ -1,6 +1,9 @@
-<script lang="typescript">
-  import { isExists } from '@guilds-shared/helpers/typeguards';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+</script>
 
+<script lang="typescript">
   export let guild: IGuildAPIClubResponse | null | undefined;
 </script>
 
@@ -41,10 +44,12 @@
 
 {#if isExists(guild)}
   <div class="guild-info__top flex-center">
-    <div class="guild-info__top__item">Глава: {guild.owner.summoner_name}</div>
+    <div class="guild-info__top__item">
+      {$_('guild-info.leader')}: {guild.owner.summoner_name}
+    </div>
 
     <div class="guild-info__top__item">
-      Завершено сезонов: {guild.seasons_count}
+      {$_('guild-info.seasons-count')}: {guild.seasons_count}
     </div>
 
     <div class="guild-info__top__item">
@@ -52,7 +57,7 @@
         class="recruitment-status"
         class:recruitment-status--active={guild.is_hiring}>
         <span class="status__circle" />
-        Набор {guild.is_hiring ? 'открыт' : 'закрыт'}
+        {guild.is_hiring ? $_('guild-info.hiring.opened') : $_('guild-info.hiring.closed')}
       </span>
     </div>
   </div>

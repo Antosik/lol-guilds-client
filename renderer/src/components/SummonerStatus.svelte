@@ -1,13 +1,12 @@
-<script lang="typescript">
-  import {
-    gameflowLocale,
-    gameflowNotBusyStatusCode,
-  } from '@guilds-shared/helpers/gameflow';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { gameflowNotBusyStatusCode } from "@guilds-shared/helpers/gameflow";
+</script>
 
-  export let statusCode: string = 'None';
+<script lang="typescript">
+  export let statusCode: string = "None";
   export let showText: boolean = true;
 
-  let isBusy: boolean;
   $: isBusy = !gameflowNotBusyStatusCode.includes(statusCode);
 </script>
 
@@ -37,6 +36,6 @@
   <span class="status__circle" />
 
   {#if showText}
-    <span class="status__text">{gameflowLocale.get(statusCode)}</span>
+    <span class="status__text">{$_(`gameflow.${statusCode}`)}</span>
   {/if}
 </span>

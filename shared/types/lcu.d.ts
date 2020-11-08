@@ -41,6 +41,7 @@ declare interface ILCUAPIFriendCoreResponse extends ILCUAPISocialCoreResponse {
   availability: ELCUAPIFriendStatus;
   productName: string;
   note: string;
+  groupId: number;
 }
 
 declare interface ILCUAPIFriendResponse extends ILCUAPIFriendCoreResponse {
@@ -68,6 +69,15 @@ declare interface ILCUAPIFriendResponse extends ILCUAPIFriendCoreResponse {
   statusMessage: string;
   summary: string;
   time: number;
+}
+
+declare interface ILCUAPIFriendGroupResponse {
+  collapsed: boolean;
+  id: number;
+  isLocalized: boolean;
+  isMetaGroup: boolean;
+  name: string;
+  priority: number;
 }
 // #endregion Friend Request & Responses
 
@@ -132,7 +142,30 @@ declare type ELCUAPIQueueId = 400 | 420 | 430 | 440 | 450 | 1090 | 1100;
 declare interface ILCUAPILobbyCore {
   queueId: ELCUAPIQueueId;
 }
+
+declare type TLobbyConfig = {
+  isLobbyFull: boolean;
+  maxLobbySize: number;
+};
+
+declare type TLobbyMemberResponse = {
+  firstPositionPreference: string;
+  secondPositionPreference: string;
+  puuid: string;
+  ready: boolean;
+  accountId: number;
+  summonerId: number;
+  summonerName: string;
+};
+
+declare type TLobbyResponse = {
+  partyId: string;
+  partyType: "open" | "closed";
+  gameConfig: TLobbyConfig;
+  members: TLobbyMemberResponse[];
+};
 // #region Lobby Requests & Responses
+
 
 // #region Session Responses
 declare type ELCUAPISessionState = "initializing" | "connected" | "loaded" | "disconnected" | "shuttingdown";
@@ -169,11 +202,23 @@ declare interface ILCUAPISummonerResponse extends ILCUAPISummonerCoreResponse {
 }
 // #endregion Summoner Requests & Responses
 
+
 // #region ProcessControl Response
 declare interface ILCUAPIProcessControlResponse {
   status: string;
 }
 // #endregion ProcessControl Response
+
+
+// #region RiotClient Response
+declare interface ILCUAPIRegionLocaleResponse {
+  locale: string;
+  region: string;
+  webLanguage: string;
+  webRegion: string;
+}
+// #endregion RiotClient Response
+
 
 // #region Utils
 declare interface ILCUAPIRequestOptions {

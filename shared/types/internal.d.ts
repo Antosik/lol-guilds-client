@@ -1,3 +1,8 @@
+declare interface IInternalCurrentSummoner {
+  displayName: string;
+  accountId: number;
+}
+
 declare interface IInternalGuildMember {
   puuid?: string;
   name: string;
@@ -69,12 +74,19 @@ declare interface IInternalGuildMembersStageRatingWithSummoner {
   summoner: IGuildAPISummonerResponse;
 }
 
-declare type IRPCHandlerFunc = (...args: any[]) => IRPCHandlerResponse | Promise<IRPCHandlerResponse>; // eslint-disable-line @typescript-eslint/no-explicit-any
+declare type IInternalStaticGroupMember = ILCUAPIFriendCoreResponse & { fromGuild: boolean };
+declare type IInternalStaticGroup = {
+  id: string;
+  name: string;
+  members: IInternalStaticGroupMember[];
+};
 
-declare interface IRPCHandlerResponse {
-  status: "ok" | "error";
-  notification?: string;
-  data?: unknown;
+declare interface IInternalLobby {
+  isFull: boolean;
+  partyMax: number;
+  partyId: string;
+  partyType: "open" | "closed";
+  members: ILCUAPISummonerCoreResponse[];
 }
 
 type GuildsEventSeasonsType = "guilds:seasons" | "guilds:season" | "guilds:season:live" | "guilds:season:prev";
@@ -84,9 +96,17 @@ type GuildsEventStatsType = "guilds:stats:season" | "guilds:stats:stage";
 type GuildsEventGamesType = "guilds:games:season" | "guilds:games:stage";
 type GuildsEventPathType = "guilds:path:season" | "guilds:path:stage";
 type GuildsEventInviteType = "guilds:invites:list" | "guilds:invites:accept" | "guilds:invites:decline";
-declare type GuildsEventType = "guilds:club" | "guilds:role" | GuildsEventSeasonsType | GuildsEventMembersType | GuildsEventRatingType | GuildsEventStatsType | GuildsEventGamesType | GuildsEventPathType | GuildsEventInviteType;
-declare type LCUEventType = "lcu:connect" | "lcu:lobby-invite" | "lcu:lobby-invite-all" | "lcu:friend-request" | "lcu:invitation:accept" | "lcu:invitation:decline" | "lcu:open-chat";
+type GuildsEventMiscType = "guilds:club" | "guilds:role" | "guilds:group:create";
+declare type GuildsEventType = GuildsEventSeasonsType | GuildsEventMembersType | GuildsEventRatingType | GuildsEventStatsType | GuildsEventGamesType | GuildsEventPathType | GuildsEventInviteType | GuildsEventMiscType;
+declare type LCUEventType = "lcu:connect" | "lcu:disconnect" | "lcu:lobby-invite" | "lcu:lobby-invite-all" | "lcu:friend-request" | "lcu:invitation:accept" | "lcu:invitation:decline" | "lcu:open-chat";
 declare type VersionEventType = "version:get" | "version:check" | "version:install";
-declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType;
+declare type StaticGroupEventType = "app:static-groups:get" | "app:static-groups:get-friends" | "app:static-groups:create" | "app:static-groups:change-name" | "app:static-groups:invite" | "app:static-groups:delete" | "app:static-groups:change-members";
+type AppWindowEventType = "app:window:isMaximized" | "app:window:minimize" | "app:window:maximize" | "app:window:unmaximize" | "app:window:close";
+type AppI18NWindowType = "app:i18n:set-locale" | "app:i18n:locale" | "app:i18n:load";
+type AppFeatureType = "app:features:get" | string;
+declare type AppEventType = AppWindowEventType | AppI18NWindowType | AppFeatureType;
+declare type RPCHandlerEventType = GuildsEventType | LCUEventType | VersionEventType | AppEventType | StaticGroupEventType;
 
 declare type IKeyValue = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+declare type NotExisting = void | undefined | null;
+declare type TAnyFunc = (...args: any[]) => any;

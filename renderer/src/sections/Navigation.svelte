@@ -1,11 +1,14 @@
-<script lang="typescript">
-  import { link } from 'svelte-spa-router';
-  import active from 'svelte-spa-router/active';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
-  import { rpc } from '../data/rpc';
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { link } from "svelte-spa-router";
+  import active from "svelte-spa-router/active";
+  import { rpc } from "@guilds-web/data/rpc";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+</script>
 
+<script lang="typescript">
   const seasonActivePromise = rpc
-    .invoke('guilds:season:live')
+    .invoke("guilds:season:live")
     .then((liveSeason) => isExists(liveSeason));
 </script>
 
@@ -20,28 +23,35 @@
 <nav class="subpages_navigation">
   <ul class="flex-center">
     <li>
-      <a href="/client/" class="flex-center use-active" use:link use:active>
-        Главная
+      <a
+        href="/client/"
+        class="flex-center use-active"
+        use:link
+        use:active={'/client/(static-groups)?'}>
+        {$_('navigation.main')}
       </a>
     </li>
+
     <li>
       <a
         href="/client/guild/"
         class="flex-center use-active"
         use:link
         use:active={'/client/guild/*'}>
-        Моя гильдия
+        {$_('navigation.guild')}
       </a>
     </li>
+
     <li>
       <a
         href="/client/rating/"
         class="flex-center use-active"
         use:link
         use:active={'/client/rating/*'}>
-        Рейтинг
+        {$_('navigation.rating')}
       </a>
     </li>
+
     {#await seasonActivePromise then isSeasonActive}
       <li>
         <a
@@ -49,7 +59,9 @@
           class="flex-center use-active"
           use:link
           use:active={'/client/current-season/*'}>
-          {#if isSeasonActive}Текущий сезон{:else}Предыдущий сезон{/if}
+          {#if isSeasonActive}
+            {$_('navigation.current-season')}
+          {:else}{$_('navigation.previous-season')}{/if}
         </a>
       </li>
     {/await}

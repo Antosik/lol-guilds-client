@@ -1,28 +1,29 @@
-<script lang="typescript">
-  import { link, push } from 'svelte-spa-router';
-  import active from 'svelte-spa-router/active';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
-  import { formatDate } from '../utils/format';
+<script context="module" lang="typescript">
+  import { _, locale } from "svelte-i18n";
+  import { link, push } from "svelte-spa-router";
+  import active from "svelte-spa-router/active";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+  import { formatDate } from "../utils/format";
 
+  const onSeasonChange = (e: Event) => {
+    push(`/client/rating/season/${(e.target as HTMLSelectElement).value}`);
+  };
+</script>
+
+<script lang="typescript">
   export let seasons: IGuildAPISeasonResponse[] = [];
   export let selectedSeason: number | undefined;
   export let selectedStage: number | undefined;
 
-  let season_info: IGuildAPISeasonResponse | undefined;
   $: season_info = selectedSeason
     ? seasons.find((season) => season.id === selectedSeason)
     : undefined;
-
-  let stage_info: IGuildAPIStageResponse | undefined;
   $: stage_info =
     isExists(selectedStage) && isExists(season_info)
       ? season_info.stages.find(
-          (stage: IGuildAPIStageResponse) => stage.id === selectedStage,
+          (stage: IGuildAPIStageResponse) => stage.id === selectedStage
         )
       : undefined;
-
-  const onSeasonChange = (e: Event) =>
-    push(`/client/rating/season/${(e.target as HTMLSelectElement).value}`);
 </script>
 
 <style>
@@ -71,25 +72,28 @@
 </style>
 
 <div class="season-selector">
-
   <div class="season-selector__info">
-    <h2 class="season-selector__heading">Сезон:</h2>
+    <h2 class="season-selector__heading">{$_('main.season')}:</h2>
 
-    <select class="season-selector__select" on:blur={onSeasonChange}>
+    <select class="season-selector__select" on:change={onSeasonChange}>
       {#each seasons as season (season.id)}
-        <option value={season.id}>{season.title}</option>
+        <option value={season.id} selected={season.id == selectedSeason}>{season.title}</option>
       {/each}
     </select>
 
     <div class="season-selector__schedule">
       {#if isExists(stage_info)}
-        <h3>Этап {stage_info.number}</h3>
+        <h3>{$_('main.stage')} {stage_info.number}</h3>
         <p>
-          {formatDate(stage_info.start_date)} - {formatDate(stage_info.end_date)}
+          {formatDate(stage_info.start_date, $locale)}
+          -
+          {formatDate(stage_info.end_date, $locale)}
         </p>
       {:else if isExists(season_info)}
         <p>
-          {formatDate(season_info.start_date)} - {formatDate(season_info.end_date)}
+          {formatDate(season_info.start_date, $locale)}
+          -
+          {formatDate(season_info.end_date, $locale)}
         </p>
       {/if}
     </div>
@@ -99,7 +103,7 @@
     {#if isExists(selectedStage)}
       <li class="season-selector__stages-list-item">
         <a href={`/client/rating/season/${selectedSeason}`} use:link>
-          К сезону
+          {$_('main.to-season')}
         </a>
       </li>
     {/if}
@@ -113,10 +117,14 @@
               class="use-active"
               use:link
               use:active>
-              Этап {stage.number}
+              {$_('main.stage')}
+              {stage.number}
             </a>
           {:else}
-            <span class="stage-not-active">Этап {stage.number}</span>
+            <span class="stage-not-active">
+              {$_('main.stage')}
+              {stage.number}
+            </span>
           {/if}
         </li>
       {/each}

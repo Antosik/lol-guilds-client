@@ -1,128 +1,140 @@
-<script lang="typescript">
-  import { onMount, onDestroy } from 'svelte';
-  import Router, { replace } from 'svelte-spa-router';
+<script lang="typescript" context="module">
+  import { onMount, onDestroy } from "svelte";
+  import { _, init, addMessages } from "svelte-i18n";
+  import { replace } from "svelte-spa-router";
+  import Router from "svelte-spa-router/Router.svelte";
 
-  import { Result } from '@guilds-shared/helpers/result';
+  import { Result } from "@guilds-shared/helpers/result";
   import {
     isNotExists,
     isExists,
     isEmpty,
-  } from '@guilds-shared/helpers/typeguards';
-  import { rpc } from './data/rpc';
-  import { appStore } from './store/app';
-  import { summonerStore } from './store/summoner';
-  import { guildStore } from './store/guild';
-  import { routes } from './routes';
+    isNotBlank,
+  } from "@guilds-shared/helpers/typeguards";
+  import { rpc } from "./data/rpc";
+  import { invitations, notifications, routeSaver } from "./store/app";
+  import { lcuConnected } from "./store/lcu";
+  import { region, summoner, guildsConnected } from "./store";
+  import { routes } from "./routes";
 
-  import Invitations from './sections/Invitations.svelte';
-  import Notifications from './sections/Notifications.svelte';
-  import Version from './sections/Version.svelte';
+  import IconButton from "./components/IconButton.svelte";
+  import Modal from "./components/Modal.svelte";
+  import Invitations from "./sections/Invitations.svelte";
+  import Notifications from "./sections/Notifications.svelte";
+  import SettingsModal from "./sections/SettingsModal.svelte";
+  import Version from "./sections/Version.svelte";
 
-  const handleRouting = (
-    auth: boolean,
-    summoner?: ILCUAPISummonerResponse | null,
-  ) => {
-    if (!auth) {
-      replace('/not-launched/');
-    } else if (auth && isNotExists(summoner)) {
-      replace('/summoner-loading/');
+  if (
+    isExists(window.LGC) &&
+    isNotBlank(window.LGC.currentLocale) &&
+    isExists(window.LGC.locales)
+  ) {
+    const { locales, currentLocale } = window.LGC;
+
+    Object.keys(locales).forEach((key) => {
+      addMessages(key, locales[key]);
+    });
+
+    init({
+      fallbackLocale: "en",
+      initialLocale: currentLocale,
+      loadingDelay: 0,
+    });
+  }
+
+  const onNotificationClose = (e: CustomEvent<string>) => {
+    notifications.remove(e.detail);
+  };
+  const onOnlineChange = () => {
+    rpc.send(navigator.onLine ? "lcu:connect" : "lcu:disconnect");
+  };
+  const onInvitationAccept = async (e: CustomEvent<string>) => {
+    const invitationid = e.detail;
+    invitations.remove(invitationid);
+    await rpc.invoke("lcu:invitation:accept", invitationid);
+  };
+  const onInvitationDecline = async (e: CustomEvent<string>) => {
+    const invitationid = e.detail;
+    invitations.remove(invitationid);
+    await rpc.invoke("lcu:invitation:decline", invitationid);
+  };
+</script>
+
+<script lang="typescript">
+  const handleRouting = (auth: boolean, summoner: TSummonerStore, region: string | NotExisting) => {
+    if (isNotBlank(region) && region !== "ru") {
+      replace("/another-region/");
+    } else if (!auth) {
+      replace("/not-launched/");
+    } else if (summoner.isLoading) {
+      replace("/summoner-loading/");
+    } else if (isNotExists(summoner.data)) {
+      replace("/not-launched/");
     } else {
-      replace($appStore.currentPage);
+      const pageToRoute =
+        $routeSaver === "/not-launched/" || $routeSaver === "/summoner-loading/" || $routeSaver === "/another-region/"
+          ? "/client/"
+          : $routeSaver;
+      replace(pageToRoute);
     }
   };
 
-  $: handleRouting($summonerStore.auth, $summonerStore.summoner);
+  $: handleRouting($guildsConnected, $summoner, $region);
+  let isSettingsModalOpen = false;
 
-  const onNotificationClose = (e: Event) => {
-    appStore.removeNotification((e as CustomEvent).detail);
-  };
-  const onSummoner = (e: Result<ILCUAPISummonerResponse>) => {
-    summonerStore.setSummoner(e.data);
-  };
-  const onGameflow = (e: Result<string>) => summonerStore.setStatus(e.data);
-  const onConnect = () => {
-    guildStore.reset();
-    summonerStore.setAuth(true);
-  };
-  const onDisconnect = () => {
-    guildStore.reset();
-    summonerStore.setAuth(false);
-  };
-  const onGuilds = async () => {
-    const club = await rpc.invoke<IGuildAPIClubResponse>('guilds:club');
-    guildStore.setGuildData(club);
+  const onSettingsModalOpen = () => (isSettingsModalOpen = true);
+  const onSettingsModalClose = () => (isSettingsModalOpen = false);
 
-    const summoner = $summonerStore.summoner;
-    if (isExists(club) && isExists(summoner)) {
-      const role = await rpc.invoke<number>(
-        'guilds:role',
-        club.id,
-        summoner.displayName,
-      );
-      guildStore.setRole(role);
-    }
-  };
-  const onOnlineChange = () =>
-    rpc.send(navigator.onLine ? 'lcu:connect' : 'lcu:disconnect');
-  const onInvitationAccept = async (e: Event) => {
-    const invitationid = (e as CustomEvent<string>).detail;
-    appStore.removeInvitation(invitationid);
-    await rpc.invoke('lcu:invitation:accept', invitationid);
-  };
-  const onInvitationDecline = async (e: Event) => {
-    const invitationid = (e as CustomEvent<string>).detail;
-    appStore.removeInvitation(invitationid);
-    await rpc.invoke('lcu:invitation:decline', invitationid);
-  };
   const onReceivedInvitation = (e: Result<IInternalReceivedInvitation[]>) => {
     if (isEmpty(e.data)) {
-      appStore.clearInvitations();
+      invitations.clear();
       return;
     }
 
     e.data
       .filter((invite) => {
-        const inviteFound = $appStore.invitations.find(
-          (invitation) => invitation.id === invite.invitationId,
+        const inviteFound = $invitations.find(
+          (invitation) => invitation.id === invite.invitationId
         );
         return isNotExists(inviteFound);
       })
       .forEach((invite) => {
-        appStore.addInvitation(
-          invite.invitationId,
-          `Приглашение в лобби от согильдийца ${invite.fromSummonerName}`,
-        );
-        new Notification('League Guilds Client', {
-          lang: 'ru-RU',
-          body: `Приглашение в лобби от согильдийца ${invite.fromSummonerName}`,
+        const msg = `${$_("invite.from-guild-member")} ${
+          invite.fromSummonerName
+        }`;
+        invitations.add(invite.invitationId, msg);
+        new Notification("League Guilds Client", {
+          lang: "ru-RU",
+          body: msg,
         });
       });
   };
+  const onDiscordTimeout = () => {
+    notifications.addPermanent($_('discord.timeout'));
+  }
+  const onDiscordConnected = () => {
+    notifications.removePermanent($_('discord.timeout'));
+  }
 
   onMount(() => {
-    rpc.invoke('lcu:connect');
+    rpc.send("lcu:connect");
+    rpc.send("guilds:connect");
 
-    rpc.on('lcu:connected', onConnect);
-    rpc.on('lcu:disconnected', onDisconnect);
-    rpc.on('lcu:summoner', onSummoner);
-    rpc.on('lcu:gameflow-phase', onGameflow);
-    rpc.on('lcu:invitations', onReceivedInvitation);
-    rpc.on('guilds:connected', onGuilds);
+    rpc.addListener("lcu:invitations", onReceivedInvitation);
+    rpc.addListener("discord:timeout", onDiscordTimeout);
+    rpc.addListener("discord:connected", onDiscordConnected);
 
-    window.addEventListener('online', onOnlineChange);
-    window.addEventListener('offline', onOnlineChange);
+    window.addEventListener("online", onOnlineChange);
+    window.addEventListener("offline", onOnlineChange);
   });
 
   onDestroy(() => {
-    rpc.removeListener('lcu:connected', onConnect);
-    rpc.removeListener('lcu:disconnected', onDisconnect);
-    rpc.removeListener('lcu:summoner', onSummoner);
-    rpc.removeListener('lcu:gameflow-phase', onGameflow);
-    rpc.removeListener('lcu:invitations', onReceivedInvitation);
-    rpc.removeListener('guilds:connected', onGuilds);
+    rpc.removeListener("lcu:invitations", onReceivedInvitation);
+    rpc.removeListener("discord:timeout", onDiscordTimeout);
+    rpc.removeListener("discord:connected", onDiscordConnected);
 
-    window.removeEventListener('online', onOnlineChange);
-    window.removeEventListener('offline', onOnlineChange);
+    window.removeEventListener("online", onOnlineChange);
+    window.removeEventListener("offline", onOnlineChange);
   });
 </script>
 
@@ -134,17 +146,39 @@
     max-width: 300px;
     min-width: 200px;
   }
+
+  :global(.settings-button) {
+    width: 30px !important;
+    height: 30px !important;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+  }
 </style>
 
 <Router {routes} />
-<Version />
+
+<IconButton
+  className="settings-button"
+  icon="settings"
+  alt={$_('settings.head')}
+  on:click={onSettingsModalOpen} />
+
+<Modal isOpen={isSettingsModalOpen} on:close={onSettingsModalClose}>
+  <h2 slot="heading">{$_('settings.head')}</h2>
+  <SettingsModal />
+</Modal>
 
 <div class="notifications">
   <Notifications
-    notifications={$appStore.notifications}
+    notifications={$notifications}
     on:notification-close={onNotificationClose} />
-  <Invitations
-    invitations={$appStore.invitations}
-    on:invite-accept={onInvitationAccept}
-    on:invite-decline={onInvitationDecline} />
+  {#if $lcuConnected}
+    <Invitations
+      invitations={$invitations}
+      on:invite-accept={onInvitationAccept}
+      on:invite-decline={onInvitationDecline} />
+  {/if}
 </div>
+
+<Version />

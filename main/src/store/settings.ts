@@ -1,13 +1,17 @@
 import Store from "electron-store";
 
 interface ISettingsStorePrototype {
-  language: "RU" | "EN";
+  language: "ru" | "en";
+  features: Record<string, boolean>;
 }
 
 const createSettingsStore = () => new Store<ISettingsStorePrototype>({
   name: "settings",
   defaults: {
-    language: "RU"
+    language: "ru",
+    features: {
+      discord: true
+    }
   }
 });
 

@@ -1,7 +1,12 @@
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import Icon from "@guilds-web/components/Icon.svelte";
+</script>
+
 <script lang="typescript">
-  export let icon: string = 'i';
-  export let label: string = 'Информация';
-  export let text: string = '';
+  export let icon: string = "i";
+  export let label: string = $_("utils.information");
+  export let text: string = "";
 </script>
 
 <style>
@@ -20,7 +25,7 @@
     width: 16px;
     height: 16px;
   }
-  .tooltip-container .tooltip-icon__img {
+  :global(.tooltip-container img) {
     width: 10px;
     height: 10px;
   }
@@ -42,10 +47,7 @@
 
 <div class="tooltip-container">
   <div class="tooltip-icon flex-center">
-    <img
-      src="./images/icons/{icon}.svg"
-      alt={label}
-      class="tooltip-icon__img" />
+    <Icon {icon} alt={label} />
   </div>
   <div role="tooltip" class="tooltip-data flex-center">{text}</div>
 </div>

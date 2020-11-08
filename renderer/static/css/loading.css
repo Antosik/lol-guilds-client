@@ -1,0 +1,42 @@
+.loading {
+  width: 100vw;
+  height: 100vh;
+  user-select: none;
+  -webkit-app-region: drag;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading__icon {
+  width: 175px;
+  height: 175px;
+
+  animation: logoRotation 2s ease-in-out infinite;
+}
+
+.loading__head {
+  font-size: 24px;
+  margin: 28px 0 16px;
+}
+
+.loading__text {
+  position: relative;
+  font-size: 18px;
+}
+
+@keyframes logoRotation {
+  0% {
+    transform: rotateY(0deg);
+  }
+
+  50% {
+    transform: rotateY(180deg);
+  }
+
+  100% {
+    transform: rotateY(0deg);
+  }
+}

@@ -1,13 +1,18 @@
-<script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-  import { fade } from 'svelte/transition';
-  import { cubicInOut } from 'svelte/easing';
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
+  import { cubicInOut } from "svelte/easing";
+  import { _ } from "svelte-i18n";
 
-  export let id: string = '';
-  export let text: string = '';
+  import IconButton from "@guilds-web/components/IconButton.svelte";
+</script>
+
+<script lang="typescript">
+  export let id: string = "";
+  export let text: string = "";
 
   const dispatch = createEventDispatcher();
-  const onClose = () => dispatch('close', id);
+  const onClose = () => dispatch("close", id);
 </script>
 
 <style>
@@ -24,28 +29,22 @@
     padding: 4px;
   }
 
-  .notification__close-button {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    padding: 0;
+  :global(.notification__close-button) {
+    width: 18px !important;
+    height: 18px !important;
     margin: 2px;
     float: right;
-  }
-  .notification__close-button img {
-    width: 10px;
-    height: 10px;
   }
 </style>
 
 <li
   class="notification"
   transition:fade|local={{ duration: 200, delay: 0, easing: cubicInOut }}>
-  <button
-    type="button"
-    on:click={onClose}
-    class="notification__close-button flex-center">
-    <img src="./images/icons/close.svg" alt="Закрыть уведомление" />
-  </button>
+  <IconButton
+    icon="close"
+    alt={$_('utils.close-notification')}
+    className="notification__close-button"
+    rounded
+    on:click={onClose} />
   <p class="notification__text">{text}</p>
 </li>

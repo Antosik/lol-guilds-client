@@ -1,9 +1,12 @@
-<script lang="typescript">
-  import { isNotBlank, isExists } from '@guilds-shared/helpers/typeguards';
+<script context="module" lang="typescript">
+  import { number } from "svelte-i18n";
+  import { isNotBlank, isExists } from "@guilds-shared/helpers/typeguards";
+</script>
 
-  export let description: string = '';
-  export let rank: number;
-  export let points: number;
+<script lang="typescript">
+  export let description: string = "";
+  export let rank: number | undefined = undefined;
+  export let points: number | undefined = undefined;
 
   export let isCurrent: boolean = false;
   export let isStart: boolean = false;
@@ -11,8 +14,7 @@
 
   export let position: number = -1;
 
-  let positionStyle: string;
-  $: positionStyle = position === -1 ? '' : `left: ${position}%`;
+  $: positionStyle = position === -1 ? "" : `left: ${position}%`;
 </script>
 
 <style>
@@ -32,11 +34,11 @@
     top: 0;
   }
   .guild-graph__point__rank:before {
-    content: '#';
+    content: "#";
   }
   @media all and (min-width: 576px) {
     .guild-graph__point__rank:before {
-      content: 'Топ-';
+      content: "#";
     }
   }
   .guild-graph__point__points {
@@ -64,7 +66,8 @@
   {:else if rank}
     <div class="guild-graph__point__rank">{rank}</div>
   {/if}
+
   {#if isExists(points)}
-    <div class="guild-graph__point__points">{points}pt</div>
+    <div class="guild-graph__point__points">{$number(points)}pts</div>
   {/if}
 </div>

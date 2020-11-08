@@ -1,32 +1,34 @@
-<script lang="typescript">
-  import { createEventDispatcher } from 'svelte';
-  import { isExists } from '@guilds-shared/helpers/typeguards';
-  import { guildMemberStatusSortOrder } from '@guilds-shared/helpers/gameflow';
+<script context="module" lang="typescript">
+  import { createEventDispatcher } from "svelte";
+  import { isExists } from "@guilds-shared/helpers/typeguards";
+  import { guildMemberStatusSortOrder } from "@guilds-shared/helpers/gameflow";
 
-  import MemberInviteListItem from './MemberInviteListItem.svelte';
-
-  export let allowInvite: boolean = true;
-  export let members: IInternalGuildMember[] = [];
-
-  const dispatch = createEventDispatcher();
-  const inviteToParty = (e: Event) => {
-    dispatch('member-invite', (e as CustomEvent<string>).detail);
-  };
-  const sendFriendRequest = (e: Event) => {
-    dispatch('friend-request', (e as CustomEvent<string>).detail);
-  };
-  const openChatWith = (e: Event) => {
-    dispatch('open-chat', (e as CustomEvent<string>).detail);
-  };
+  import MemberInviteListItem from "./MemberInviteListItem.svelte";
 
   function sortMembers(arr: IInternalGuildMember[]) {
     return arr.sort(
       ({ name: n1, status: s1 }, { name: n2, status: s2 }) =>
         n1.localeCompare(n2) &&
-        guildMemberStatusSortOrder.get(s1 ?? 'offline')! -
-          guildMemberStatusSortOrder.get(s2 ?? 'offline')!,
+        guildMemberStatusSortOrder.get(s1 ?? "offline")! -
+          guildMemberStatusSortOrder.get(s2 ?? "offline")!
     );
   }
+</script>
+
+<script lang="typescript">
+  export let allowInvite: boolean = true;
+  export let members: IInternalGuildMember[] = [];
+
+  const dispatch = createEventDispatcher();
+  const inviteToParty = (e: CustomEvent<string>) => {
+    dispatch("member-invite", e.detail);
+  };
+  const sendFriendRequest = (e: CustomEvent<string>) => {
+    dispatch("friend-request", e.detail);
+  };
+  const openChatWith = (e: CustomEvent<string>) => {
+    dispatch("open-chat", e.detail);
+  };
 </script>
 
 <style>

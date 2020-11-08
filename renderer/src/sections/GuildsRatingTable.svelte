@@ -1,6 +1,9 @@
-<script lang="typescript">
-  import { isNotBlank, isEmpty } from '@guilds-shared/helpers/typeguards';
+<script context="module" lang="typescript">
+  import { _, number } from "svelte-i18n";
+  import { isNotBlank, isEmpty } from "@guilds-shared/helpers/typeguards";
+</script>
 
+<script lang="typescript">
   export let myGuildId: number | undefined = undefined;
   export let guilds: Array<
     IGuildAPIClubStageRatingResponse | IGuildAPIClubSeasonRatingResponse
@@ -30,7 +33,7 @@
     background: rgba(245, 240, 223, 0.2);
   }
   tr:not(:first-child):after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     width: 100%;
@@ -49,17 +52,20 @@
 </style>
 
 {#if isEmpty(guilds)}
-  <h4>Нет данных</h4>
+  <h4>{$_('not-found.data')}</h4>
 {:else}
+
   <table>
+
     <thead>
       <tr>
         <th>#</th>
-        <th>Название гильдии</th>
-        <th>Количество очков</th>
-        <th>Награды</th>
+        <th>{$_('guilds-rating.guild-name')}</th>
+        <th>{$_('guilds-rating.guild-points')}</th>
+        <th>{$_('guilds-rating.guild-rewards')}</th>
       </tr>
     </thead>
+
     <tbody>
       {#each guilds as guild, i (guild.id)}
         <tr class:my-guild={guild.club.id === myGuildId}>
@@ -67,12 +73,13 @@
           <td>
             {#if isNotBlank(guild.club.lol_name)}
               {guild.club.lol_name}
-            {:else}Гильдия распущена{/if}
+            {:else}{$_('guilds-rating.guild-disbanded')}{/if}
           </td>
-          <td>{guild.points} pt.</td>
+          <td>{$number(guild.points)}pts</td>
           <td>{guild.rank_reward ? guild.rank_reward.reward_value : ''}</td>
         </tr>
       {/each}
     </tbody>
+
   </table>
 {/if}

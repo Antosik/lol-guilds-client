@@ -1,17 +1,18 @@
-<script lang="typescript">
-  import { rpc } from "../data/rpc";
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
 
-  async function LCUReconnect() {
-    await rpc.invoke("lcu:connect");
+  function reload() {
+    window.location.reload();
   }
 </script>
 
 <div class="absolute-full flex-center not-launched">
-  <h1 class="not-launched__heading">Клиент League of Legends не запущен!</h1>
+  <h1 class="not-launched__heading">{$_('main.auth-required')}</h1>
+  <h2 class="not-launched__heading">{$_('main.auth-required-sub')}</h2>
   <button
     class="flex-center not-launched__button"
     type="button"
-    on:click={LCUReconnect}>
-    Перезагрузить
+    on:click={reload}>
+    {$_('utils.reload')}
   </button>
 </div>

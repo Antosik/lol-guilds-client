@@ -1,17 +1,21 @@
+<script context="module" lang="typescript">
+  import { _ } from "svelte-i18n";
+  import { location } from "svelte-spa-router";
+  import { isExists, isNotBlank } from "@guilds-shared/helpers/typeguards";
+  import { routeSaver } from "@guilds-web/store/app";
+
+  import SummonerStatus from "@guilds-web/components/SummonerStatus.svelte";
+  import IconButton from "@guilds-web/components/IconButton.svelte";
+</script>
+
 <script lang="typescript">
-  import { location } from 'svelte-spa-router';
-  import { isExists, isNotBlank } from '@guilds-shared/helpers/typeguards';
-  import { appStore } from '../store/app';
-
-  import SummonerStatus from '../components/SummonerStatus.svelte';
-
-  export let summoner: ILCUAPISummonerResponse | undefined = undefined;
-  export let guild: IGuildAPIClubResponse | undefined = undefined;
-  export let status: string = 'None';
-  export let style: string = 'normal';
+  export let summoner: IInternalCurrentSummoner | NotExisting = undefined;
+  export let guild: IGuildAPIClubResponse | NotExisting = undefined;
+  export let status: string | NotExisting = "None";
+  export let style: string = "normal";
 
   const pageReload = () => {
-    appStore.setCurrentPage($location);
+    routeSaver.set($location);
     window.location.reload();
   };
 </script>
@@ -50,34 +54,35 @@
     line-height: 24px;
   }
 
-  .refresh {
+  :global(.refresh) {
     position: absolute;
     top: 50%;
     right: 20px;
-    width: 30px;
-    height: 30px;
     transform: translateY(-50%);
-    padding: 0.1em;
-  }
-
-  .refresh img {
-    max-width: 100%;
+    width: 30px !important;
+    height: 30px !important;
   }
 </style>
 
 <header class="summoner-info" class:light={style === 'light'}>
+
   <h1>
     {#if isExists(summoner)}{summoner.displayName}{:else}???{/if}
     {#if isExists(guild)}
       <span>[ {guild.club_name} ]</span>
     {/if}
   </h1>
+
   {#if isNotBlank(status)}
     <div class="summoner-info__status">
       <SummonerStatus statusCode={status} showText={style !== 'light'} />
     </div>
   {/if}
-  <button type="button" class="refresh flex-center" on:click={pageReload}>
-    <img src="./images/icons/refresh.svg" alt="Обновить" />
-  </button>
+
+  <IconButton
+    icon="refresh"
+    alt={$_('utils.reload')}
+    className="refresh"
+    on:click={pageReload} />
+
 </header>

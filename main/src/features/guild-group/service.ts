@@ -37,7 +37,7 @@ export class GuildGroupService implements IService {
       this.#guildsService.getGuildMembers(club_id)
     ]);
 
-    const groupName = `LGC: ${guild.club_name}`;
+    const groupName = "LGC - Гильдия";
     const group = await this.#lcuService.createFriendGroup(groupName);
     if (isNotExists(group)) {
       throw new Error(i18n.t("social.league-group.failure"));

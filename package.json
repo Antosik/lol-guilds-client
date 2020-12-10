@@ -1,6 +1,6 @@
 {
   "name": "guilds-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This desktop application allows users to interact with the “Guilds” program in League of Legends.",
   "main": "target/app/main.js",
   "scripts": {

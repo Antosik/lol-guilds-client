@@ -49,7 +49,7 @@
     "cross-env": "^7.0.2",
     "css-loader": "^4.3.0",
     "del-cli": "^3.0.1",
-    "electron": "^10.1.5",
+    "electron": "^15.5.5",
     "electron-builder": "^22.9.1",
     "eslint": "^7.12.0",
     "eslint-plugin-svelte3": "^2.7.3",

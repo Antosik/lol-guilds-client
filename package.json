@@ -91,7 +91,7 @@
     "league-connect": "^2.0.1",
     "markdown-it": "^11.0.1",
     "markdown-it-for-inline": "^0.1.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "svelte-i18n": "^3.1.0",
     "svelte-spa-router": "^3.0.5"
   }
